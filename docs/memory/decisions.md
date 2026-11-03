@@ -5,6 +5,7 @@ if a decision changes, add a new entry that says what it replaces.
 
 | Date | Decision | Why |
 | --- | --- | --- |
+| 2026-11-03 | 5 rerolls each for race and talent (replaces "5 rerolls shared") | Kha wants more control over both rolls |
 | 2026-11-03 | Legendary talent: Chosen One (advantage on every check) | Kha picked it from Claude's ideas; strongest option, watch balance |
 | 2026-11-03 | Passives and check bonuses are text only for now; built later | Keeps character creation small |
 | 2026-11-03 | Hero stats = class base + race changes; Mage attacks with Magic | Numbers proposed by Claude, approved by Kha |

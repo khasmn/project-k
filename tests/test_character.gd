@@ -23,13 +23,14 @@ func _init() -> void:
 	_check(not talent_counts.has("legendary"), "rolled a talent rarity that doesn't exist")
 	_check(absf(100.0 * talent_counts.common / ROLLS - 51.0) < 1.5, "talent chances didn't scale up")
 
-	# 5 rerolls shared between race and talent, then no more.
-	for i in 3:
+	# 5 rerolls each for race and talent; using race rerolls doesn't touch talent rerolls.
+	for i in 5:
 		_check(draft.reroll_race(), "race reroll refused early")
-	for i in 2:
+	_check(not draft.reroll_race(), "6th race reroll allowed")
+	_check(draft.talent_rerolls_left == 5, "race rerolls used talent rerolls")
+	for i in 5:
 		_check(draft.reroll_talent(), "talent reroll refused early")
-	_check(draft.rerolls_left == 0, "reroll counter wrong")
-	_check(not draft.reroll_race() and not draft.reroll_talent(), "6th reroll allowed")
+	_check(not draft.reroll_talent(), "6th talent reroll allowed")
 
 	# Stats = class base + race change.
 	draft.race_id = "glimmerfae"

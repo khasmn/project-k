@@ -1,5 +1,5 @@
 extends Control
-## Character creation screen: shows the rolled race and talent, shared rerolls, and class buttons.
+## Character creation screen: shows the rolled race and talent with their rerolls, and class buttons.
 
 const RARITY_COLORS: Dictionary = {
 	"common": Color(0.75, 0.75, 0.75), "uncommon": Color(0.4, 0.85, 0.4), "rare": Color(0.4, 0.6, 1.0),
@@ -52,9 +52,10 @@ func _refresh() -> void:
 		%ClassInfo.text = "%s\nWeapon: %s (d%d)\nEvolves at level 15: %s" % [
 			hero_class.role, hero_class.weapon, hero_class.damage_die, hero_class.evolves]
 
-	%RerollsLabel.text = "Rerolls left: %d (shared by race and talent)" % draft.rerolls_left
-	%RerollRaceButton.disabled = draft.rerolls_left == 0
-	%RerollTalentButton.disabled = draft.rerolls_left == 0
+	%RerollRaceButton.text = "Reroll race (%d left)" % draft.race_rerolls_left
+	%RerollTalentButton.text = "Reroll talent (%d left)" % draft.talent_rerolls_left
+	%RerollRaceButton.disabled = draft.race_rerolls_left == 0
+	%RerollTalentButton.disabled = draft.talent_rerolls_left == 0
 	%HeroSummary.text = _summary()
 
 

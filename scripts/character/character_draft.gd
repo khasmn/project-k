@@ -1,6 +1,6 @@
 class_name CharacterDraft
 extends RefCounted
-## A hero being created: rolled race and talent, picked class, and the shared rerolls.
+## A hero being created: rolled race and talent, picked class, and 5 rerolls each for race and talent.
 
 const RARITY_CHANCES: Dictionary = {"common": 50, "uncommon": 25, "rare": 15, "epic": 8, "legendary": 2}
 const REROLLS: int = 5
@@ -12,23 +12,24 @@ var classes: Dictionary = _load("res://data/classes.json")
 var race_id: String = roll_by_rarity(races)
 var talent_id: String = roll_by_rarity(talents)
 var class_id: String = ""
-var rerolls_left: int = REROLLS
+var race_rerolls_left: int = REROLLS
+var talent_rerolls_left: int = REROLLS
 
 
-## Spend one shared reroll on the race. Returns false if none are left.
+## Spend one race reroll. Returns false if none are left.
 func reroll_race() -> bool:
-	if rerolls_left == 0:
+	if race_rerolls_left == 0:
 		return false
-	rerolls_left -= 1
+	race_rerolls_left -= 1
 	race_id = roll_by_rarity(races)
 	return true
 
 
-## Spend one shared reroll on the talent. Returns false if none are left.
+## Spend one talent reroll. Returns false if none are left.
 func reroll_talent() -> bool:
-	if rerolls_left == 0:
+	if talent_rerolls_left == 0:
 		return false
-	rerolls_left -= 1
+	talent_rerolls_left -= 1
 	talent_id = roll_by_rarity(talents)
 	return true
 

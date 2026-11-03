@@ -27,7 +27,7 @@ Inspired by Pixel Lineage (Roblox). Solo hobby project, built to play myself fir
 - All dice go through ONE dice module (`scripts/core/dice.gd`). Never call randi() for game rolls elsewhere.
 - Character creation: race + talent are rolled by rarity
   (Common 50%, Uncommon 25%, Rare 15%, Epic 8%, Legendary 2%).
-  One free roll each, then 5 rerolls SHARED between race and talent. Class is picked, not rolled.
+  One free roll each, then 5 rerolls for race and 5 for talent (separate). Class is picked, not rolled.
 - Classes: Warrior, Archer, Mage, Brawler. Evolution event at level 15 (choose 1 of 2 paths).
 - 3 lives per character. On death: back to main menu, restart current chapter, keep level and gear.
   Third death ends the run.
@@ -72,7 +72,7 @@ Inspired by Pixel Lineage (Roblox). Solo hobby project, built to play myself fir
 ## Build order
 
 1. Dice module + combat prototype (one hero vs one enemy)
-2. Character creation screen (race, talent, class, 5 shared rerolls)
+2. Character creation screen (race, talent, class, 5 rerolls each)
 3. A run of 5 fights with level-up choices
 4. Chapter map: shop, rest, events, boss
 5. Saving, 3 lives, meta-progression unlocks

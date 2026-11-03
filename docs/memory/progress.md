@@ -7,7 +7,7 @@ Read this first in every new session. Keep it short: replace "Current status" an
 
 - Build step 1 done: dice module + combat prototype (`scenes/combat/combat.tscn`) + game-tester skill.
 - Build step 2 done: character creation (`scenes/character/character_creation.tscn`, main scene).
-  Rarity-rolled race and talent, 5 shared rerolls, class pick, final stats. Data in
+  Rarity-rolled race and talent, 5 rerolls each, class pick, final stats. Data in
   `data/races.json`, `talents.json`, `classes.json`. Rules in `scripts/character/character_draft.gd`.
 - Combat still uses the test hero; open combat.tscn and press F6 to play it.
 - Run checks: `for f in tests/test_*.gd; do /Applications/Godot.app/Contents/MacOS/Godot --headless --script res://$f; done`
@@ -27,9 +27,10 @@ Read this first in every new session. Keep it short: replace "Current status" an
 ## Session log (newest first)
 
 ### 2026-11-03 – Character creation
-- Built the character creation screen (rarity rolls, shared rerolls, class buttons from data).
+- Built the character creation screen (rarity rolls, rerolls, class buttons from data).
 - Added stat numbers for classes and races (Claude's proposal, approved).
 - Added Legendary talent Chosen One (advantage on every check).
+- Changed rerolls: 5 each for race and talent instead of 5 shared.
 
 ### 2026-11-03 – Game tester and first playtest
 - Built the game-tester skill, text play tool and dev tools (seed, forced rolls).
