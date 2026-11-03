@@ -5,28 +5,39 @@ Read this first in every new session. Keep it short: replace "Current status" an
 
 ## Current status
 
-- Built: dice, combat, game-tester skill, character creation, 5-fight run with passives.
-- Step 1 of the new room plan done (branch feature/ui-and-stat-points): framed UI sections,
-  HP/EXP bars, EXP and levels, 3 stat points per level via the level-up panel.
-- Run state: `scripts/core/run.gd` (fight, level, EXP). Level-up panel: `scripts/combat/level_up_panel.gd`.
-- Play tool actions: attack, defend, 1/2/3 choices, +hp/+attack/+defense/+speed, -stat, confirm.
+- Built: dice, combat, game-tester skill, character creation, framed UI, EXP + saved stat points,
+  path screen (3 doors: Elite/Rest/Shop/Event), Rest/Train, gold, 8 rooms + Bandit Chief boss.
+- Shop and Event doors lead to a plain battle until steps 3 and 4. Gold has no use yet.
+- Run state: `scripts/core/run.gd`. Path screen: `scripts/path/path_screen.gd`.
+  Stat panel: `scripts/ui/character_panel.gd` (CHARACTER button, path screen only).
+- Play tool: fight `attack`, `defend`, `1`; path `1/2/3`, `character`, `+stat`/`-stat`, `confirm`, `close`.
 - Run checks: `for f in tests/test_*.gd; do /Applications/Godot.app/Contents/MacOS/Godot --headless --script res://$f; done`
 
 ## Next step
 
-New room plan (see design.md "Chapter rooms"), one branch each:
-2. Doors after each fight (3 different of Elite/Shop/NPC event/Rest) with Elite and Rest working,
-   gold, 8 rooms + boss; rebalance EXP and enemies for 8 rooms.
+Kha picks balance ideas (see Open questions), on an `update/` branch. Then:
 3. Shop + potions + Item button in combat.
 4. NPC events with d20 checks.
 
 ## Open questions
 
-- Defend is still weaker than attacking; needs a reason (enemy wind-ups, or Energy once skills exist).
-- Balance is temporary until step 2 (sim: 52-59% clears with 5 fights and stat points).
-- Human +10% XP and Fast Learner can work now that EXP exists; not built yet.
+Balance ideas from the 2026-11-04 playtest, waiting for Kha to pick (my pick in brackets):
+- 5 Attack too strong (hit + damage): A) hit only, damage +1 per 2 Attack; B) costs 2 points. [A]
+- 6 Speed useless: A) every 3 Speed = +1 Armor; B) extra attack if 5+ faster; C) flee chance. [A]
+- 7 Defend a trap: A) also heal 10%; B) enemy's next attack at disadvantage; C) stronger crit guard. [B]
+- 8 Train weak (~+2 EXP): A) +1 stat point; B) 50% of EXP bar. [A]
+- 9 Elite too easy: always toughest enemy for the room, x2 HP, card names the enemy.
+- 10 Difficulty ramp: rats only rooms 1-2, new mid enemy (Orc Raider 26 HP d8) rooms 5-8, boss 40 HP.
+- 11 Archer/Mage fragile: A) everyone heals 10% after a won fight; B) +4 HP for both. [A]
+- Human +10% XP and Fast Learner not built yet.
 
 ## Session log (newest first)
+
+### 2026-11-04 – Path choice (step 2) merged
+- Path screen: 3 door cards, hero sidebar, CHARACTER button with saved points; Elite, Rest/Train, gold, boss after room 8.
+- Game-tester run: no rule bugs. Fixed Rest double-click, boss defeat text, door/rest wording, Armor = 10 + Defense shown.
+- Rebalanced boss (44 HP, Atk 4, d10) and Skeleton (24 HP); bot clears 51-58%.
+- Balance ideas 5-11 proposed, waiting for Kha.
 
 ### 2026-11-04 – New room plan, UI sections, stat points
 - Kha redesigned the run: 8 rooms + boss, 3 doors (Elite/Shop/NPC event/Rest), every room ends in a fight.
