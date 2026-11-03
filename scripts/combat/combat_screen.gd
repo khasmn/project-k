@@ -3,6 +3,13 @@ extends Control
 
 const ENEMY_TURN_DELAY: float = 0.6
 const CREATION_SCENE: String = "res://scenes/character/character_creation.tscn"
+## Battle log colors (BBCode: the log understands tags like [b]bold[/b] and [color=#hex]text[/color]).
+const HERO_COLOR: String = "#7fd17f"
+const ENEMY_COLOR: String = "#ff7a7a"
+const GOLD: String = "#ffd34d"
+const GRAY: String = "#8a8a8a"
+const PASSIVE_COLOR: String = "#6fd3ff"
+const EXP_COLOR: String = "#8fb4ff"
 
 var hero: Combatant
 var enemy: Combatant
@@ -26,7 +33,8 @@ func _start_fight() -> void:
 	_clear_choices()
 	%Buttons.show()
 	%Title.text = "Fight %d of %d:  %s" % [Run.fight_number, Run.FIGHTS.size(), enemy.display_name]
-	_log("[b]--- Fight %d of %d: %s ---[/b]" % [Run.fight_number, Run.FIGHTS.size(), enemy.display_name])
+	_log("[color=%s][b]--- Fight %d of %d: %s ---[/b][/color]" % [
+		GOLD, Run.fight_number, Run.FIGHTS.size(), enemy.display_name])
 	_update_labels()
 
 	# Initiative: d20 + Speed, highest goes first. Ties go to the enemy, unless the hero wins ties (Elf).
@@ -85,7 +93,7 @@ func _enemy_turn() -> void:
 	_log(enemy.strike(hero))
 	_update_labels()
 	if not hero.is_alive():
-		_log("[b]Defeated![/b] Run over at fight %d of %d." % [Run.fight_number, Run.FIGHTS.size()])
+		_log("[color=" + ENEMY_COLOR + "][b]Defeated![/b][/color] Run over at fight %d of %d." % [Run.fight_number, Run.FIGHTS.size()])
 		%TurnLabel.text = "Defeated! Your run is over."
 		_add_choice("New hero", _new_hero)
 	else:
@@ -93,22 +101,22 @@ func _enemy_turn() -> void:
 
 
 func _win() -> void:
-	_log("[b]Victory![/b]")
+	_log("[color=%s][b]Victory![/b][/color]" % HERO_COLOR)
 	var heal_text: String = hero.win_fight()
 	if heal_text != "":
 		_log(heal_text)
 	fight_won = true
 	if Run.is_last_fight():
-		_log("[b]Run complete![/b] You beat all %d fights." % Run.FIGHTS.size())
+		_log("[color=" + GOLD + "][b]Run complete![/b][/color] You beat all %d fights." % Run.FIGHTS.size())
 		%TurnLabel.text = "Run complete! You beat all %d fights." % Run.FIGHTS.size()
 		_add_choice("New hero", _new_hero)
 		_update_labels()
 		return
 	var levels: int = Run.gain_exp(enemy.exp_reward)
-	_log("+%d EXP." % enemy.exp_reward)
+	_log("[color=%s]+%d EXP.[/color]" % [EXP_COLOR, enemy.exp_reward])
 	_update_labels()
 	if levels > 0:
-		_log("[b]Level up![/b] Now level %d: spend %d stat points." % [Run.level, levels * Run.POINTS_PER_LEVEL])
+		_log("[color=" + GOLD + "][b]Level up![/b][/color] Now level %d: spend %d stat points." % [Run.level, levels * Run.POINTS_PER_LEVEL])
 		%ActionPanel.hide()
 		%LevelUpPanel.open(hero, levels * Run.POINTS_PER_LEVEL)
 	else:
@@ -173,4 +181,18 @@ func _set_buttons_enabled(enabled: bool) -> void:
 
 
 func _log(text: String) -> void:
-	%Log.append_text(text + "\n")
+	%Log.append_text(_highlight(text) + "\n")
+
+
+## Color names, passives, hits, misses and damage so a log line is easy to scan.
+func _highlight(text: String) -> String:
+	for passive in hero.passive_names.values():
+		text = text.replace(passive, "[color=%s]%s[/color]" % [PASSIVE_COLOR, passive])
+	text = text.replace(hero.display_name + ":", "[color=%s][b]%s:[/b][/color]" % [HERO_COLOR, hero.display_name])
+	text = text.replace(enemy.display_name + ":", "[color=%s][b]%s:[/b][/color]" % [ENEMY_COLOR, enemy.display_name])
+	text = text.replace("CRITICAL HIT", "[color=%s][b]CRITICAL HIT[/b][/color]" % GOLD)
+	text = text.replace("hit!", "[b]hit![/b]")
+	text = text.replace("automatic miss!", "[color=%s]automatic miss![/color]" % GRAY)
+	text = text.replace(", miss.", ", [color=%s]miss.[/color]" % GRAY)
+	var damage: RegEx = RegEx.create_from_string("= (\\d+) damage")
+	return damage.sub(text, "= [b]$1 damage[/b]", true)
