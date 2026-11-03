@@ -1,11 +1,11 @@
 {
 	"human": {"name": "Human", "rarity": "common", "role": "Balanced", "stats": {"charisma": 1, "luck": 1}, "passive": "+10% XP", "check_bonus": "+2 on talk checks"},
-	"elf": {"name": "Elf", "rarity": "common", "role": "Agile", "stats": {"speed": 2}, "passive": "Wins tied initiative", "check_bonus": "+2 on spotting hidden things"},
+	"elf": {"name": "Elf", "rarity": "common", "role": "Agile", "stats": {"speed": 2}, "passive": "Wins tied initiative", "check_bonus": "+2 on spotting hidden things", "effects": {"wins_ties": true}},
 	"orc": {"name": "Orc", "rarity": "common", "role": "Brute", "stats": {"attack": 2, "charisma": -1}, "passive": "+Attack, -Charisma", "check_bonus": "+2 on intimidate"},
 	"dwarf": {"name": "Dwarf", "rarity": "uncommon", "role": "Sturdy", "stats": {"hp": 4, "defense": 1}, "passive": "Resists poison", "check_bonus": "+2 on lock and trap checks"},
 	"ironhide": {"name": "Ironhide", "rarity": "uncommon", "role": "Tank", "stats": {"defense": 2, "speed": -1}, "passive": "High Defense, low Speed", "check_bonus": "+2 on strength checks"},
 	"undead": {"name": "Undead", "rarity": "rare", "role": "Resilient", "stats": {"hp": 4, "defense": 1}, "passive": "Immune to poison; healing potions heal half", "check_bonus": "+2 on sneak checks"},
-	"mossfolk": {"name": "Mossfolk", "rarity": "rare", "role": "Sustain", "stats": {"hp": 4}, "passive": "Regenerate a little HP each turn", "check_bonus": "+2 on nature and herb checks"},
+	"mossfolk": {"name": "Mossfolk", "rarity": "rare", "role": "Sustain", "stats": {"hp": 4}, "passive": "Regenerate a little HP each turn", "check_bonus": "+2 on nature and herb checks", "effects": {"regen": 1}},
 	"emberkin": {"name": "Emberkin", "rarity": "epic", "role": "Damage", "stats": {"attack": 2}, "passive": "Attacks have a small chance to burn", "check_bonus": "+2 on intimidate"},
 	"glimmerfae": {"name": "Glimmerfae", "rarity": "legendary", "role": "Magic", "stats": {"magic": 3, "hp": -6}, "passive": "High Magic, low HP", "check_bonus": "+2 on magic checks"}
 }

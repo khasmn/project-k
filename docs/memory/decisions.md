@@ -5,6 +5,11 @@ if a decision changes, add a new entry that says what it replaces.
 
 | Date | Decision | Why |
 | --- | --- | --- |
+| 2026-11-03 | Classes tuned (Warrior Def 2; Archer 30 HP, Def 2; Mage 26 HP, Def 1; Brawler 30 HP, Atk 3, d8) | Sim: all classes clear ~30-34% of runs |
+| 2026-11-03 | Softer enemies (Rat 10, Bandit 16, Wolf 18, Skeleton 22, Chief 32 HP) | First set was nearly unwinnable (0-3%) |
+| 2026-11-03 | Initiative ties go to the enemy unless the hero is an Elf (replaces "hero wins ties") | Gives Elf's passive a purpose |
+| 2026-11-03 | Passive numbers: Mossfolk +1 HP/turn, Glass Cannon +2 dmg -6 HP, Bloodlust +4 HP on win, Lucky rerolls first nat 1/fight, Keen Eye crit 19-20, Second Wind once per run, Chosen One advantage on attacks + initiative | Simple combat passives first |
+| 2026-11-03 | 5-fight run: Rat, Bandit, Wolf, Skeleton, Bandit Chief; no healing between fights; level up after every win (1 of 3 upgrades); lose or win = back to creation | Build step 3, lives come in step 5 |
 | 2026-11-03 | 5 rerolls each for race and talent (replaces "5 rerolls shared") | Kha wants more control over both rolls |
 | 2026-11-03 | Legendary talent: Chosen One (advantage on every check) | Kha picked it from Claude's ideas; strongest option, watch balance |
 | 2026-11-03 | Passives and check bonuses are text only for now; built later | Keeps character creation small |

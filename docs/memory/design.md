@@ -94,7 +94,7 @@ Mechanics are free to use; the D&D name and its unique monsters/settings are off
 
 ## Combat
 
-1. Initiative: everyone rolls d20 + Speed; highest acts first.
+1. Initiative: everyone rolls d20 + Speed; highest acts first. Ties go to the enemy (Elf wins ties).
 2. Choose an action: Attack, Skill, Item or Defend.
 3. Attack roll: d20 + Attack vs target's Armor. On a hit, roll weapon damage.
 4. Skills cost Energy. Spells can skip the attack roll and force a saving throw instead.

@@ -34,16 +34,17 @@ static func roll_d20(mode: Mode = Mode.NORMAL) -> int:
 
 ## d20 + modifier vs DC. Meet or beat the DC to succeed.
 ## Natural 20 always succeeds (crit), natural 1 always fails (fumble).
-static func check(modifier: int, dc: int, mode: Mode = Mode.NORMAL) -> Dictionary:
+## crit_min lowers the crit range (Keen Eye: 19), and a crit always succeeds.
+static func check(modifier: int, dc: int, mode: Mode = Mode.NORMAL, crit_min: int = 20) -> Dictionary:
 	var natural: int = roll_d20(mode)
 	var total: int = natural + modifier
-	var success: bool = natural == 20 or (natural != 1 and total >= dc)
+	var success: bool = natural >= crit_min or (natural != 1 and total >= dc)
 	return {
 		"natural": natural,
 		"modifier": modifier,
 		"total": total,
 		"dc": dc,
 		"success": success,
-		"crit": natural == 20,
+		"crit": natural >= crit_min,
 		"fumble": natural == 1,
 	}

@@ -36,7 +36,7 @@ func _init() -> void:
 	draft.race_id = "glimmerfae"
 	draft.class_id = "mage"
 	var stats: Dictionary = draft.stats()
-	_check(stats.hp == 16 and stats.magic == 7 and stats.attack == 0, "stats math wrong: %s" % stats)
+	_check(stats.hp == 20 and stats.magic == 7 and stats.attack == 0, "stats math wrong: %s" % stats)
 
 	if failed:
 		quit(1)

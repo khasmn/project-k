@@ -14,6 +14,7 @@ func _ready() -> void:
 	%RerollRaceButton.pressed.connect(func() -> void: draft.reroll_race(); _refresh())
 	%RerollTalentButton.pressed.connect(func() -> void: draft.reroll_talent(); _refresh())
 	%NewHeroButton.pressed.connect(_new_hero)
+	%StartButton.pressed.connect(_start_run)
 	# One toggle button per class in classes.json. A ButtonGroup keeps only one pressed at a time.
 	for id in CharacterDraft.new().classes:
 		var button: Button = Button.new()
@@ -57,6 +58,12 @@ func _refresh() -> void:
 	%RerollRaceButton.disabled = draft.race_rerolls_left == 0
 	%RerollTalentButton.disabled = draft.talent_rerolls_left == 0
 	%HeroSummary.text = _summary()
+	%StartButton.disabled = draft.class_id == ""
+
+
+func _start_run() -> void:
+	Run.start(draft)
+	get_tree().change_scene_to_file("res://scenes/combat/combat.tscn")
 
 
 func _show_rolled(label: Label, entry: Dictionary) -> void:

@@ -34,12 +34,29 @@ func reroll_talent() -> bool:
 	return true
 
 
-## Final stats: the class's base stats plus the race's changes. Needs a class picked.
+## Final stats: the class's base stats plus race and talent changes. Needs a class picked.
 func stats() -> Dictionary:
 	var result: Dictionary = {}
 	for stat in classes[class_id].stats:
-		result[stat] = int(classes[class_id].stats[stat]) + int(races[race_id].stats.get(stat, 0))
+		result[stat] = (int(classes[class_id].stats[stat]) + int(races[race_id].stats.get(stat, 0))
+			+ int(talents[talent_id].get("stats", {}).get(stat, 0)))
 	return result
+
+
+## Everything Combatant.new() needs to build this hero. A Mage attacks with Magic.
+func hero_data() -> Dictionary:
+	var hero_class: Dictionary = classes[class_id]
+	var s: Dictionary = stats()
+	return {
+		"name": hero_class.name,
+		"hp": s.hp,
+		"attack": s[hero_class.attack_stat],
+		"attack_name": hero_class.attack_stat.capitalize(),
+		"defense": s.defense,
+		"speed": s.speed,
+		"damage_die": hero_class.damage_die,
+		"effects": races[race_id].get("effects", {}).merged(talents[talent_id].get("effects", {})),
+	}
 
 
 ## Roll a rarity (Common 50%, Uncommon 25%, Rare 15%, Epic 8%, Legendary 2%), then a random

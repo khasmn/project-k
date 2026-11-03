@@ -5,26 +5,31 @@ Read this first in every new session. Keep it short: replace "Current status" an
 
 ## Current status
 
-- Build step 1 done: dice module + combat prototype (`scenes/combat/combat.tscn`) + game-tester skill.
-- Build step 2 done: character creation (`scenes/character/character_creation.tscn`, main scene).
-  Rarity-rolled race and talent, 5 rerolls each, class pick, final stats. Data in
-  `data/races.json`, `talents.json`, `classes.json`. Rules in `scripts/character/character_draft.gd`.
-- Combat still uses the test hero; open combat.tscn and press F6 to play it.
-- Run checks: `for f in tests/test_*.gd; do /Applications/Godot.app/Contents/MacOS/Godot --headless --script res://$f; done`
+- Build steps 1-3 done: dice, combat, game-tester skill, character creation, 5-fight run.
+- Flow: character creation -> Start run -> 5 fights (`scenes/combat/combat.tscn`) with a
+  level-up after each win -> back to creation on loss or full clear.
+- Run state: `scripts/core/run.gd` (static `Run`). Enemies `data/enemies.json`, upgrades `data/upgrades.json`.
+- Passives working: Elf, Mossfolk, Glass Cannon, Bloodlust, Lucky, Keen Eye, Second Wind, Chosen One
+  (via "effects" in races/talents JSON). Not yet: Emberkin burn, poison, XP, talk/check bonuses.
+- Balance sim (`tests/test_run.gd`, always-attack bot): every class clears ~30-34% of runs.
+- Play tool: `tests/play.gd -- [--seed N] [--race x] [--talent y] [--class z] attack defend 1 2 3`
 
 ## Next step
 
-- Build step 3: a run of 5 fights with level-up choices; connect the created hero to combat
-  (Mage attacks with Magic) and start making passives work.
+- Build step 4: chapter map (shop, rest, events, boss).
 
 ## Open questions
 
-- Defend still loses to always-attack (76% vs 95% wins in sims): needs a reason to defend
-  (enemy wind-up attacks, or Defend restores Energy once skills exist). Kha to decide.
-- Armor = 10 + Defense was chosen by Claude; Kha may change it.
-- Hero wins ~95% vs Bandit; fine for a test fight.
+- Defend is still weaker than attacking; needs a reason (enemy wind-ups, or Energy once skills exist).
+- No healing between fights for now; rest spots come with the chapter map.
 
 ## Session log (newest first)
+
+### 2026-11-03 – 5-fight run
+- Built the run: created hero fights 5 enemies, picks 1 of 3 upgrades after each win.
+- Made 8 combat passives work through "effects" in data; Mage attacks with Magic.
+- First enemy set was almost unwinnable; softened enemies and tuned classes (sim ~30-34% each).
+- Play tool can now play a whole run and choose the hero.
 
 ### 2026-11-03 – Character creation
 - Built the character creation screen (rarity rolls, rerolls, class buttons from data).
