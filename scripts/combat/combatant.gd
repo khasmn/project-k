@@ -2,7 +2,7 @@ class_name Combatant
 extends RefCounted
 ## One fighter (hero or enemy): stats, HP, and how it attacks.
 
-const DEFEND_BONUS: int = 2
+const DEFEND_BONUS: int = 4
 
 var display_name: String
 var max_hp: int
@@ -39,7 +39,8 @@ func is_alive() -> bool:
 	return hp > 0
 
 
-## Attack roll vs target's Armor; on a hit, roll damage (always at least 1). Nat 20 doubles damage.
+## Attack roll vs target's Armor; on a hit, roll damage (always at least 1).
+## Nat 20 rolls the damage die twice.
 ## Returns a log line like "Hero: 14 + 3 = 17 vs Armor 11, hit! d8: 4 + 3 = 7 damage."
 func strike(target: Combatant) -> String:
 	var result: Dictionary = Dice.check(attack, target.armor())
@@ -48,13 +49,13 @@ func strike(target: Combatant) -> String:
 	if not result.success:
 		return line + (", nat 1, automatic miss!" if result.fumble else ", miss.")
 	var damage_roll: int = Dice.roll(damage_die)
-	var damage: int = maxi(damage_roll + attack, 1)
 	var damage_text: String = "d%d: %s" % [damage_die, Dice.sum_text(damage_roll, attack)]
 	if result.crit:
-		damage *= 2
-		line += ", CRITICAL HIT! (%s) x 2" % damage_text
-	else:
-		line += ", hit! " + damage_text
+		var extra_roll: int = Dice.roll(damage_die)
+		damage_text = "2d%d: %d + %s" % [damage_die, damage_roll, Dice.sum_text(extra_roll, attack)]
+		damage_roll += extra_roll
+	var damage: int = maxi(damage_roll + attack, 1)
+	line += (", CRITICAL HIT! " if result.crit else ", hit! ") + damage_text
 	target.hp = maxi(target.hp - damage, 0)
 	line += " = %d damage" % damage
 	return line + (" (minimum)." if damage_roll + attack < 1 else ".")

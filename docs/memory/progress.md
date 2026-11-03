@@ -5,25 +5,31 @@ Read this first in every new session. Keep it short: replace "Current status" an
 
 ## Current status
 
-- Setup merged (PR #1, PR #2: ask-first rule, .DS_Store ignored, Claude merges via gh).
-- Dice module done: `scripts/core/dice.gd` + self-check `tests/test_dice.gd` (PR #3).
-- Combat prototype done (build step 1 complete): `scenes/combat/combat.tscn` is the main scene.
-  Hero vs Bandit, Attack + Defend, initiative, roll log, Victory/Defeated + Restart.
-  Stats in `data/heroes.json` and `data/enemies.json`. Self-check `tests/test_combat.gd`.
-- Run a check: `/Applications/Godot.app/Contents/MacOS/Godot --headless --script res://tests/<file>.gd`
+- Build step 1 done: dice module (`scripts/core/dice.gd`) + combat prototype
+  (`scenes/combat/combat.tscn`, main scene): Hero vs Bandit, Attack + Defend, roll math in the log.
+- Game-tester skill (`.claude/skills/game-tester/`): gamer agent + dev tester agent, report then ask.
+  Tools: `tests/play.gd` (text play tool, `--seed`, `--force`), `Dice.forced_rolls`, self-checks.
+- First playtest done; all bugs fixed; crits roll damage twice, Defend +4 Armor.
+- Run checks: `for f in tests/test_*.gd; do /Applications/Godot.app/Contents/MacOS/Godot --headless --script res://$f; done`
 
 ## Next step
 
-Kha picks one:
-- Game-tester skill (gamer agent + dev tester agent), now that combat runs.
 - Build step 2: character creation screen (race, talent, class, 5 shared rerolls).
 
 ## Open questions
 
+- Defend still loses to always-attack (76% vs 95% wins in sims): needs a reason to defend
+  (enemy wind-up attacks, or Defend restores Energy once skills exist). Kha to decide.
 - Armor = 10 + Defense was chosen by Claude; Kha may change it.
-- Hero wins ~94% vs Bandit; fine for a test fight, rebalance later.
+- Hero wins ~95% vs Bandit; fine for a test fight.
 
 ## Session log (newest first)
+
+### 2026-11-03 – Game tester and first playtest
+- Built the game-tester skill, text play tool and dev tools (seed, forced rolls).
+- First playtest: play tool hang + bad forced rolls, negative damage healing, missing roll math.
+- Fixed all of them; log now shows every roll's math and Armor on labels.
+- Balance: crits roll damage die twice; Defend +4 Armor. Defend still weak (open question).
 
 ### 2026-11-03 – Rules, dice module
 - Merged setup/claude-md (PR #1) and setup/ask-first (PR #2).
