@@ -22,9 +22,13 @@ func _start_fight() -> void:
 	_update_labels()
 
 	# Initiative: d20 + Speed, highest goes first (hero wins ties).
-	var hero_init: int = Dice.roll_d20() + hero.speed
-	var enemy_init: int = Dice.roll_d20() + enemy.speed
-	_log("Initiative: %s %d, %s %d" % [hero.display_name, hero_init, enemy.display_name, enemy_init])
+	var hero_roll: int = Dice.roll_d20()
+	var enemy_roll: int = Dice.roll_d20()
+	var hero_init: int = hero_roll + hero.speed
+	var enemy_init: int = enemy_roll + enemy.speed
+	_log("Initiative: %s %s = %d, %s %s = %d" % [
+		hero.display_name, Dice.sum_text(hero_roll, hero.speed), hero_init,
+		enemy.display_name, Dice.sum_text(enemy_roll, enemy.speed), enemy_init])
 	if enemy_init > hero_init:
 		_enemy_turn()
 	else:
@@ -33,6 +37,7 @@ func _start_fight() -> void:
 
 func _hero_turn() -> void:
 	hero.defending = false
+	_update_labels()
 	_set_buttons_enabled(true)
 	_log("Your turn.")
 
@@ -77,8 +82,8 @@ func _end_fight(text: String) -> void:
 
 
 func _update_labels() -> void:
-	%HeroLabel.text = "%s  HP %d/%d" % [hero.display_name, hero.hp, hero.max_hp]
-	%EnemyLabel.text = "%s  HP %d/%d" % [enemy.display_name, enemy.hp, enemy.max_hp]
+	%HeroLabel.text = "%s  HP %d/%d  Armor %d" % [hero.display_name, hero.hp, hero.max_hp, hero.armor()]
+	%EnemyLabel.text = "%s  HP %d/%d  Armor %d" % [enemy.display_name, enemy.hp, enemy.max_hp, enemy.armor()]
 
 
 func _set_buttons_enabled(enabled: bool) -> void:

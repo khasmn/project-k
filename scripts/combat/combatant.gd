@@ -39,16 +39,22 @@ func is_alive() -> bool:
 	return hp > 0
 
 
-## Attack roll vs target's Armor; on a hit, roll damage. Nat 20 doubles damage.
-## Returns a log line like "Hero: 14 + 3 = 17 vs Armor 11, hit! 7 damage."
+## Attack roll vs target's Armor; on a hit, roll damage (always at least 1). Nat 20 doubles damage.
+## Returns a log line like "Hero: 14 + 3 = 17 vs Armor 11, hit! d8: 4 + 3 = 7 damage."
 func strike(target: Combatant) -> String:
 	var result: Dictionary = Dice.check(attack, target.armor())
-	var line: String = "%s: %d + %d = %d vs Armor %d" % [
-		display_name, result.natural, attack, result.total, target.armor()]
+	var line: String = "%s: %s = %d vs Armor %d" % [
+		display_name, Dice.sum_text(result.natural, attack), result.total, target.armor()]
 	if not result.success:
-		return line + (", nat 1, stumbles!" if result.fumble else ", miss.")
-	var damage: int = Dice.roll(damage_die) + attack
+		return line + (", nat 1, automatic miss!" if result.fumble else ", miss.")
+	var damage_roll: int = Dice.roll(damage_die)
+	var damage: int = maxi(damage_roll + attack, 1)
+	var damage_text: String = "d%d: %s" % [damage_die, Dice.sum_text(damage_roll, attack)]
 	if result.crit:
 		damage *= 2
+		line += ", CRITICAL HIT! (%s) x 2" % damage_text
+	else:
+		line += ", hit! " + damage_text
 	target.hp = maxi(target.hp - damage, 0)
-	return line + (", CRITICAL HIT! %d damage." if result.crit else ", hit! %d damage.") % damage
+	line += " = %d damage" % damage
+	return line + (" (minimum)." if damage_roll + attack < 1 else ".")
