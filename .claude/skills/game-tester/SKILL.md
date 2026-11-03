@@ -16,37 +16,44 @@ If one fails, report that and stop. The agents can't test a broken build.
 ## 2. Spawn both agents in parallel (Agent tool, one message)
 
 Give each the target, today's branch, and its prompt below.
-Both: never edit game files (scripts/, scenes/, data/). Temporary scripts go in `tests/tmp/`
-(git-ignored) and get deleted at the end. Every bug needs a repro command.
+Both: never edit game files (scripts/, scenes/, data/). Temporary scripts go in `tests/tmp/<agent>/`
+(git-ignored, e.g. `tests/tmp/tester/`); each agent deletes only its own folder at the end.
+While they run, you (the main session) use `tests/tmp/main/` for your own checks.
+Every bug needs a repro command.
+
+Play tool (both agents):
+`$G --headless --script res://tests/play.gd -- [--seed N] [--race R] [--talent T] [--class C] [--force 20,1,...] actions...`
+- Actions: `attack`, `defend`, and `1`/`2`/`3` to click a choice (level-up upgrade, "New hero").
+- Without `--race`/`--talent` the hero is rolled; class defaults to warrior. Ids are in `data/*.json`.
+- It plays a whole run from fight 1 and prints the log, the state and what you can click next.
+  Same seed + same options + same actions = same run, so play turn by turn: add one action per rerun.
 
 ### Gamer prompt
 
 You're a regular player trying Project K, a turn-based d20 roguelike. Don't read the code;
-play it like a player would. Play with the text play tool:
-
-`$G --headless --script res://tests/play.gd -- --seed N attack defend ...`
-
-It prints the fight log, the HP and what you can do next. The same seed and the same actions
-give the same fight, so play turn by turn: rerun with one more action each time.
-Play at least 3 full fights with different seeds and styles (all attack, lots of defend, mixed),
-and use restart once. Report, in plain words:
-- anything confusing (unclear log lines, numbers you couldn't follow)
-- anything unfair or boring (too easy or hard, choices that never matter)
-- anything that looked like a bug, with the seed and actions to replay it
+play it like a player would, with the play tool. Play at least 4 full runs (to death or the end)
+with different seeds, classes and styles (all attack, lots of defend, mixed; different upgrade picks).
+Report, in plain words:
+- anything confusing (unclear log lines, numbers or choices you couldn't follow)
+- anything unfair or boring (too easy or hard, choices that never matter, a class that feels bad)
+- anything that looked like a bug, with the exact command to replay it
 - what was fun
 
 ### Dev tester prompt
 
-You're a QA tester with dev tools. Read `docs/memory/design.md` (the rules) and the code being
-tested, then hunt for bugs where the code breaks the rules or crashes. Tools:
+You're a QA tester with dev tools. Read `docs/memory/design.md` (the rules), the "Current status"
+in `docs/memory/progress.md` (what's built and what isn't yet, so you don't report planned features
+as missing), the top rows of `docs/memory/decisions.md` (latest rule changes), and the code being
+tested. Hunt for bugs where the code breaks the rules, crashes or gets stuck. Tools:
 - Self-checks: `tests/test_*.gd`
-- Play tool: `$G --headless --script res://tests/play.gd -- [--seed N] [--force 20,1,...] actions...`
-  `--force` makes the next dice (any die, in roll order) come out as those numbers.
-  Initiative rolls come first: hero d20, then enemy d20.
-- Your own probe scripts in `tests/tmp/` (copy the style of `tests/test_combat.gd`):
-  set `Dice.rng.seed` and `Dice.forced_rolls`, build `Combatant`s and change their stats directly.
-Always test edge cases: nat 1, nat 20, exactly meeting the DC/Armor, 0 HP, ties, the enemy going
-first, Defend timing, Restart in the middle of things, clicks while it's not your turn.
+- Play tool (above). `--force` sets the next dice in roll order, after the hero is rolled.
+  Initiative comes first: the hero's d20 (two with advantage), then the enemy's d20.
+- Your own probe scripts in `tests/tmp/tester/` (copy the style of `tests/test_run.gd`):
+  set `Dice.rng.seed` and `Dice.forced_rolls`, build `Combatant`s and change stats directly,
+  set `Run` state, or instantiate a scene (await `process_frame` first) and emit button signals.
+Always test edge cases: nat 1, nat 20, exactly meeting Armor, 0 HP, ties, the enemy going first,
+Defend timing, every passive, level-up choices, the last fight, dying in each fight, starting a
+second run, clicks while it's not your turn, and play-tool argument errors.
 Run every repro twice to confirm it before reporting. Report each bug as: what's wrong,
 which rule it breaks, file:line, repro command. Also list what you tested that passed.
 
@@ -59,4 +66,4 @@ which rule it breaks, file:line, repro command. Also list what you tested that p
    - **What works:** one or two lines
 3. Fix nothing. Ask Kha which items to fix. Each fix gets its own `fix/<name>` branch,
    and balance or design changes follow the ask-first rule.
-4. Delete `tests/tmp/` if the agents left anything in it.
+4. Delete `tests/tmp/` if anything is left in it.
