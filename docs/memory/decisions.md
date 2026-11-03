@@ -5,6 +5,9 @@ if a decision changes, add a new entry that says what it replaces.
 
 | Date | Decision | Why |
 | --- | --- | --- |
+| 2026-11-03 | Defend gives +4 Armor (replaces +2) | +2 was never worth picking (playtest) |
+| 2026-11-03 | Crit rolls the damage die twice, then adds Attack (replaces "doubles total damage") | Doubling made crits near one-shots (playtest) |
+| 2026-11-03 | A hit always does at least 1 damage | Negative Attack must not heal |
 | 2026-11-03 | Armor = 10 + Defense; Defend gives +2 Armor until your next turn | D&D-style, simple; easy to change |
 | 2026-11-03 | Crit (nat 20) doubles total damage; damage = weapon die + Attack | Matches design "double damage" |
 | 2026-11-03 | Combat prototype: Attack + Defend only, stats from JSON, Restart button | Small but a real choice; data-driven from the start |

@@ -82,7 +82,7 @@ Energy is a separate resource that skills spend each fight.
 ## Dice system
 
 Roll d20 + modifier vs a target number (DC). Meet or beat it to succeed.
-- Natural 20: critical success (double damage, or best dialogue outcome)
+- Natural 20: critical success (roll the damage dice twice, or best dialogue outcome)
 - Natural 1: critical failure (stumble, or NPC turns hostile)
 - Advantage: roll 2 d20 keep higher. Disadvantage: roll 2 keep lower.
 - Damage dice: weapons roll their own dice on a hit (dagger d6, greatsword d10).
