@@ -56,7 +56,17 @@ func hero_data() -> Dictionary:
 		"speed": s.speed,
 		"damage_die": hero_class.damage_die,
 		"effects": races[race_id].get("effects", {}).merged(talents[talent_id].get("effects", {})),
+		"passive_names": _passive_names(),
 	}
+
+
+## Which race or talent each effect comes from, for the log: {"advantage": "Chosen One"}.
+func _passive_names() -> Dictionary:
+	var names: Dictionary = {}
+	for entry in [races[race_id], talents[talent_id]]:
+		for effect in entry.get("effects", {}):
+			names[effect] = entry.name
+	return names
 
 
 ## Roll a rarity (Common 50%, Uncommon 25%, Rare 15%, Epic 8%, Legendary 2%), then a random

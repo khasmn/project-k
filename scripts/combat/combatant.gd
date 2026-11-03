@@ -24,6 +24,7 @@ var wins_ties: bool = false  # Elf
 var heal_on_win: int = 0  # Bloodlust
 var second_wind: bool = false  # Second Wind: once per run, survive a lethal hit at 1 HP
 var lucky_used: bool = false
+var passive_names: Dictionary = {}  # effect -> race/talent name, e.g. {"advantage": "Chosen One"}
 
 
 func _init(data: Dictionary) -> void:
@@ -35,6 +36,7 @@ func _init(data: Dictionary) -> void:
 	defense = int(data.defense)
 	speed = int(data.speed)
 	damage_die = int(data.damage_die)
+	passive_names = data.get("passive_names", {})
 	var effects: Dictionary = data.get("effects", {})
 	for effect in effects:
 		# JSON numbers come in as floats; the passive variables are ints or bools.
@@ -60,6 +62,18 @@ func roll_mode() -> Dice.Mode:
 	return Dice.Mode.ADVANTAGE if advantage else Dice.Mode.NORMAL
 
 
+## Log note when advantage was used: " (Chosen One: rolled 7 and 15)", else "".
+func advantage_note(rolls: Array[int]) -> String:
+	if rolls.size() < 2:
+		return ""
+	return " (%s: rolled %d and %d)" % [passive("advantage"), rolls[0], rolls[1]]
+
+
+## The race or talent name behind an effect, for the log.
+func passive(effect: String) -> String:
+	return passive_names.get(effect, effect.capitalize())
+
+
 func start_fight() -> void:
 	defending = false
 	lucky_used = false
@@ -72,7 +86,7 @@ func start_turn() -> String:
 		return ""
 	var healed: int = mini(regen, max_hp - hp)
 	hp += healed
-	return "%s regenerates %d HP." % [display_name, healed]
+	return "%s: %s regenerates %d HP." % [passive("regen"), display_name, healed]
 
 
 ## Called after winning a fight. Returns a log line or "".
@@ -81,7 +95,7 @@ func win_fight() -> String:
 		return ""
 	var healed: int = mini(heal_on_win, max_hp - hp)
 	hp += healed
-	return "Bloodlust: %s heals %d HP." % [display_name, healed]
+	return "%s: %s heals %d HP." % [passive("heal_on_win"), display_name, healed]
 
 
 ## Lose HP. Second Wind turns the first lethal hit of the run into 1 HP. Returns a log note or "".
@@ -90,7 +104,7 @@ func take_damage(amount: int) -> String:
 	if hp == 0 and second_wind:
 		second_wind = false
 		hp = 1
-		return " Second Wind! %s survives with 1 HP." % display_name
+		return " %s! %s survives with 1 HP." % [passive("second_wind"), display_name]
 	return ""
 
 
@@ -102,21 +116,27 @@ func strike(target: Combatant) -> String:
 	var result: Dictionary = Dice.check(attack, target.armor(), roll_mode(), crit_min)
 	if result.fumble and lucky and not lucky_used:
 		lucky_used = true
-		line = "%s rolls a nat 1, Lucky rerolls! " % display_name
+		line = "%s rolls a nat 1%s, %s rerolls! " % [display_name, advantage_note(result.rolls), passive("lucky")]
 		result = Dice.check(attack, target.armor(), roll_mode(), crit_min)
-	line += "%s: %s = %d vs Armor %d" % [
-		display_name, Dice.sum_text(result.natural, attack), result.total, target.armor()]
+	line += "%s: %s = %d vs Armor %d%s" % [display_name, Dice.sum_text(result.natural, attack),
+		result.total, target.armor(), advantage_note(result.rolls)]
 	if not result.success:
 		return line + (", nat 1, automatic miss!" if result.fumble else ", miss.")
 	var bonus: int = attack + damage_bonus
 	var damage_roll: int = Dice.roll(damage_die)
-	var damage_text: String = "d%d: %s" % [damage_die, Dice.sum_text(damage_roll, bonus)]
+	var damage_text: String = "d%d: %s" % [damage_die, Dice.sum_text(damage_roll, attack)]
 	if result.crit:
 		var extra_roll: int = Dice.roll(damage_die)
-		damage_text = "2d%d: %d + %s" % [damage_die, damage_roll, Dice.sum_text(extra_roll, bonus)]
+		damage_text = "2d%d: %d + %s" % [damage_die, damage_roll, Dice.sum_text(extra_roll, attack)]
 		damage_roll += extra_roll
+	if damage_bonus != 0:
+		damage_text += " + %d bonus" % damage_bonus
 	var damage: int = maxi(damage_roll + bonus, 1)
-	line += (", CRITICAL HIT! " if result.crit else ", hit! ") + damage_text
+	if result.crit and result.natural < 20:
+		line += ", CRITICAL HIT (%s: crit on %d+)! " % [passive("crit_min"), crit_min]
+	else:
+		line += ", CRITICAL HIT! " if result.crit else ", hit! "
+	line += damage_text
 	line += " = %d damage" % damage + (" (minimum)." if damage_roll + bonus < 1 else ".")
 	return line + target.take_damage(damage)
 

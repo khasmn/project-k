@@ -27,13 +27,17 @@ func _start_fight() -> void:
 	_update_labels()
 
 	# Initiative: d20 + Speed, highest goes first. Ties go to the enemy, unless the hero wins ties (Elf).
-	var hero_roll: int = Dice.roll_d20(hero.roll_mode())
+	var hero_rolls: Array[int] = Dice.roll_d20s(hero.roll_mode())
+	var hero_roll: int = Dice.keep(hero_rolls, hero.roll_mode())
 	var enemy_roll: int = Dice.roll_d20()
 	var hero_init: int = hero_roll + hero.speed
 	var enemy_init: int = enemy_roll + enemy.speed
-	_log("Initiative: %s %s = %d, %s %s = %d" % [
-		hero.display_name, Dice.sum_text(hero_roll, hero.speed), hero_init,
+	_log("Initiative: %s %s = %d%s, %s %s = %d" % [
+		hero.display_name, Dice.sum_text(hero_roll, hero.speed), hero_init, hero.advantage_note(hero_rolls),
 		enemy.display_name, Dice.sum_text(enemy_roll, enemy.speed), enemy_init])
+	if hero_init == enemy_init:
+		_log("Tie! %s goes first." % (
+			"%s (%s)" % [hero.display_name, hero.passive("wins_ties")] if hero.wins_ties else enemy.display_name))
 	if hero_init > enemy_init or (hero_init == enemy_init and hero.wins_ties):
 		_hero_turn()
 	else:
