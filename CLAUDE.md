@@ -3,7 +3,14 @@
 A 2D pixel-art, turn-based roguelike RPG with D&D-style d20 checks.
 Inspired by Pixel Lineage (Roblox). Solo hobby project, built to play myself first.
 
-Full design doc: https://claude.ai/artifact/4UKyd7RnGBHQ5ZpMwuFAQo
+## Project memory (read first)
+
+- At the start of EVERY new session, use the `project-memory` skill (recall): read
+  `docs/memory/progress.md` and `docs/memory/decisions.md`, check git, then tell me
+  where we are and what's next.
+- Full game design: `docs/memory/design.md` (source of truth).
+- Whenever we make a decision, finish a feature or change the design, update the memory
+  (`project-memory` skill, save) before the session ends.
 
 ## Tech
 
