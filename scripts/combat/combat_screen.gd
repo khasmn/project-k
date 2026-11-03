@@ -94,7 +94,7 @@ func _enemy_turn() -> void:
 	_log(enemy.strike(hero))
 	_update_labels()
 	if not hero.is_alive():
-		_log("[color=" + ENEMY_COLOR + "][b]Defeated![/b][/color] Run over in room %d of %d." % [mini(Run.room, Run.ROOMS), Run.ROOMS])
+		_log("[color=" + ENEMY_COLOR + "][b]Defeated![/b][/color] Run over %s." % ("at the boss fight" if Run.is_boss() else "in room %d of %d" % [Run.room, Run.ROOMS]))
 		%TurnLabel.text = "Defeated! Your run is over."
 		_add_choice("New hero", _new_hero)
 	else:

@@ -2,14 +2,17 @@ extends Control
 ## Path screen between fights: pick 1 of 3 doors (every door ends in a battle), or spend stat points.
 
 const COMBAT_SCENE: String = "res://scenes/combat/combat.tscn"
+const REST_CLICK_DELAY: float = 0.5  # Rest/Train appear where the door was: block a double click picking one
 ## Left stripe color and subtitle per door type.
 const TYPE_COLORS: Dictionary = {
 	"elite": Color(0.9, 0.3, 0.3), "rest": Color(0.4, 0.8, 0.45), "shop": Color(0.95, 0.75, 0.25),
 	"event": Color(0.45, 0.65, 1.0), "boss": Color(0.75, 0.3, 0.9),
+	"heal": Color(0.4, 0.8, 0.45), "train": Color(0.4, 0.6, 1.0),
 }
 const SUBTITLES: Dictionary = {
 	"elite": "ELITE  -  HARDER BATTLE", "rest": "REST  -  THEN A BATTLE", "shop": "SHOP  -  THEN A BATTLE",
 	"event": "EVENT  -  THEN A BATTLE", "boss": "BOSS  -  FINAL BATTLE",
+	"heal": "HEAL  -  THEN A BATTLE", "train": "TRAIN  -  THEN A BATTLE",
 }
 
 var hero: Combatant
@@ -57,14 +60,19 @@ func _show_rest() -> void:
 	_clear_doors()
 	%HeadingTitle.text = "TAKE A BREAK"
 	%HeadingText.text = "Pick one, then the battle starts"
-	_add_card("Rest", "rest", "Heal %d%% of your Max HP (+%d HP)." % [Run.REST_HEAL_PERCENT, Run.rest_amount()], _rest)
-	_add_card("Train", "rest", "Gain %d%% of your EXP bar (+%d EXP)." % [Run.TRAIN_EXP_PERCENT, Run.train_amount()], _train)
+	_add_card("Rest", "heal", "Heal %d%% of your Max HP (+%d HP)." % [Run.REST_HEAL_PERCENT, Run.rest_amount()], _rest)
+	_add_card("Train", "train", "Gain %d%% of your EXP bar (+%d EXP)." % [Run.TRAIN_EXP_PERCENT, Run.train_amount()], _train)
+	for card in %Doors.get_children():
+		card.disabled = true
+	await get_tree().create_timer(REST_CLICK_DELAY).timeout
+	for card in %Doors.get_children():
+		card.disabled = false
 
 
 func _rest() -> void:
 	var healed: int = Run.rest_amount()
 	hero.hp += healed
-	Run.room_note = "You rested by the fire: +%d HP." % healed
+	Run.room_note = "You rested: +%d HP." % healed
 	_to_battle()
 
 
@@ -140,5 +148,6 @@ func _update_sidebar() -> void:
 	%Level.text = "Level %d   EXP %d / %d" % [Run.level, Run.experience, Run.exp_needed()]
 	%ExpBar.max_value = Run.exp_needed()
 	%ExpBar.value = Run.experience
-	%HeroStats.text = "%s %d (d%d)\nArmor %d\nSpeed %d" % [hero.attack_name, hero.attack, hero.damage_die, hero.armor(), hero.speed]
+	%HeroStats.text = "%s %d (d%d)\nArmor %d (10 + Defense %d)\nSpeed %d" % [
+		hero.attack_name, hero.attack, hero.damage_die, hero.armor(), hero.defense, hero.speed]
 	%CharacterButton.text = "CHARACTER" if Run.points == 0 else "CHARACTER  (%d points)" % Run.points

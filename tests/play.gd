@@ -9,6 +9,7 @@ extends SceneTree
 ## then +hp, +attack, +defense, +speed to add a point (-hp etc. to take it back), confirm or close.
 ## Same seed + same options + same actions = same run, so you can replay and add one action at a time.
 ## --force makes the next dice (any die, in roll order, after the hero is rolled) come out as those numbers.
+## In rooms 1-8 the first die picks the enemy (d2 or d3), then initiative; the boss room starts with initiative.
 
 const BUTTONS: Dictionary = {
 	"attack": "%AttackButton", "defend": "%DefendButton", "character": "%CharacterButton",
@@ -175,7 +176,8 @@ func _wait_for_input() -> void:
 		if scene == null or not scene.is_node_ready():
 			continue
 		if scene.name == "Path":
-			if scene.get_node("%Doors").get_child_count() > 0 or scene.get_node("%CharacterPanel").visible:
+			var cards: Array = scene.get_node("%Doors").get_children()
+			if (not cards.is_empty() and not cards[0].disabled) or scene.get_node("%CharacterPanel").visible:
 				return
 		elif not scene.get_node("%AttackButton").disabled or scene.get_node("%Choices").get_child_count() > 0:
 			return

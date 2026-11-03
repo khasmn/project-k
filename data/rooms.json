@@ -1,7 +1,7 @@
 {
 	"elite": [
-		{"name": "Dark Hollow", "description": "Something big moves in the dark. Tougher foe, double gold and EXP."},
-		{"name": "Old Watchtower", "description": "A veteran guards the stairs. Tougher foe, double gold and EXP."}
+		{"name": "Dark Hollow", "description": "Something growls in the dark. Tougher foe, double gold and EXP."},
+		{"name": "Old Watchtower", "description": "Someone guards the stairs. Tougher foe, double gold and EXP."}
 	],
 	"rest": [
 		{"name": "Old Campfire", "description": "Warm embers. Sit down to heal, or train with your weapon."},

@@ -8,7 +8,7 @@ signal closed
 const STATS: Array = [
 	["max_hp", "Max HP", 3, "also heals"],
 	["attack", "{attack}", 1, "hit and damage"],
-	["defense", "Defense", 1, "+1 Armor"],
+	["defense", "Defense", 1, "+1 Armor (Armor = 10 + Defense)"],
 	["speed", "Speed", 1, "initiative"],
 ]
 
