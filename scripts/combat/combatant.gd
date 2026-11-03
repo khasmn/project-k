@@ -12,6 +12,8 @@ var attack_name: String = "Attack"  # "Magic" for a Mage
 var defense: int
 var speed: int
 var damage_die: int
+var weapon: String = "weapon"  # for the log: "sword (d8)"
+var exp_reward: int = 0  # EXP the hero gets for beating this enemy
 var defending: bool = false
 
 # Passives, set from the "effects" of a race or talent in data/. Enemies have none.
@@ -36,6 +38,8 @@ func _init(data: Dictionary) -> void:
 	defense = int(data.defense)
 	speed = int(data.speed)
 	damage_die = int(data.damage_die)
+	weapon = data.get("weapon", "weapon")
+	exp_reward = int(data.get("exp", 0))
 	passive_names = data.get("passive_names", {})
 	var effects: Dictionary = data.get("effects", {})
 	for effect in effects:
@@ -62,11 +66,11 @@ func roll_mode() -> Dice.Mode:
 	return Dice.Mode.ADVANTAGE if advantage else Dice.Mode.NORMAL
 
 
-## Log note when advantage was used: " (Chosen One: rolled 7 and 15)", else "".
-func advantage_note(rolls: Array[int]) -> String:
+## How a d20 roll reads in the log: "14", or with advantage "9 and 15 (Chosen One keeps 15)".
+func rolled_text(rolls: Array[int]) -> String:
 	if rolls.size() < 2:
-		return ""
-	return " (%s: rolled %d and %d)" % [passive("advantage"), rolls[0], rolls[1]]
+		return str(rolls[0])
+	return "%d and %d (%s keeps %d)" % [rolls[0], rolls[1], passive("advantage"), Dice.keep(rolls, roll_mode())]
 
 
 ## The race or talent name behind an effect, for the log.
@@ -109,55 +113,48 @@ func take_damage(amount: int) -> String:
 
 
 ## Attack roll vs target's Armor; on a hit, roll damage (always at least 1).
-## A crit rolls the damage die twice.
-## Returns a log line like "Hero: 14 + 3 = 17 vs Armor 11, hit! d8: 4 + 3 = 7 damage."
+## A crit rolls the damage die twice. Returns two log lines, e.g.
+## "Warrior attacks: rolled 14, +5 Attack = 19 vs Armor 10: hit!"
+## "    Damage: sword (d8) rolled 7, +5 Attack = 12 damage."
 func strike(target: Combatant) -> String:
-	var line: String = ""
+	var line: String = "%s attacks: " % display_name
 	var result: Dictionary = Dice.check(attack, target.armor(), roll_mode(), crit_min)
 	if result.fumble and lucky and not lucky_used:
 		lucky_used = true
-		line = "%s rolls a nat 1%s, %s rerolls! " % [display_name, advantage_note(result.rolls), passive("lucky")]
+		line += "rolled %s, a natural 1! %s rerolls: " % [rolled_text(result.rolls), passive("lucky")]
 		result = Dice.check(attack, target.armor(), roll_mode(), crit_min)
-	line += "%s: %s = %d vs Armor %d%s" % [display_name, Dice.sum_text(result.natural, attack),
-		result.total, target.armor(), advantage_note(result.rolls)]
-	if not result.success:
-		return line + (", nat 1, automatic miss!" if result.fumble else ", miss.")
-	var bonus: int = attack + damage_bonus
-	var damage_roll: int = Dice.roll(damage_die)
-	var damage_text: String = "d%d: %s" % [damage_die, Dice.sum_text(damage_roll, attack)]
+	if result.fumble:
+		return line + "rolled %s, a natural 1: automatic miss!" % rolled_text(result.rolls)
 	if result.crit:
-		var extra_roll: int = Dice.roll(damage_die)
-		damage_text = "2d%d: %d + %s" % [damage_die, damage_roll, Dice.sum_text(extra_roll, attack)]
-		damage_roll += extra_roll
-	if damage_bonus != 0:
-		damage_text += " + %d bonus" % damage_bonus
-	var damage: int = maxi(damage_roll + bonus, 1)
-	if result.crit and result.natural < 20:
-		line += ", CRITICAL HIT (%s: crit on %d+)! " % [passive("crit_min"), crit_min]
+		line += "rolled %s, a natural %d: CRITICAL HIT!" % [rolled_text(result.rolls), result.natural]
+		if result.natural < 20:
+			line += " (%s: crits on %d or more)" % [passive("crit_min"), crit_min]
 	else:
-		line += ", CRITICAL HIT! " if result.crit else ", hit! "
-	line += damage_text
-	line += " = %d damage" % damage + (" (minimum)." if damage_roll + bonus < 1 else ".")
-	return line + target.take_damage(damage)
+		line += "rolled %s, %+d %s = %d vs Armor %d: %s" % [rolled_text(result.rolls), attack, attack_name,
+			result.total, target.armor(), "hit!" if result.success else "miss."]
+		if not result.success:
+			return line
+
+	var rolls: Array[int] = [Dice.roll(damage_die)]
+	if result.crit:
+		rolls.append(Dice.roll(damage_die))
+	var dice_total: int = rolls[0] + (rolls[1] if rolls.size() > 1 else 0)
+	var damage_text: String = "%s (d%d) rolled %s" % [weapon, damage_die,
+		"twice: %d + %d" % [rolls[0], rolls[1]] if result.crit else str(rolls[0])]
+	damage_text += ", %+d %s" % [attack, attack_name]
+	if damage_bonus != 0:
+		damage_text += ", %+d bonus" % damage_bonus
+	var damage: int = maxi(dice_total + attack + damage_bonus, 1)
+	damage_text += " = %d damage" % damage
+	if dice_total + attack + damage_bonus < 1:
+		damage_text += " (minimum 1)"
+	return line + "\n    Damage: " + damage_text + "." + target.take_damage(damage)
 
 
-## Level-up upgrade from data/upgrades.json, e.g. {"stat": "defense", "amount": 1}.
-func apply_upgrade(upgrade: Dictionary) -> void:
-	var amount: int = int(upgrade.amount)
-	if upgrade.stat == "max_hp":
+## Raise a stat (stat points at level-up). More Max HP also heals the same amount.
+func raise_stat(stat: String, amount: int) -> void:
+	if stat == "max_hp":
 		max_hp += amount
 		hp += amount
-	elif upgrade.stat == "heal_percent":
-		hp += _heal_amount(amount)
 	else:
-		set(upgrade.stat, int(get(upgrade.stat)) + amount)
-
-
-func upgrade_text(upgrade: Dictionary) -> String:
-	var heal: int = _heal_amount(int(upgrade.amount)) if upgrade.stat == "heal_percent" else 0
-	return upgrade.text.replace("{attack}", attack_name).replace("{heal}", str(heal))
-
-
-## HP a heal of this % of max HP would restore right now (never past max HP).
-func _heal_amount(percent: int) -> int:
-	return mini(ceili(max_hp * percent / 100.0), max_hp - hp)
+		set(stat, int(get(stat)) + amount)

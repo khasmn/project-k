@@ -55,6 +55,7 @@ func hero_data() -> Dictionary:
 		"defense": s.defense,
 		"speed": s.speed,
 		"damage_die": hero_class.damage_die,
+		"weapon": hero_class.weapon.to_lower(),
 		"effects": races[race_id].get("effects", {}).merged(talents[talent_id].get("effects", {})),
 		"passive_names": _passive_names(),
 	}

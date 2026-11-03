@@ -4,11 +4,13 @@ extends SceneTree
 ## /Applications/Godot.app/Contents/MacOS/Godot --headless --script res://tests/play.gd -- [options] actions...
 ## Options: --seed N, --force 20,1,..., --race elf, --talent lucky, --class mage (ids from data/*.json;
 ## race and talent are rolled and class is warrior if not given).
-## Actions: attack, defend, and 1/2/3 to click a choice (level-up upgrades, "New hero").
+## Actions: attack, defend, 1/2/3 to click a choice ("Next fight", "New hero"), and on level-up:
+## +hp, +attack, +defense, +speed to add a point (-hp etc. to take it back), then confirm.
 ## Same seed + same options + same actions = same run, so you can replay and add one action at a time.
 ## --force makes the next dice (any die, in roll order, after the hero is rolled) come out as those numbers.
 
-const BUTTONS: Dictionary = {"attack": "%AttackButton", "defend": "%DefendButton"}
+const BUTTONS: Dictionary = {"attack": "%AttackButton", "defend": "%DefendButton", "confirm": "%ConfirmButton"}
+const STAT_IDS: Dictionary = {"hp": "max_hp", "attack": "attack", "defense": "defense", "speed": "speed"}
 
 var screen: Control
 
@@ -74,24 +76,32 @@ func _play(actions: Array[String]) -> void:
 		await _wait_for_input()
 		var button: Button = _button_for(action)
 		if button == null:
-			print(">> can't '%s' right now (use attack, defend, or a choice number)" % action)
+			print(">> can't '%s' right now (use attack, defend, a choice number, or +stat/-stat/confirm on level-up)" % action)
 		elif button.disabled:
 			print(">> can't %s right now" % action)
 		elif button.text == "New hero":
 			print(">> click New hero (goes back to character creation; the play tool stops here)")
 			break
 		else:
-			print(">> click %s" % button.text)
+			print(">> click %s" % (action if action[0] in "+-" else button.text))
 			button.pressed.emit()
 	await _wait_for_input()
 	print("----- LOG -----")
 	print(screen.get_node("%Log").get_parsed_text().strip_edges())
 	print("----- STATE -----")
 	print(screen.get_node("%Title").text)
-	print(screen.get_node("%HeroLabel").text + "   |   " + screen.get_node("%EnemyLabel").text)
+	for n in ["%HeroName", "%HeroHP", "%HeroStats", "%Level"]:
+		print("  Hero: " + screen.get_node(n).text.replace("\n", "  |  "))
+	for n in ["%EnemyName", "%EnemyHP", "%EnemyStats"]:
+		print("  Enemy: " + screen.get_node(n).text)
 	var choices: Array = screen.get_node("%Choices").get_children()
-	if choices.is_empty():
-		print("Your turn. Possible: attack, defend")
+	if screen.get_node("%LevelUpPanel").visible:
+		print(screen.get_node("%PointsLabel").text)
+		for row in screen.get_node("%StatRows").get_children():
+			print("  %s %s" % [row.get_node("Name").text, row.get_node("Value").text])
+		print("Possible: +hp +attack +defense +speed (or -stat to undo), then confirm")
+	elif choices.is_empty():
+		print(screen.get_node("%TurnLabel").text + ". Possible: attack, defend")
 	else:
 		var texts: PackedStringArray = []
 		for n in choices.size():
@@ -103,6 +113,11 @@ func _play(actions: Array[String]) -> void:
 func _button_for(action: String) -> Button:
 	if BUTTONS.has(action):
 		return screen.get_node(BUTTONS[action])
+	if action.length() > 1 and action[0] in "+-" and STAT_IDS.has(action.substr(1)):
+		var row: Node = screen.get_node("%StatRows").get_node_or_null("Row_" + STAT_IDS[action.substr(1)])
+		if row != null and screen.get_node("%LevelUpPanel").visible:
+			return row.get_node("Plus" if action[0] == "+" else "Minus")
+		return null
 	var choices: Array = screen.get_node("%Choices").get_children()
 	if action.is_valid_int() and int(action) >= 1 and int(action) <= choices.size():
 		return choices[int(action) - 1]
@@ -114,7 +129,8 @@ func _is_number(text: String) -> bool:
 	return text.is_valid_int() and text.trim_prefix("-").length() <= 18
 
 
-## Wait until the hero can act or there are choices to click (the enemy's turn takes a moment).
+## Wait until the hero can act, there are choices, or the level-up panel is open (the enemy's turn takes a moment).
 func _wait_for_input() -> void:
-	while screen.get_node("%AttackButton").disabled and screen.get_node("%Choices").get_child_count() == 0:
+	while (screen.get_node("%AttackButton").disabled and screen.get_node("%Choices").get_child_count() == 0
+			and not screen.get_node("%LevelUpPanel").visible):
 		await process_frame
