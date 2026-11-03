@@ -43,12 +43,13 @@ func _start_fight() -> void:
 	var enemy_roll: int = Dice.roll_d20()
 	var hero_init: int = hero_roll + hero.speed
 	var enemy_init: int = enemy_roll + enemy.speed
-	_log("Initiative: %s %s = %d%s, %s %s = %d" % [
-		hero.display_name, Dice.sum_text(hero_roll, hero.speed), hero_init, hero.advantage_note(hero_rolls),
-		enemy.display_name, Dice.sum_text(enemy_roll, enemy.speed), enemy_init])
+	var order: String = "Who goes first: %s rolled %s %+d Speed = %d, %s rolled %d %+d Speed = %d." % [
+		hero.display_name, hero.rolled_text(hero_rolls), hero.speed, hero_init,
+		enemy.display_name, enemy_roll, enemy.speed, enemy_init]
 	if hero_init == enemy_init:
-		_log("Tie! %s goes first." % (
-			"%s (%s)" % [hero.display_name, hero.passive("wins_ties")] if hero.wins_ties else enemy.display_name))
+		order += " Tie! %s goes first." % (
+			"%s (%s wins ties)" % [hero.display_name, hero.passive("wins_ties")] if hero.wins_ties else enemy.display_name)
+	_log(order)
 	if hero_init > enemy_init or (hero_init == enemy_init and hero.wins_ties):
 		_hero_turn()
 	else:
@@ -188,11 +189,13 @@ func _log(text: String) -> void:
 func _highlight(text: String) -> String:
 	for passive in hero.passive_names.values():
 		text = text.replace(passive, "[color=%s]%s[/color]" % [PASSIVE_COLOR, passive])
-	text = text.replace(hero.display_name + ":", "[color=%s][b]%s:[/b][/color]" % [HERO_COLOR, hero.display_name])
-	text = text.replace(enemy.display_name + ":", "[color=%s][b]%s:[/b][/color]" % [ENEMY_COLOR, enemy.display_name])
-	text = text.replace("CRITICAL HIT", "[color=%s][b]CRITICAL HIT[/b][/color]" % GOLD)
-	text = text.replace("hit!", "[b]hit![/b]")
+	for fighter in [[hero, HERO_COLOR], [enemy, ENEMY_COLOR]]:
+		var name_text: String = fighter[0].display_name + " attacks:"
+		text = text.replace(name_text, "[color=%s][b]%s[/b][/color]" % [fighter[1], name_text])
+	text = text.replace("CRITICAL HIT!", "[color=%s][b]CRITICAL HIT![/b][/color]" % GOLD)
+	text = text.replace(": hit!", ": [b]hit![/b]")
 	text = text.replace("automatic miss!", "[color=%s]automatic miss![/color]" % GRAY)
-	text = text.replace(", miss.", ", [color=%s]miss.[/color]" % GRAY)
+	text = text.replace(": miss.", ": [color=%s]miss.[/color]" % GRAY)
+	text = text.replace("Damage:", "[color=%s]Damage:[/color]" % GRAY)
 	var damage: RegEx = RegEx.create_from_string("= (\\d+) damage")
 	return damage.sub(text, "= [b]$1 damage[/b]", true)

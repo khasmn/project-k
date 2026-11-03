@@ -5,6 +5,7 @@
 		"attack": 3,
 		"defense": 2,
 		"speed": 2,
-		"damage_die": 8
+		"damage_die": 8,
+		"weapon": "sword"
 	}
 }

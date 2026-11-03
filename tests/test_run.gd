@@ -18,7 +18,7 @@ func _init() -> void:
 	# Chosen One: attack rolls keep the higher of two d20s.
 	var chosen: Combatant = _hero({"advantage": true})
 	Dice.forced_rolls = [2, 15, 3]
-	_check(chosen.strike(Combatant.new(DUMMY)).contains(": 15 +"), "Chosen One didn't keep the high roll")
+	_check(chosen.strike(Combatant.new(DUMMY)).contains("2 and 15 (Advantage keeps 15)"), "Chosen One didn't keep the high roll")
 
 	# Lucky: the first nat 1 of a fight is rerolled, the second isn't; a new fight resets it.
 	var lucky: Combatant = _hero({"lucky": true})
