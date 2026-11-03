@@ -11,6 +11,11 @@ static func roll(sides: int) -> int:
 	return rng.randi_range(1, sides)
 
 
+## Shows a roll with its modifier for the log: "14 + 3", "9 - 2".
+static func sum_text(natural: int, modifier: int) -> String:
+	return "%d %s %d" % [natural, "-" if modifier < 0 else "+", absi(modifier)]
+
+
 ## Roll a d20. Advantage keeps the higher of two rolls, disadvantage the lower.
 static func roll_d20(mode: Mode = Mode.NORMAL) -> int:
 	var first: int = roll(20)

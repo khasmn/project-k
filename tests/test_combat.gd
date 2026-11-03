@@ -27,6 +27,18 @@ func _init() -> void:
 		if hero.is_alive():
 			hero_wins += 1
 
+	# A weak attacker (negative Attack) still does at least 1 damage, never heals.
+	var weak: Combatant = Combatant.new({"name": "Weak", "hp": 10, "attack": -5, "defense": 0, "speed": 0, "damage_die": 4})
+	var dummy: Combatant = Combatant.new({"name": "Dummy", "hp": 1000, "attack": 0, "defense": -30, "speed": 0, "damage_die": 4})
+	for i in FIGHTS:
+		var hp_before: int = dummy.hp
+		var line: String = weak.strike(dummy)
+		_check(dummy.hp <= hp_before, "weak hit healed")
+		if not "miss" in line:
+			_check(dummy.hp < hp_before, "weak hit did 0 damage")
+		if dummy.hp == 0:
+			dummy.hp = 1000
+
 	if failed:
 		quit(1)
 		return
