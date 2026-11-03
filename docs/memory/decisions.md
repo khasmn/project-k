@@ -5,6 +5,8 @@ if a decision changes, add a new entry that says what it replaces.
 
 | Date | Decision | Why |
 | --- | --- | --- |
+| 2026-11-04 | Game window opens maximized; UI scales up (canvas_items stretch) | Kha wants the game to fill the screen |
+| 2026-11-04 | Battle log in plain words with colors: attack line + separate damage line with weapon names | Kha found the dice math hard to read |
 | 2026-11-04 | UI in framed sections (top bar, hero, enemy, battle log, actions, level-up) with HP/EXP bars | Kha found the interface confusing |
 | 2026-11-04 | EXP bar (8, 12, 16...) and 3 stat points per level, spent with +/- (replaces upgrade cards) | Kha wants to build the hero himself |
 | 2026-11-04 | Plan: 8 rooms + boss; 3 different doors from Elite/Shop/NPC event/Rest; every room ends with a fight; Rest = +30% HP or +10% EXP bar | Kha's design; built in 4 small steps |
