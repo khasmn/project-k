@@ -1,0 +1,10 @@
+{
+	"bandit": {
+		"name": "Bandit",
+		"hp": 22,
+		"attack": 2,
+		"defense": 1,
+		"speed": 1,
+		"damage_die": 6
+	}
+}

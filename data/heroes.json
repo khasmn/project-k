@@ -1,0 +1,10 @@
+{
+	"test_hero": {
+		"name": "Hero",
+		"hp": 30,
+		"attack": 3,
+		"defense": 2,
+		"speed": 2,
+		"damage_die": 8
+	}
+}
