@@ -11,7 +11,8 @@ Read this first in every new session. Keep it short: replace "Current status" an
 - Run state: `scripts/core/run.gd` (static `Run`). Enemies `data/enemies.json`, upgrades `data/upgrades.json`.
 - Passives working: Elf, Mossfolk, Glass Cannon, Bloodlust, Lucky, Keen Eye, Second Wind, Chosen One
   (via "effects" in races/talents JSON). Not yet: Emberkin burn, poison, XP, talk/check bonuses.
-- Balance sim (`tests/test_run.gd`, always-attack bot): every class clears ~30-34% of runs.
+- Balance sim (`tests/test_run.gd`, always-attack bot, random upgrades): classes clear ~40-48% of runs.
+- Every passive logs when it helps. Upgrades include "Heal 50% of max HP".
 - Play tool: `tests/play.gd -- [--seed N] [--race x] [--talent y] [--class z] attack defend 1 2 3`
 
 ## Next step
@@ -21,9 +22,16 @@ Read this first in every new session. Keep it short: replace "Current status" an
 ## Open questions
 
 - Defend is still weaker than attacking; needs a reason (enemy wind-ups, or Energy once skills exist).
-- No healing between fights for now; rest spots come with the chapter map.
+- No healing between fights except the Heal 50% upgrade; rest spots come with the chapter map.
+- Heal card is still offered at full HP ("+0 HP"); Kha to decide.
 
 ## Session log (newest first)
+
+### 2026-11-04 – Second playtest fixes
+- Game-tester run on the 5-fight run: no game bugs; 3 play-tool argument bugs fixed.
+- Level-up title shows the new level; double upgrade click guarded.
+- Passives now log when they help; upgrade texts clearer; Heal 50% card added, Speed removed.
+- Game-tester skill prompts refreshed (play tool options, per-agent temp folders).
 
 ### 2026-11-03 – 5-fight run
 - Built the run: created hero fights 5 enemies, picks 1 of 3 upgrades after each win.

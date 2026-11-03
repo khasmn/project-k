@@ -5,6 +5,8 @@ if a decision changes, add a new entry that says what it replaces.
 
 | Date | Decision | Why |
 | --- | --- | --- |
+| 2026-11-04 | Every passive writes a log line when it helps (e.g. "Chosen One: rolled 7 and 15") | Playtest: passives felt invisible |
+| 2026-11-04 | Upgrade pool: +5 Max HP, +1 Attack/Magic, +1 Defense, +1 damage, Heal 50% HP; +1 Speed removed | Playtest: boss wall and useless Speed; sim now 40-48% |
 | 2026-11-03 | Classes tuned (Warrior Def 2; Archer 30 HP, Def 2; Mage 26 HP, Def 1; Brawler 30 HP, Atk 3, d8) | Sim: all classes clear ~30-34% of runs |
 | 2026-11-03 | Softer enemies (Rat 10, Bandit 16, Wolf 18, Skeleton 22, Chief 32 HP) | First set was nearly unwinnable (0-3%) |
 | 2026-11-03 | Initiative ties go to the enemy unless the hero is an Elf (replaces "hero wins ties") | Gives Elf's passive a purpose |
