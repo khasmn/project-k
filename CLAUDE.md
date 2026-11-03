@@ -65,10 +65,9 @@ Inspired by Pixel Lineage (Roblox). Solo hobby project, built to play myself fir
 - Before starting, check which branch we're on. If it's `main`, create the new branch first.
   If uncommitted changes exist, ask me what to do with them.
 - Commit on the branch in small steps with short clear messages (e.g. "Add dice module").
-- When the feature works, tell me it's ready. I push the branch with GitHub Desktop,
-  open a pull request on GitHub, and merge it into `main` myself.
+- When the feature works, tell me it's ready. When I say to merge, you do it with the `gh` CLI:
+  push the branch, open a pull request, merge it into `main`, then switch to `main` and pull.
 - Don't merge into `main`, push, or delete branches unless I ask.
-- After I merge, switch back to `main` and pull before starting the next branch.
 
 ## Build order
 
