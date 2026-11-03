@@ -5,6 +5,9 @@ if a decision changes, add a new entry that says what it replaces.
 
 | Date | Decision | Why |
 | --- | --- | --- |
+| 2026-11-03 | Armor = 10 + Defense; Defend gives +2 Armor until your next turn | D&D-style, simple; easy to change |
+| 2026-11-03 | Crit (nat 20) doubles total damage; damage = weapon die + Attack | Matches design "double damage" |
+| 2026-11-03 | Combat prototype: Attack + Defend only, stats from JSON, Restart button | Small but a real choice; data-driven from the start |
 | 2026-11-03 | Game-tester skill (gamer + dev tester agents) waits until combat prototype runs | Nothing to test yet |
 | 2026-11-03 | Dice is a static `class_name Dice` script, not an autoload | Simplest; callable anywhere |
 | 2026-11-03 | Nat 20 always succeeds, nat 1 always fails, for every check | Every roll keeps hope and risk |
