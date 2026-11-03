@@ -1,0 +1,18 @@
+{
+	"elite": [
+		{"name": "Dark Hollow", "description": "Something growls in the dark. Tougher foe, double gold and EXP."},
+		{"name": "Old Watchtower", "description": "Someone guards the stairs. Tougher foe, double gold and EXP."}
+	],
+	"rest": [
+		{"name": "Old Campfire", "description": "Warm embers. Sit down to heal, or train with your weapon."},
+		{"name": "Quiet Spring", "description": "Cool water and soft grass. Rest a while, or practice."}
+	],
+	"shop": [
+		{"name": "Peddler's Cart", "description": "A cheerful peddler waves you over. (The shop opens in a later update.)"},
+		{"name": "Traveling Smith", "description": "Hammers, potions, odd trinkets. (The shop opens in a later update.)"}
+	],
+	"event": [
+		{"name": "Stranger on the Road", "description": "A hooded figure wants a word. (Events arrive in a later update.)"},
+		{"name": "Broken Bridge", "description": "Someone is stuck on the other side. (Events arrive in a later update.)"}
+	]
+}

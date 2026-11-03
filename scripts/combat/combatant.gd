@@ -14,6 +14,7 @@ var speed: int
 var damage_die: int
 var weapon: String = "weapon"  # for the log: "sword (d8)"
 var exp_reward: int = 0  # EXP the hero gets for beating this enemy
+var gold_reward: int = 0
 var defending: bool = false
 
 # Passives, set from the "effects" of a race or talent in data/. Enemies have none.
@@ -40,6 +41,7 @@ func _init(data: Dictionary) -> void:
 	damage_die = int(data.damage_die)
 	weapon = data.get("weapon", "weapon")
 	exp_reward = int(data.get("exp", 0))
+	gold_reward = int(data.get("gold", 0))
 	passive_names = data.get("passive_names", {})
 	var effects: Dictionary = data.get("effects", {})
 	for effect in effects:

@@ -5,6 +5,10 @@ if a decision changes, add a new entry that says what it replaces.
 
 | Date | Decision | Why |
 | --- | --- | --- |
+| 2026-11-04 | Run = 8 rooms + Bandit Chief boss; after each fight pick 1 of 3 different doors (Elite, Rest, Shop, Event) | Kha wants choices between fights; replaces the fixed 5-fight list |
+| 2026-11-04 | Stat points are saved; spend them any time with the CHARACTER button on the path screen (replaces the level-up popup) | Kha's reference layout |
+| 2026-11-04 | Shop and Event doors show as cards but lead to a plain battle until steps 3 and 4 | Kha's choice |
+| 2026-11-04 | Elite = 1.5x HP, +1 Attack/Defense, double gold and EXP; Rest = +30% HP or +10% EXP bar; boss 44 HP, Atk 4, d10 | Bot clears 51-58% after rebalance |
 | 2026-11-04 | Game window opens maximized; UI scales up (canvas_items stretch) | Kha wants the game to fill the screen |
 | 2026-11-04 | Battle log in plain words with colors: attack line + separate damage line with weapon names | Kha found the dice math hard to read |
 | 2026-11-04 | UI in framed sections (top bar, hero, enemy, battle log, actions, level-up) with HP/EXP bars | Kha found the interface confusing |

@@ -3,7 +3,7 @@ extends SceneTree
 ## /Applications/Godot.app/Contents/MacOS/Godot --headless --script res://tests/test_run.gd
 
 const RUNS: int = 2000
-const LEVEL_UP: Script = preload("res://scripts/combat/level_up_panel.gd")
+const PANEL: Script = preload("res://scripts/ui/character_panel.gd")
 const DUMMY: Dictionary = {"name": "Dummy", "hp": 500, "attack": 0, "defense": 0, "speed": 0, "damage_die": 4}
 
 var failed: bool = false
@@ -65,23 +65,42 @@ func _init() -> void:
 	_check(Run.gain_exp(7) == 0 and Run.level == 1, "leveled too early")
 	_check(Run.gain_exp(1) == 1 and Run.level == 2 and Run.experience == 0, "level up at 8 EXP wrong")
 	_check(Run.gain_exp(30) == 2 and Run.level == 4 and Run.experience == 2, "double level up wrong")
+	_check(Run.points == 3 * Run.POINTS_PER_LEVEL, "stat points not saved")
+
+	# Doors: always 3, never two of the same type. Elites are tougher and pay double.
+	for i in 200:
+		var types: Array = Run.door_choices().map(func(door: Dictionary) -> String: return door.type)
+		_check(types.size() == 3 and types.size() == _unique(types).size(), "doors wrong: %s" % [types])
+	Run.room = 7
+	Run.room_type = "elite"
+	var elite: Combatant = Run.enemy()
+	_check(elite.display_name.begins_with("Elite") and elite.gold_reward > 0, "elite wrong")
+	Run.room = Run.ROOMS + 1
+	_check(Run.is_boss() and Run.enemy().display_name == "Bandit Chief", "no boss after room 8")
+
+	# Rest heals 30% (not past max); Train gives 10% of the EXP bar.
+	Run.hero.hp = Run.hero.max_hp - 2
+	_check(Run.rest_amount() == 2, "rest healed past max")
+	Run.level = 1
+	_check(Run.train_amount() == 1, "train amount wrong")
 
 	# Balance: auto-play whole runs (always attack, points spent at random), per class.
 	Dice.forced_rolls = []
 	var report: PackedStringArray = []
 	for class_id in draft.classes:
 		var wins: int = 0
-		var reached: Array[int] = [0, 0, 0, 0, 0, 0]
+		var reached: Array[int] = []
+		reached.resize(Run.ROOMS + 2)
 		for i in RUNS:
 			var d: CharacterDraft = CharacterDraft.new()
 			d.class_id = class_id
 			Run.start(d)
 			var result: int = _auto_run()
-			_check(result >= 1 and result <= Run.FIGHTS.size() + 1, "run ended at a weird fight")
+			_check(result >= 1 and result <= Run.ROOMS + 2, "run ended in a weird room")
 			reached[result - 1] += 1
-			if result > Run.FIGHTS.size():
+			if result == Run.ROOMS + 2:
 				wins += 1
-		report.append("%s %d%% (died at fight 1-5: %s)" % [class_id, 100 * wins / RUNS, reached.slice(0, 5)])
+		report.append("%s %d%% (died in room 1-8, boss: %s)" % [class_id, 100 * wins / RUNS, reached.slice(0, Run.ROOMS + 1)])
 
 	if failed:
 		quit(1)
@@ -90,10 +109,21 @@ func _init() -> void:
 	quit()
 
 
-## Plays one run with the current Run.hero. Returns the fight it died in, or 6 for a full clear.
+## Plays one run with the current Run.hero: random doors, rests when hurt, points spent at random.
+## Returns the room it died in (ROOMS + 1 = the boss), or ROOMS + 2 for a full clear.
 func _auto_run() -> int:
 	var hero: Combatant = Run.hero
 	while true:
+		if Run.is_boss():
+			Run.room_type = "boss"
+		elif Run.room > 1:
+			var doors: Array = Run.door_choices()
+			Run.room_type = doors[Dice.roll(doors.size()) - 1].type
+			if Run.room_type == "rest":
+				if hero.hp < hero.max_hp * 0.7:
+					hero.hp += Run.rest_amount()
+				else:
+					Run.gain_exp(Run.train_amount())
 		var enemy: Combatant = Run.enemy()
 		hero.start_fight()
 		var hero_init: int = Dice.roll_d20(hero.roll_mode()) + hero.speed
@@ -106,15 +136,26 @@ func _auto_run() -> int:
 			if enemy.is_alive():
 				enemy.strike(hero)
 		if not hero.is_alive():
-			return Run.fight_number
+			return Run.room
 		hero.win_fight()
-		if Run.is_last_fight():
-			return Run.FIGHTS.size() + 1
-		for point in Run.gain_exp(enemy.exp_reward) * Run.POINTS_PER_LEVEL:
-			var entry: Array = LEVEL_UP.STATS[Dice.roll(LEVEL_UP.STATS.size()) - 1]
+		if Run.is_boss():
+			return Run.ROOMS + 2
+		Run.gain_exp(enemy.exp_reward)
+		Run.gold += enemy.gold_reward
+		for point in Run.points:
+			var entry: Array = PANEL.STATS[Dice.roll(PANEL.STATS.size()) - 1]
 			hero.raise_stat(entry[0], entry[2])
-		Run.fight_number += 1
+		Run.points = 0
+		Run.room += 1
 	return 0
+
+
+func _unique(items: Array) -> Array:
+	var seen: Array = []
+	for item in items:
+		if not item in seen:
+			seen.append(item)
+	return seen
 
 
 func _hero(effects: Dictionary) -> Combatant:
