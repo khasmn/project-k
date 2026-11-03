@@ -5,6 +5,11 @@ if a decision changes, add a new entry that says what it replaces.
 
 | Date | Decision | Why |
 | --- | --- | --- |
+| 2026-11-03 | 5 rerolls each for race and talent (replaces "5 rerolls shared") | Kha wants more control over both rolls |
+| 2026-11-03 | Legendary talent: Chosen One (advantage on every check) | Kha picked it from Claude's ideas; strongest option, watch balance |
+| 2026-11-03 | Passives and check bonuses are text only for now; built later | Keeps character creation small |
+| 2026-11-03 | Hero stats = class base + race changes; Mage attacks with Magic | Numbers proposed by Claude, approved by Kha |
+| 2026-11-03 | Character creation is its own screen for now; connect to combat in build step 3 | Small steps |
 | 2026-11-03 | Defend gives +4 Armor (replaces +2) | +2 was never worth picking (playtest) |
 | 2026-11-03 | Crit rolls the damage die twice, then adds Attack (replaces "doubles total damage") | Doubling made crits near one-shots (playtest) |
 | 2026-11-03 | A hit always does at least 1 damage | Negative Attack must not heal |

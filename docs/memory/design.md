@@ -21,7 +21,7 @@ Race and talent are rolled at random, weighted by rarity. Class is picked freely
 
 Rolling rules:
 - Race and talent are each rolled once for free.
-- Then 5 rerolls SHARED between them; each reroll is spent on race or talent, player's choice.
+- Then 5 rerolls for race and 5 rerolls for talent (separate, not shared).
 - A reroll replaces the current result; when rerolls run out, you keep what you have.
 - Rerolls reset with each new character and don't carry over.
 - Chance per rarity: Common 50%, Uncommon 25%, Rare 15%, Epic 8%, Legendary 2%.
@@ -52,6 +52,7 @@ Rolling rules:
 | Lucky | Rare | Reroll one natural 1 per fight; better loot |
 | Keen Eye | Rare | Critical hit on 19 or 20 |
 | Second Wind | Epic | Survive one lethal hit per run |
+| Chosen One | Legendary | Advantage on every check |
 
 ### Classes
 
@@ -141,7 +142,7 @@ the hero; currency earned still unlocks content for future runs.
 ## Build order
 
 1. Dice module + combat prototype (one hero vs one enemy, simple shapes)
-2. Character creation screen (race, talent, class, 5 shared rerolls)
+2. Character creation screen (race, talent, class, 5 rerolls each)
 3. A run of 5 fights with level-up choices
 4. Chapter map: shop, rest, events, boss
 5. Saving, 3 lives, meta-progression unlocks
