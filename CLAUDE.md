@@ -40,10 +40,25 @@ Full design doc: https://claude.ai/artifact/4UKyd7RnGBHQ5ZpMwuFAQo
 
 - I'm a beginner. Explain new Godot concepts briefly in plain words when you introduce them.
 - Build in small steps; the game should run after every step.
-- After each working feature, make a git commit with a short clear message
-  (e.g. "Add dice module"). I push with GitHub Desktop.
 - Never commit the `.godot/` folder (already in .gitignore).
 - If something can only be checked by running the game, tell me exactly what to click and what I should see.
+
+## Git workflow (always follow)
+
+- NEVER commit directly to `main`. `main` only gets work that is tested and merged.
+- Every new feature, fix or update gets its own branch, created from an up-to-date `main`:
+  - `feature/<name>` for new things (e.g. `feature/dice-module`)
+  - `fix/<name>` for bug fixes (e.g. `fix/reroll-counter`)
+  - `update/<name>` for changes to existing things (e.g. `update/race-balance`)
+  - `setup/<name>` for project setup, docs, tooling
+  Names: lowercase, words joined with `-`.
+- Before starting, check which branch we're on. If it's `main`, create the new branch first.
+  If uncommitted changes exist, ask me what to do with them.
+- Commit on the branch in small steps with short clear messages (e.g. "Add dice module").
+- When the feature works, tell me it's ready. I push the branch with GitHub Desktop,
+  open a pull request on GitHub, and merge it into `main` myself.
+- Don't merge into `main`, push, or delete branches unless I ask.
+- After I merge, switch back to `main` and pull before starting the next branch.
 
 ## Build order
 
