@@ -1,7 +1,8 @@
 extends PanelContainer
-## Level-up panel: spend stat points with + / - buttons, then Confirm.
+## Character panel: your stats, and saved stat points to spend with + / - buttons.
+## Confirm applies what you added (unspent points stay saved); Close throws away unconfirmed changes.
 
-signal confirmed
+signal closed
 
 ## [stat, label, amount per point, hint]. "{attack}" becomes Attack or Magic.
 const STATS: Array = [
@@ -18,12 +19,13 @@ var added: Dictionary = {}  # stat -> points put in (not applied until Confirm)
 
 func _ready() -> void:
 	%ConfirmButton.pressed.connect(_on_confirm)
+	%CloseButton.pressed.connect(_close)
 	hide()
 
 
-func open(for_hero: Combatant, points: int) -> void:
+func open(for_hero: Combatant) -> void:
 	hero = for_hero
-	points_left = points
+	points_left = Run.points
 	added = {}
 	for row in %StatRows.get_children():
 		%StatRows.remove_child(row)
@@ -68,7 +70,7 @@ func _change(stat: String, delta: int) -> void:
 
 
 func _refresh() -> void:
-	%PointsLabel.text = "LEVEL UP!   Level %d   Points left: %d" % [Run.level, points_left]
+	%PointsLabel.text = "CHARACTER   Level %d   Points to spend: %d" % [Run.level, points_left]
 	for entry in STATS:
 		var row: Node = %StatRows.get_node("Row_" + entry[0])
 		var now: int = int(hero.get(entry[0]))
@@ -76,15 +78,19 @@ func _refresh() -> void:
 		row.get_node("Value").text = str(now) if pending == 0 else "%d -> %d" % [now, now + pending]
 		row.get_node("Minus").disabled = added.get(entry[0], 0) == 0
 		row.get_node("Plus").disabled = points_left == 0
-	%ConfirmButton.disabled = points_left > 0
-	%ConfirmButton.text = "Confirm" if points_left == 0 else "Spend all points first"
+	%ConfirmButton.disabled = points_left == Run.points
 
 
 func _on_confirm() -> void:
-	if points_left > 0 or not visible:
+	if not visible:
 		return
 	for entry in STATS:
 		if added.get(entry[0], 0) > 0:
 			hero.raise_stat(entry[0], added[entry[0]] * entry[2])
+	Run.points = points_left
+	_close()
+
+
+func _close() -> void:
 	hide()
-	confirmed.emit()
+	closed.emit()

@@ -1,7 +1,7 @@
 {
-	"giant_rat": {"name": "Giant Rat", "hp": 10, "attack": 0, "defense": 0, "speed": 3, "weapon": "bite", "damage_die": 4, "exp": 8},
-	"bandit": {"name": "Bandit", "hp": 16, "attack": 1, "defense": 0, "speed": 1, "weapon": "dagger", "damage_die": 6, "exp": 10},
-	"wolf": {"name": "Wolf", "hp": 18, "attack": 2, "defense": 0, "speed": 4, "weapon": "bite", "damage_die": 6, "exp": 12},
-	"skeleton": {"name": "Skeleton", "hp": 22, "attack": 2, "defense": 1, "speed": 1, "weapon": "rusty sword", "damage_die": 6, "exp": 14},
-	"bandit_chief": {"name": "Bandit Chief", "hp": 32, "attack": 3, "defense": 2, "speed": 2, "weapon": "axe", "damage_die": 8, "exp": 30}
+	"giant_rat": {"name": "Giant Rat", "hp": 10, "attack": 0, "defense": 0, "speed": 3, "weapon": "bite", "damage_die": 4, "exp": 8, "tier": 1, "gold": 3},
+	"bandit": {"name": "Bandit", "hp": 16, "attack": 1, "defense": 0, "speed": 1, "weapon": "dagger", "damage_die": 6, "exp": 10, "tier": 1, "gold": 5},
+	"wolf": {"name": "Wolf", "hp": 18, "attack": 2, "defense": 0, "speed": 4, "weapon": "bite", "damage_die": 6, "exp": 12, "tier": 2, "gold": 6},
+	"skeleton": {"name": "Skeleton", "hp": 24, "attack": 2, "defense": 1, "speed": 1, "weapon": "rusty sword", "damage_die": 6, "exp": 14, "tier": 3, "gold": 8},
+	"bandit_chief": {"name": "Bandit Chief", "hp": 44, "attack": 4, "defense": 2, "speed": 2, "weapon": "axe", "damage_die": 10, "exp": 30, "tier": 0, "gold": 0}
 }

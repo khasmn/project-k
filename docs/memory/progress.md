@@ -32,6 +32,7 @@ New room plan (see design.md "Chapter rooms"), one branch each:
 - Kha redesigned the run: 8 rooms + boss, 3 doors (Elite/Shop/NPC event/Rest), every room ends in a fight.
 - Replaced upgrade cards with EXP + 3 stat points per level (level-up panel with +/-).
 - Rebuilt the combat and creation screens in framed sections; picked class has a gold frame.
+- Step 2 (feature/path-choice): path screen with door cards, hero sidebar, CHARACTER panel, gold, Elite and Rest rooms, 8 rooms + boss.
 - Battle log colored and reworded (separate damage line, weapon names); window opens maximized.
 
 ### 2026-11-04 – Second playtest fixes
