@@ -94,11 +94,16 @@ func _win() -> void:
 		_add_choice("New hero", _new_hero)
 		return
 	_log("Level up! Pick an upgrade.")
+	%Title.text = "Fight %d/%d won   |   Level %d %s: pick an upgrade" % [
+		Run.fight_number, Run.FIGHTS.size(), Run.fight_number + 1, Run.hero_title]
 	for upgrade in Run.upgrade_choices():
 		_add_choice(hero.upgrade_text(upgrade), func() -> void: _level_up(upgrade))
 
 
 func _level_up(upgrade: Dictionary) -> void:
+	if %Choices.get_child_count() == 0:
+		return  # a second click on an upgrade that was already picked
+	_clear_choices()
 	hero.apply_upgrade(upgrade)
 	Run.fight_number += 1
 	_log("Level %d: %s." % [Run.fight_number, hero.upgrade_text(upgrade)])
