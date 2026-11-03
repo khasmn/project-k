@@ -6,18 +6,22 @@ Read this first in every new session. Keep it short: replace "Current status" an
 ## Current status
 
 - Setup merged (PR #1, PR #2: ask-first rule, .DS_Store ignored, Claude merges via gh).
-- Dice module done: `scripts/core/dice.gd` (roll, roll_d20 with advantage/disadvantage,
-  check vs DC) + self-check `tests/test_dice.gd` (passes). Merged via feature/dice-module.
-- Run the check: `/Applications/Godot.app/Contents/MacOS/Godot --headless --script res://tests/test_dice.gd`
+- Dice module done: `scripts/core/dice.gd` + self-check `tests/test_dice.gd` (PR #3).
+- Combat prototype done (build step 1 complete): `scenes/combat/combat.tscn` is the main scene.
+  Hero vs Bandit, Attack + Defend, initiative, roll log, Victory/Defeated + Restart.
+  Stats in `data/heroes.json` and `data/enemies.json`. Self-check `tests/test_combat.gd`.
+- Run a check: `/Applications/Godot.app/Contents/MacOS/Godot --headless --script res://tests/<file>.gd`
 
 ## Next step
 
-1. Combat prototype on `feature/combat-prototype`: one hero vs one enemy, simple shapes,
-   clickable actions, roll log using Dice.
+Kha picks one:
+- Game-tester skill (gamer agent + dev tester agent), now that combat runs.
+- Build step 2: character creation screen (race, talent, class, 5 shared rerolls).
 
 ## Open questions
 
-- Game-tester skill (gamer agent + dev tester agent): build after the combat prototype runs.
+- Armor = 10 + Defense was chosen by Claude; Kha may change it.
+- Hero wins ~94% vs Bandit; fine for a test fight, rebalance later.
 
 ## Session log (newest first)
 
@@ -27,6 +31,7 @@ Read this first in every new session. Keep it short: replace "Current status" an
 - Claude now pushes, opens and merges PRs with gh when Kha says to merge.
 - Built the dice module + headless self-check; nat 20 always succeeds, nat 1 always fails.
 - Idea parked: game-tester skill with two agents, after combat prototype.
+- Built the combat prototype (hero vs bandit, Attack/Defend, JSON stats, Restart).
 
 ### 2026-11-03 – Planning and setup
 - Brainstormed the game, inspired by Pixel Lineage (Roblox) + D&D d20 checks.
