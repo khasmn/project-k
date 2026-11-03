@@ -147,9 +147,17 @@ func apply_upgrade(upgrade: Dictionary) -> void:
 	if upgrade.stat == "max_hp":
 		max_hp += amount
 		hp += amount
+	elif upgrade.stat == "heal_percent":
+		hp += _heal_amount(amount)
 	else:
 		set(upgrade.stat, int(get(upgrade.stat)) + amount)
 
 
 func upgrade_text(upgrade: Dictionary) -> String:
-	return upgrade.text.replace("{attack}", attack_name)
+	var heal: int = _heal_amount(int(upgrade.amount)) if upgrade.stat == "heal_percent" else 0
+	return upgrade.text.replace("{attack}", attack_name).replace("{heal}", str(heal))
+
+
+## HP a heal of this % of max HP would restore right now (never past max HP).
+func _heal_amount(percent: int) -> int:
+	return mini(ceili(max_hp * percent / 100.0), max_hp - hp)

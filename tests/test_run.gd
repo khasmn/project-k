@@ -60,6 +60,10 @@ func _init() -> void:
 	_check(cannon.max_hp == 31 and cannon.hp == 15, "Max HP upgrade wrong")
 	cannon.apply_upgrade({"stat": "attack", "amount": 1})
 	_check(cannon.attack == 4, "attack upgrade wrong")
+	var heal: Dictionary = {"text": "Heal (+{heal} HP)", "stat": "heal_percent", "amount": 50}
+	_check(cannon.upgrade_text(heal) == "Heal (+16 HP)", "heal text wrong: " + cannon.upgrade_text(heal))
+	cannon.apply_upgrade(heal)
+	_check(cannon.hp == 31, "heal didn't cap at max HP")
 
 	# Balance: auto-play whole runs (always attack, random upgrade), per class.
 	Dice.forced_rolls = []
