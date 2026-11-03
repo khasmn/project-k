@@ -49,6 +49,9 @@ Inspired by Pixel Lineage (Roblox). Solo hobby project, built to play myself fir
 - Build in small steps; the game should run after every step.
 - Never commit the `.godot/` folder (already in .gitignore).
 - If something can only be checked by running the game, tell me exactly what to click and what I should see.
+- Ask, don't assume: if my instruction is unclear or you have a question, ask me before doing anything.
+- Ideas need my OK: if you have an idea or suggestion (a feature, a design change, extra code
+  I didn't ask for), describe it and ask if I want it. Only build it after I say yes.
 
 ## Git workflow (always follow)
 
