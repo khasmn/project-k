@@ -5,5 +5,6 @@
 	"silver_tongue": {"name": "Silver Tongue", "rarity": "uncommon", "effect": "Advantage on persuasion checks"},
 	"lucky": {"name": "Lucky", "rarity": "rare", "effect": "Reroll one natural 1 per fight; better loot"},
 	"keen_eye": {"name": "Keen Eye", "rarity": "rare", "effect": "Critical hit on 19 or 20"},
-	"second_wind": {"name": "Second Wind", "rarity": "epic", "effect": "Survive one lethal hit per run"}
+	"second_wind": {"name": "Second Wind", "rarity": "epic", "effect": "Survive one lethal hit per run"},
+	"chosen_one": {"name": "Chosen One", "rarity": "legendary", "effect": "Advantage on every check"}
 }

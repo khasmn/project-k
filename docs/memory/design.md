@@ -52,6 +52,7 @@ Rolling rules:
 | Lucky | Rare | Reroll one natural 1 per fight; better loot |
 | Keen Eye | Rare | Critical hit on 19 or 20 |
 | Second Wind | Epic | Survive one lethal hit per run |
+| Chosen One | Legendary | Advantage on every check |
 
 ### Classes
 

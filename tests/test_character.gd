@@ -16,8 +16,10 @@ func _init() -> void:
 		var percent: float = 100.0 * counts.get(rarity, 0) / ROLLS
 		_check(absf(percent - CharacterDraft.RARITY_CHANCES[rarity]) < 1.5, "race %s at %.1f%%" % [rarity, percent])
 
-	# Talents have no Legendary yet: it never comes up, Common scales to 50/98.
-	var talent_counts: Dictionary = _rarity_counts(draft.talents)
+	# A rarity with no entries never comes up; the others scale up (Common becomes 50/98).
+	var no_legendary: Dictionary = draft.talents.duplicate()
+	no_legendary.erase("chosen_one")
+	var talent_counts: Dictionary = _rarity_counts(no_legendary)
 	_check(not talent_counts.has("legendary"), "rolled a talent rarity that doesn't exist")
 	_check(absf(100.0 * talent_counts.common / ROLLS - 51.0) < 1.5, "talent chances didn't scale up")
 
