@@ -1,0 +1,9 @@
+{
+	"fast_learner": {"name": "Fast Learner", "rarity": "common", "effect": "+XP, and gain XP even on a failed check"},
+	"glass_cannon": {"name": "Glass Cannon", "rarity": "common", "effect": "+Damage, -HP"},
+	"bloodlust": {"name": "Bloodlust", "rarity": "uncommon", "effect": "Heal a little on each kill"},
+	"silver_tongue": {"name": "Silver Tongue", "rarity": "uncommon", "effect": "Advantage on persuasion checks"},
+	"lucky": {"name": "Lucky", "rarity": "rare", "effect": "Reroll one natural 1 per fight; better loot"},
+	"keen_eye": {"name": "Keen Eye", "rarity": "rare", "effect": "Critical hit on 19 or 20"},
+	"second_wind": {"name": "Second Wind", "rarity": "epic", "effect": "Survive one lethal hit per run"}
+}
