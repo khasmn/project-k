@@ -22,24 +22,31 @@ func _initialize() -> void:
 	var i: int = 0
 	while i < args.size():
 		var arg: String = args[i]
-		if arg.begins_with("--") and i + 1 >= args.size():
-			printerr("%s needs a value after it" % arg)
-			quit(1)
-			return
-		if arg in ["--seed", "--force"] and not _is_number_list(args[i + 1]):
-			printerr("%s needs a number after it (--force takes a list like 20,1,8)" % arg)
+		if not arg.begins_with("--"):
+			actions.append(arg.to_lower())
+			i += 1
+			continue
+		var error: String = ""
+		var value: String = args[i + 1] if i + 1 < args.size() else ""
+		if not arg in ["--seed", "--force", "--race", "--talent", "--class"]:
+			error = "unknown option %s (use --seed, --force, --race, --talent, --class)" % arg
+		elif value == "":
+			error = "%s needs a value after it" % arg
+		elif arg == "--seed" and not _is_number(value):
+			error = "--seed needs one whole number, like 42"
+		elif arg == "--force" and not Array(value.split(",")).all(_is_number):
+			error = "--force needs a list of numbers, like 20,1,8"
+		if error != "":
+			printerr(error)
 			quit(1)
 			return
 		if arg == "--seed":
-			seed_value = int(args[i + 1])
+			seed_value = int(value)
 		elif arg == "--force":
-			for n in args[i + 1].split(","):
+			for n in value.split(","):
 				forced.append(int(n))
-		elif arg in ["--race", "--talent", "--class"]:
-			picks[arg.trim_prefix("--")] = args[i + 1].to_lower()
 		else:
-			actions.append(arg.to_lower())
-			i -= 1  # actions have no value after them
+			picks[arg.trim_prefix("--")] = value.to_lower()
 		i += 2
 	Dice.rng.seed = seed_value
 
@@ -102,11 +109,9 @@ func _button_for(action: String) -> Button:
 	return null
 
 
-func _is_number_list(text: String) -> bool:
-	for n in text.split(","):
-		if not n.is_valid_int():
-			return false
-	return true
+## A whole number small enough to fit (huge ones would silently turn into a different number).
+func _is_number(text: String) -> bool:
+	return text.is_valid_int() and text.trim_prefix("-").length() <= 18
 
 
 ## Wait until the hero can act or there are choices to click (the enemy's turn takes a moment).
