@@ -21,9 +21,21 @@ func _ready() -> void:
 		button.toggle_mode = true
 		button.button_group = class_group
 		button.custom_minimum_size = Vector2(0, 36)
+		button.add_theme_stylebox_override("pressed", _selected_style())
+		button.add_theme_stylebox_override("hover_pressed", _selected_style())
 		button.pressed.connect(func() -> void: draft.class_id = id; _refresh())
 		%ClassButtons.add_child(button)
 	_new_hero()
+
+
+## Gold frame so the picked class stands out.
+func _selected_style() -> StyleBoxFlat:
+	var style: StyleBoxFlat = StyleBoxFlat.new()
+	style.bg_color = Color(0.25, 0.2, 0.08)
+	style.set_border_width_all(2)
+	style.border_color = Color(0.95, 0.75, 0.25)
+	style.set_corner_radius_all(4)
+	return style
 
 
 func _new_hero() -> void:

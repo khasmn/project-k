@@ -5,6 +5,9 @@ if a decision changes, add a new entry that says what it replaces.
 
 | Date | Decision | Why |
 | --- | --- | --- |
+| 2026-11-04 | UI in framed sections (top bar, hero, enemy, battle log, actions, level-up) with HP/EXP bars | Kha found the interface confusing |
+| 2026-11-04 | EXP bar (8, 12, 16...) and 3 stat points per level, spent with +/- (replaces upgrade cards) | Kha wants to build the hero himself |
+| 2026-11-04 | Plan: 8 rooms + boss; 3 different doors from Elite/Shop/NPC event/Rest; every room ends with a fight; Rest = +30% HP or +10% EXP bar | Kha's design; built in 4 small steps |
 | 2026-11-04 | Every passive writes a log line when it helps (e.g. "Chosen One: rolled 7 and 15") | Playtest: passives felt invisible |
 | 2026-11-04 | Upgrade pool: +5 Max HP, +1 Attack/Magic, +1 Defense, +1 damage, Heal 50% HP; +1 Speed removed | Playtest: boss wall and useless Speed; sim now 40-48% |
 | 2026-11-03 | Classes tuned (Warrior Def 2; Archer 30 HP, Def 2; Mage 26 HP, Def 1; Brawler 30 HP, Atk 3, d8) | Sim: all classes clear ~30-34% of runs |

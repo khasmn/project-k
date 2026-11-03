@@ -1,16 +1,18 @@
 extends Control
-## Combat screen: the run's hero vs the current enemy, turn by turn, then level-up or run end.
+## Combat screen: the run's hero vs the current enemy, turn by turn, then EXP, level-up or run end.
 
 const ENEMY_TURN_DELAY: float = 0.6
 const CREATION_SCENE: String = "res://scenes/character/character_creation.tscn"
 
 var hero: Combatant
 var enemy: Combatant
+var fight_won: bool = false  # true between a win and starting the next fight
 
 
 func _ready() -> void:
 	%AttackButton.pressed.connect(_on_attack)
 	%DefendButton.pressed.connect(_on_defend)
+	%LevelUpPanel.confirmed.connect(_next_fight)
 	if Run.hero == null:
 		Run.start_test()  # this scene was started on its own, not from character creation
 	_start_fight()
@@ -20,10 +22,11 @@ func _start_fight() -> void:
 	hero = Run.hero
 	enemy = Run.enemy()
 	hero.start_fight()
+	fight_won = false
 	_clear_choices()
-	%Title.text = "Fight %d/%d   |   Level %d %s" % [
-		Run.fight_number, Run.FIGHTS.size(), Run.fight_number, Run.hero_title]
-	_log("[b]--- Fight %d/%d: %s ---[/b]" % [Run.fight_number, Run.FIGHTS.size(), enemy.display_name])
+	%Buttons.show()
+	%Title.text = "Fight %d of %d:  %s" % [Run.fight_number, Run.FIGHTS.size(), enemy.display_name]
+	_log("[b]--- Fight %d of %d: %s ---[/b]" % [Run.fight_number, Run.FIGHTS.size(), enemy.display_name])
 	_update_labels()
 
 	# Initiative: d20 + Speed, highest goes first. Ties go to the enemy, unless the hero wins ties (Elf).
@@ -50,7 +53,7 @@ func _hero_turn() -> void:
 		_log(regen_text)
 	_update_labels()
 	_set_buttons_enabled(true)
-	_log("Your turn.")
+	%TurnLabel.text = "Your turn: choose an action"
 
 
 func _on_attack() -> void:
@@ -76,12 +79,14 @@ func _after_action() -> void:
 
 func _enemy_turn() -> void:
 	_set_buttons_enabled(false)
+	%TurnLabel.text = "%s's turn..." % enemy.display_name
 	# await pauses this function until the timer runs out, so the turn doesn't happen instantly.
 	await get_tree().create_timer(ENEMY_TURN_DELAY).timeout
 	_log(enemy.strike(hero))
 	_update_labels()
 	if not hero.is_alive():
 		_log("[b]Defeated![/b] Run over at fight %d of %d." % [Run.fight_number, Run.FIGHTS.size()])
+		%TurnLabel.text = "Defeated! Your run is over."
 		_add_choice("New hero", _new_hero)
 	else:
 		_hero_turn()
@@ -92,25 +97,30 @@ func _win() -> void:
 	var heal_text: String = hero.win_fight()
 	if heal_text != "":
 		_log(heal_text)
-	_update_labels()
+	fight_won = true
 	if Run.is_last_fight():
 		_log("[b]Run complete![/b] You beat all %d fights." % Run.FIGHTS.size())
+		%TurnLabel.text = "Run complete! You beat all %d fights." % Run.FIGHTS.size()
 		_add_choice("New hero", _new_hero)
+		_update_labels()
 		return
-	_log("Level up! Pick an upgrade.")
-	%Title.text = "Fight %d/%d won   |   Level %d %s: pick an upgrade" % [
-		Run.fight_number, Run.FIGHTS.size(), Run.fight_number + 1, Run.hero_title]
-	for upgrade in Run.upgrade_choices():
-		_add_choice(hero.upgrade_text(upgrade), func() -> void: _level_up(upgrade))
+	var levels: int = Run.gain_exp(enemy.exp_reward)
+	_log("+%d EXP." % enemy.exp_reward)
+	_update_labels()
+	if levels > 0:
+		_log("[b]Level up![/b] Now level %d: spend %d stat points." % [Run.level, levels * Run.POINTS_PER_LEVEL])
+		%ActionPanel.hide()
+		%LevelUpPanel.open(hero, levels * Run.POINTS_PER_LEVEL)
+	else:
+		%TurnLabel.text = "Victory!"
+		_add_choice("Next fight", _next_fight)
 
 
-func _level_up(upgrade: Dictionary) -> void:
-	if %Choices.get_child_count() == 0:
-		return  # a second click on an upgrade that was already picked
-	_clear_choices()
-	hero.apply_upgrade(upgrade)
+func _next_fight() -> void:
+	if not fight_won:
+		return  # a second click on a button that was already used
+	%ActionPanel.show()
 	Run.fight_number += 1
-	_log("Level %d: %s." % [Run.fight_number, hero.upgrade_text(upgrade)])
 	_start_fight()
 
 
@@ -125,6 +135,7 @@ func _add_choice(text: String, on_pressed: Callable) -> void:
 	button.custom_minimum_size = Vector2(160, 40)
 	button.pressed.connect(on_pressed)
 	%Choices.add_child(button)
+	%Buttons.hide()  # the fight is over: only the choice buttons make sense now
 
 
 func _clear_choices() -> void:
@@ -134,8 +145,26 @@ func _clear_choices() -> void:
 
 
 func _update_labels() -> void:
-	%HeroLabel.text = "%s  HP %d/%d  Armor %d" % [hero.display_name, hero.hp, hero.max_hp, hero.armor()]
-	%EnemyLabel.text = "%s  HP %d/%d  Armor %d" % [enemy.display_name, enemy.hp, enemy.max_hp, enemy.armor()]
+	%HeroName.text = Run.hero_title
+	%HeroHPBar.max_value = hero.max_hp
+	%HeroHPBar.value = hero.hp
+	%HeroHP.text = "HP %d / %d" % [hero.hp, hero.max_hp]
+	var passives: Array = []
+	for name in hero.passive_names.values():
+		if not name in passives:
+			passives.append(name)
+	%HeroStats.text = "%s %d (d%d)   Armor %d%s   Speed %d\nPassives: %s" % [
+		hero.attack_name, hero.attack, hero.damage_die, hero.armor(), " (defending)" if hero.defending else "",
+		hero.speed, ", ".join(passives) if passives else "none in combat"]
+	%Level.text = "Level %d   EXP %d / %d" % [Run.level, Run.experience, Run.exp_needed()]
+	%ExpBar.max_value = Run.exp_needed()
+	%ExpBar.value = Run.experience
+
+	%EnemyName.text = enemy.display_name
+	%EnemyHPBar.max_value = enemy.max_hp
+	%EnemyHPBar.value = enemy.hp
+	%EnemyHP.text = "HP %d / %d" % [enemy.hp, enemy.max_hp]
+	%EnemyStats.text = "Attack %d (d%d)   Armor %d   Speed %d" % [enemy.attack, enemy.damage_die, enemy.armor(), enemy.speed]
 
 
 func _set_buttons_enabled(enabled: bool) -> void:

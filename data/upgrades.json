@@ -1,7 +1,0 @@
-[
-	{"text": "+5 Max HP (heals 5)", "stat": "max_hp", "amount": 5},
-	{"text": "+1 {attack} (hit and damage)", "stat": "attack", "amount": 1},
-	{"text": "+1 Defense (+1 Armor)", "stat": "defense", "amount": 1},
-	{"text": "+1 damage on hits", "stat": "damage_bonus", "amount": 1},
-	{"text": "Heal 50% of max HP (+{heal} HP)", "stat": "heal_percent", "amount": 50}
-]

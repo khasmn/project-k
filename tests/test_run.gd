@@ -3,6 +3,7 @@ extends SceneTree
 ## /Applications/Godot.app/Contents/MacOS/Godot --headless --script res://tests/test_run.gd
 
 const RUNS: int = 2000
+const LEVEL_UP: Script = preload("res://scripts/combat/level_up_panel.gd")
 const DUMMY: Dictionary = {"name": "Dummy", "hp": 500, "attack": 0, "defense": 0, "speed": 0, "damage_die": 4}
 
 var failed: bool = false
@@ -52,20 +53,20 @@ func _init() -> void:
 	var cannon: Combatant = Combatant.new(draft.hero_data())
 	_check(cannon.max_hp == 26 and cannon.damage_bonus == 2, "Glass Cannon wrong")
 
-	# Level-ups: 3 different choices; +5 Max HP also heals 5.
-	var choices: Array = Run.upgrade_choices()
-	_check(choices.size() == 3 and choices[0] != choices[1] and choices[1] != choices[2] and choices[0] != choices[2], "upgrade choices not 3 different")
+	# Stat points: more Max HP also heals the same amount.
 	cannon.hp = 10
-	cannon.apply_upgrade({"stat": "max_hp", "amount": 5})
-	_check(cannon.max_hp == 31 and cannon.hp == 15, "Max HP upgrade wrong")
-	cannon.apply_upgrade({"stat": "attack", "amount": 1})
-	_check(cannon.attack == 4, "attack upgrade wrong")
-	var heal: Dictionary = {"text": "Heal (+{heal} HP)", "stat": "heal_percent", "amount": 50}
-	_check(cannon.upgrade_text(heal) == "Heal (+16 HP)", "heal text wrong: " + cannon.upgrade_text(heal))
-	cannon.apply_upgrade(heal)
-	_check(cannon.hp == 31, "heal didn't cap at max HP")
+	cannon.raise_stat("max_hp", 3)
+	_check(cannon.max_hp == 29 and cannon.hp == 13, "Max HP point wrong")
+	cannon.raise_stat("attack", 2)
+	_check(cannon.attack == 5, "attack point wrong")
 
-	# Balance: auto-play whole runs (always attack, random upgrade), per class.
+	# EXP: bar is 8, 12, 16...; leftover EXP carries over; a big gain can give two levels.
+	Run.start(draft)
+	_check(Run.gain_exp(7) == 0 and Run.level == 1, "leveled too early")
+	_check(Run.gain_exp(1) == 1 and Run.level == 2 and Run.experience == 0, "level up at 8 EXP wrong")
+	_check(Run.gain_exp(30) == 2 and Run.level == 4 and Run.experience == 2, "double level up wrong")
+
+	# Balance: auto-play whole runs (always attack, points spent at random), per class.
 	Dice.forced_rolls = []
 	var report: PackedStringArray = []
 	for class_id in draft.classes:
@@ -109,7 +110,9 @@ func _auto_run() -> int:
 		hero.win_fight()
 		if Run.is_last_fight():
 			return Run.FIGHTS.size() + 1
-		hero.apply_upgrade(Run.upgrade_choices()[0])
+		for point in Run.gain_exp(enemy.exp_reward) * Run.POINTS_PER_LEVEL:
+			var entry: Array = LEVEL_UP.STATS[Dice.roll(LEVEL_UP.STATS.size()) - 1]
+			hero.raise_stat(entry[0], entry[2])
 		Run.fight_number += 1
 	return 0
 

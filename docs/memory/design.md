@@ -121,8 +121,18 @@ Example event, "a bandit blocks the bridge":
 
 ## Run loop and meta-progression
 
-A run is split into chapters; each chapter is a path of rooms (mostly fights, plus events,
-shops, rest spots) ending in a boss.
+A run is split into chapters; each chapter is a path of rooms ending in a boss.
+
+Chapter rooms (planned, Kha's design 2026-11-04):
+- A chapter is 8 rooms, then the boss.
+- After every fight, pick 1 of 3 doors: 3 DIFFERENT room types, chosen at random from
+  Elite, Shop, NPC event and Rest (one type is left out each time).
+- Every room ends with a monster fight:
+  - Elite: a harder fight, about double gold and EXP.
+  - Shop: buy potions with gold, then fight.
+  - NPC event: a short scene with d20 check choices (reward or trouble), then fight.
+  - Rest: choose Rest (+30% HP) or Train (+10% of the current EXP bar), then fight.
+- Potions are used in combat with an Item button.
 
 Create hero -> explore rooms -> chapter boss -> next chapter ... -> run ends
 -> earn currency -> unlock new races/talents/classes -> next run
@@ -133,7 +143,9 @@ the hero; currency earned still unlocks content for future runs.
 
 ## Loot and progression
 
-- Level up: pick 1 of 3 random upgrades (stat boost, new skill, or passive)
+- EXP from fights fills a bar (8, 12, 16, ... EXP per level). Each level gives 3 stat points:
+  1 point = +3 Max HP (also heals 3), +1 Attack (Magic for a Mage), +1 Defense or +1 Speed.
+  Spent on a level-up panel with + / - buttons and Confirm. (Skills/passives on level-up: later.)
 - Gear slots: weapon, armor, trinket
 - Rarity tiers: common, uncommon, rare, epic, legendary
 - Shop: spend gold found during the run on gear and potions

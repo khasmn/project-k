@@ -12,6 +12,7 @@ var attack_name: String = "Attack"  # "Magic" for a Mage
 var defense: int
 var speed: int
 var damage_die: int
+var exp_reward: int = 0  # EXP the hero gets for beating this enemy
 var defending: bool = false
 
 # Passives, set from the "effects" of a race or talent in data/. Enemies have none.
@@ -36,6 +37,7 @@ func _init(data: Dictionary) -> void:
 	defense = int(data.defense)
 	speed = int(data.speed)
 	damage_die = int(data.damage_die)
+	exp_reward = int(data.get("exp", 0))
 	passive_names = data.get("passive_names", {})
 	var effects: Dictionary = data.get("effects", {})
 	for effect in effects:
@@ -141,23 +143,10 @@ func strike(target: Combatant) -> String:
 	return line + target.take_damage(damage)
 
 
-## Level-up upgrade from data/upgrades.json, e.g. {"stat": "defense", "amount": 1}.
-func apply_upgrade(upgrade: Dictionary) -> void:
-	var amount: int = int(upgrade.amount)
-	if upgrade.stat == "max_hp":
+## Raise a stat (stat points at level-up). More Max HP also heals the same amount.
+func raise_stat(stat: String, amount: int) -> void:
+	if stat == "max_hp":
 		max_hp += amount
 		hp += amount
-	elif upgrade.stat == "heal_percent":
-		hp += _heal_amount(amount)
 	else:
-		set(upgrade.stat, int(get(upgrade.stat)) + amount)
-
-
-func upgrade_text(upgrade: Dictionary) -> String:
-	var heal: int = _heal_amount(int(upgrade.amount)) if upgrade.stat == "heal_percent" else 0
-	return upgrade.text.replace("{attack}", attack_name).replace("{heal}", str(heal))
-
-
-## HP a heal of this % of max HP would restore right now (never past max HP).
-func _heal_amount(percent: int) -> int:
-	return mini(ceili(max_hp * percent / 100.0), max_hp - hp)
+		set(stat, int(get(stat)) + amount)
