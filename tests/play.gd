@@ -16,6 +16,10 @@ func _initialize() -> void:
 	var actions: Array[String] = []
 	var i: int = 0
 	while i < args.size():
+		if args[i] in ["--seed", "--force"] and (i + 1 >= args.size() or not _is_number_list(args[i + 1])):
+			printerr("%s needs a number after it (--force takes a list like 20,1,8)" % args[i])
+			quit(1)
+			return
 		if args[i] == "--seed":
 			seed_value = int(args[i + 1])
 			i += 1
@@ -56,6 +60,13 @@ func _play(actions: Array[String]) -> void:
 	else:
 		print("Your turn. Possible: attack, defend")
 	quit()
+
+
+func _is_number_list(text: String) -> bool:
+	for n in text.split(","):
+		if not n.is_valid_int():
+			return false
+	return true
 
 
 ## Wait until the hero can act or the fight is over (the enemy's turn takes a moment).

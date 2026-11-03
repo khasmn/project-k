@@ -40,6 +40,8 @@ func _init() -> void:
 	Dice.forced_rolls = [1, 20]
 	_check(Dice.check(99, 2).fumble and Dice.check(-99, 50).crit, "forced rolls ignored")
 	_check(Dice.forced_rolls.is_empty(), "forced rolls not used up")
+	Dice.forced_rolls = [25, 0]
+	_check(Dice.roll(20) == 20 and Dice.roll(6) == 1, "impossible forced roll not clamped")
 	Dice.rng.seed = 42
 	var first: int = Dice.roll(20)
 	Dice.rng.seed = 42

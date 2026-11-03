@@ -11,7 +11,10 @@ static var forced_rolls: Array[int] = []
 ## Roll one die with the given number of sides (d6 = roll(6)).
 static func roll(sides: int) -> int:
 	if not forced_rolls.is_empty():
-		return forced_rolls.pop_front()
+		var forced: int = forced_rolls.pop_front()
+		if forced < 1 or forced > sides:
+			push_error("Forced roll %d doesn't fit a d%d, using %d" % [forced, sides, clampi(forced, 1, sides)])
+		return clampi(forced, 1, sides)
 	return rng.randi_range(1, sides)
 
 
