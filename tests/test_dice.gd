@@ -36,6 +36,15 @@ func _init() -> void:
 			crits += 1
 	_check(abs(float(crits) / ROLLS - 0.05) < 0.01, "nat 20 rate not ~5%")
 
+	# Dev tools: forced rolls come out in order, same seed gives the same rolls.
+	Dice.forced_rolls = [1, 20]
+	_check(Dice.check(99, 2).fumble and Dice.check(-99, 50).crit, "forced rolls ignored")
+	_check(Dice.forced_rolls.is_empty(), "forced rolls not used up")
+	Dice.rng.seed = 42
+	var first: int = Dice.roll(20)
+	Dice.rng.seed = 42
+	_check(Dice.roll(20) == first, "same seed gave different roll")
+
 	if failed:
 		quit(1)
 		return

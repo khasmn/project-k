@@ -4,10 +4,14 @@ class_name Dice
 enum Mode { NORMAL, ADVANTAGE, DISADVANTAGE }
 
 static var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+## Testing only: the next dice return these numbers in order, whatever the die.
+static var forced_rolls: Array[int] = []
 
 
 ## Roll one die with the given number of sides (d6 = roll(6)).
 static func roll(sides: int) -> int:
+	if not forced_rolls.is_empty():
+		return forced_rolls.pop_front()
 	return rng.randi_range(1, sides)
 
 
