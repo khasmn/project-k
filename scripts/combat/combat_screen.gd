@@ -222,6 +222,7 @@ func _add_choice(text: String, on_pressed: Callable) -> void:
 func _command_button(text: String, on_pressed: Callable) -> Button:
 	var button: Button = %AttackButton.duplicate(0)  # copy the look only, not the Attack signal
 	button.unique_name_in_owner = false
+	button.disabled = false  # Attack is disabled when the fight ends; the copy must not be
 	button.text = "   " + text
 	button.pressed.connect(on_pressed)
 	_add_cursor(button)
