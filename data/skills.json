@@ -15,6 +15,10 @@
 		"effect": {"status": "stun", "save": "speed"}},
 	"uppercut": {"name": "Uppercut", "pose": "brawler_uppercut", "impact": "uppercut", "cost": 2, "description": "Attack at -2 to hit, +1d8 damage on a hit.",
 		"to_hit": -2, "extra_die": 8},
+	"piercing_thrust": {"name": "Piercing Thrust", "pose": "lancer_skill", "impact": "punch", "cost": 2, "description": "Attack at +2 to hit, +1d4 damage on a hit.",
+		"to_hit": 2, "extra_die": 4},
+	"sweeping_arc": {"name": "Sweeping Arc", "pose": "lancer_sweep", "impact": "slash", "cost": 3, "description": "No attack roll: every monster makes a Speed save. Fail: d6 damage. Pass: half damage.",
+		"save": "speed", "area": "all", "damage_die": 6},
 
 	"howl": {"name": "Howl", "aura": "howl", "buff": "inspired", "turns": 2, "description": "Inspires its hero: +{power} to hit and damage on the next 2 attacks."},
 	"warm_egg": {"name": "Warm Egg", "aura": "rally", "heal": true, "description": "Gives its hero a warm egg: heals {power} HP (only when the hero is hurt that much)."},

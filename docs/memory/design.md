@@ -77,7 +77,7 @@ paths (new skills + boost to the class's main stat). Each class also has 1 secre
 | Brawler | Fast unarmed combos | Attack, Speed | Monk (dodge, counters) or Pit Fighter (stun, grapple) | Tempest Fist (Monk) |
 | Lancer (NEW) | Reach and charges | Attack, Speed | Skylancer (leaps) or Phalanx (spear wall) | Drakerider (Skylancer) |
 
-Lancer (planned): HP 32, Attack 3, Defense 2, Speed 2, Charisma 1, Luck 1, spear d8. Skills: Piercing Thrust
+Lancer (built 2026-11-05): HP 32, Attack 3, Defense 2, Speed 2, Charisma 1, Luck 1, spear d8. Skills: Piercing Thrust
 (2 Energy: to_hit +2, extra_die 4), Sweeping Arc (3: Speed save, all monsters, d6). Skylancer: Leap Strike
 (3: advantage, extra_die 8), Wind Step (1: shield 5). Phalanx: Spear Wall (2: shield 4 for all), Impale
 (3: extra_die 8, stun on a failed Defense save). Look: light scale armor, long spear held low, red pennant.

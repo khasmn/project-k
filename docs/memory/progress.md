@@ -31,6 +31,14 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 
 ## Session log (newest first)
 
+### 2026-11-05 – Lancer class (feature/lancer)
+- New class Lancer in data/classes.json: HP 32, Atk 3, Def 2, Spd 2, spear d8. Sim win rate 48% (others 43-54%).
+- Skills: Piercing Thrust (+2 to hit, +1d4), Sweeping Arc (Speed save, all monsters, d6). Save skills
+  without a status effect now work (combatant.gd).
+- Art: spear idle, thrust, Piercing Thrust and Sweeping Arc poses (red pennant); spear icons.
+- Gear: Iron Spear (shop), Steel Spear (basic forge), Starmetal Spear (starmetal forge).
+- Creation screen says "Evolves at level 10" (the evolution event itself is not built yet).
+
 ### 2026-11-05 – Review panel on the story and game
 - New review-panel skill (film director, RPG game director, gamer influencer, twist-loving reader).
 - Scores 5 / 7 / 7 / 5. Kha kept all 12 adjustments (see design.md Story and decisions.md).
