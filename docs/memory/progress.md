@@ -31,6 +31,12 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 
 ## Session log (newest first)
 
+### 2026-11-04 – Main menu and character creation restyle
+- Title art (assets/backgrounds/title.png, 384x216, grim dawn, cloaked hero on a cliff).
+- Main menu: New Game, Continue (greyed out until saving), Settings (background animation, fullscreen; saved in user://settings.cfg), Quit.
+- Character creation restyled with gold-tab boxes, Back button, slot-machine spin on race/talent rolls.
+- Shared styles in scenes/ui/ (gold_box, gold_tab, flat_button) and UI.menu_button for all menus.
+
 ### 2026-11-04 – Background skill and chapter 1 woods
 - make-background skill (setup/background-skill, not merged yet).
 - assets/backgrounds/woods.png: deep jungle, 5-frame leaf sway, shown behind every fight (Run.BACKGROUND, one per chapter later).
