@@ -215,7 +215,7 @@ the hero; currency earned still unlocks content for future runs.
 
 - A pixel town you click, shown after character creation and after the 1st and 2nd death (3 lives).
 - Buildings in the first version: Shop (buy items), Blacksmith (craft and upgrade gear),
-  Farm (plant before a run, harvest food when you're back), Inn/Temple (heal, see lives left).
+  Farm (raise animals; some become companions that fight with you; not food, Kha 2026-11-04), Inn/Temple (heal, see lives left).
 - Gear slots: helmet, armor, weapon 1, weapon 2 (a shield, or taken by a two-handed weapon 1),
   and 2 jewelry/artifact slots. Gear is crafted at the Blacksmith or dropped by monsters.
 - Details still to decide with Kha when each building is built.
