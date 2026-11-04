@@ -11,7 +11,7 @@ static func pick() -> String:
 	var ids: Array = Run.data("events").keys()
 	var fresh: Array = ids.filter(func(id: String) -> bool: return not id in Run.events_seen)
 	var pool: Array = fresh if fresh else ids
-	return pool[Dice.roll(pool.size(), false) - 1]
+	return pool[0] if pool.size() == 1 else pool[Dice.roll(pool.size(), false) - 1]
 
 
 static func can_choose(choice: Dictionary) -> bool:
@@ -37,9 +37,9 @@ static func choose(choice: Dictionary) -> Dictionary:
 	var lines: PackedStringArray = []
 	if choice.has("stat"):
 		var bonus: int = Run.hero.get(choice.stat)
-		var result: Dictionary = Dice.check(bonus, int(choice.dc))
+		var result: Dictionary = Dice.check(bonus, int(choice.dc), Run.hero.roll_mode())
 		success = result.success
-		lines.append("Rolled %d %+d %s = %d vs DC %d: %s" % [result.natural, bonus, stat_name(choice.stat), result.total,
+		lines.append("Rolled %s %+d %s = %d vs DC %d: %s" % [Run.hero.rolled_text(result.rolls), bonus, stat_name(choice.stat), result.total,
 			choice.dc, "success!" if success else "failure."])
 	var outcome: Dictionary = choice.success if success else choice.get("fail", {})
 	lines.append(outcome.get("text", ""))

@@ -120,7 +120,7 @@ static func forge(id: String) -> Dictionary:
 	for material in recipe.materials:
 		Run.materials[material] -= recipe.materials[material]
 	Run.gold -= int(recipe.gold)
-	var rolled: int = Dice.roll(20)
+	var rolled: int = Dice.roll_d20(Run.hero.roll_mode())  # Chosen One: advantage on every check
 	var total: int = rolled + Run.hero.luck
 	var grade: int = 0
 	while grade + 1 < GRADES.size() and total >= GRADES[grade + 1][1]:
@@ -150,7 +150,7 @@ static func upgrade(item: Dictionary) -> Dictionary:
 	Run.materials[cost.material] -= cost.count
 	Run.gold -= cost.gold
 	var dc: int = UPGRADE_DCS[item.plus]
-	var rolled: int = Dice.roll(20)
+	var rolled: int = Dice.roll_d20(Run.hero.roll_mode())  # Chosen One: advantage on every check
 	var total: int = rolled + Run.hero.luck
 	var outcome: String = "fail"
 	var change: int = 0

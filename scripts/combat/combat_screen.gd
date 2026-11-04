@@ -126,6 +126,7 @@ func _start_fight() -> void:
 			foe.statuses.stun = true
 		_log("The monsters are caught off guard: they lose their first turn!")
 	_update_labels()
+	Dice.history.clear()  # building the monster group rolled dice too; only show the fight's rolls
 	if next.has("first"):
 		_log("You know the road: %s strikes first!" % hero.display_name)
 		_hero_turn()
@@ -133,7 +134,6 @@ func _start_fight() -> void:
 	if Settings.animate_dice:  # a moment to see the fight before the first dice (the play tool skips it)
 		await get_tree().create_timer(START_DELAY).timeout
 
-	Dice.history.clear()  # building the monster group rolled dice too; only show the fight's rolls
 	# Initiative: your d20 + Speed vs one d20 for the group + its fastest Speed. Ties go to the monsters (Elf wins ties).
 	var hero_rolls: Array[int] = Dice.roll_d20s(hero.roll_mode())
 	var hero_init: int = Dice.keep(hero_rolls, hero.roll_mode()) + hero.speed
@@ -188,7 +188,7 @@ func _hero_turn() -> void:
 		return
 	if hero.shake_off_stun():
 		_log("%s is stunned and loses this turn!" % hero.display_name)
-		_enemy_turn()
+		_after_action()  # allies still act
 		return
 	_set_buttons_enabled(true)
 	%TurnLabel.text = "Your turn: pick a target, then an action"
@@ -399,7 +399,7 @@ func _on_flee() -> void:
 	await dice.show_rolls(true)
 	if not result.success:
 		_log(line + ": failed!")
-		_enemy_turn()
+		_after_action()
 		return
 	_log(line + ": [b]escaped![/b] No gold or EXP from this fight.")
 	fight_over = true
@@ -485,7 +485,7 @@ func _enemy_turn() -> void:
 		# With allies, each monster picks the hero or an ally standing (one die, not animated).
 		var sides: Array[Combatant] = [hero]
 		sides.append_array(allies.filter(func(ally: Combatant) -> bool: return ally.is_alive()))
-		var victim: Combatant = sides[Dice.roll(sides.size(), false) - 1]
+		var victim: Combatant = hero if sides.size() == 1 else sides[Dice.roll(sides.size(), false) - 1]
 		var before: Dictionary = _snapshot()
 		var line: String = foe.use_skill(foe.skills[0], [victim], _alive()) if uses_skill else foe.strike(victim)
 		await dice.show_rolls(false)
@@ -536,15 +536,6 @@ func _win() -> void:
 		gold_total += foe.gold_reward
 	if pet:
 		_log("[color=%s]%s[/color]" % [EXP_COLOR, Farm.gain_exp(exp_total)])
-	if Run.is_boss():
-		_log("[color=" + GOLD + "][b]Chapter complete![/b][/color] You beat the %s!" % enemies[0].display_name)
-		%TurnLabel.text = "Chapter complete! You beat the %s!" % enemies[0].display_name
-		_add_choice("Back to town", _back_to_town)
-		var next: Button = UI.menu_button("Next chapter (coming soon)", _back_to_town)
-		next.disabled = true
-		%Choices.add_child(next)
-		_update_labels()
-		return
 	var levels: int = Run.gain_exp(exp_total)
 	Run.gold += gold_total
 	_log("[color=%s]+%d EXP.[/color]  [color=%s]+%d gold.[/color]" % [EXP_COLOR, exp_total, GOLD, gold_total])
@@ -552,6 +543,14 @@ func _win() -> void:
 		_log("[color=" + GOLD + "][b]Level up![/b][/color] Now level %d: +%d stat points. Spend them with CHARACTER on the path screen." % [
 			Run.level, levels * Run.POINTS_PER_LEVEL])
 	_update_labels()
+	if Run.is_boss():
+		_log("[color=" + GOLD + "][b]Chapter complete![/b][/color] You beat the %s!" % enemies[0].display_name)
+		%TurnLabel.text = "Chapter complete! You beat the %s!" % enemies[0].display_name
+		_add_choice("Back to town", _back_to_town)
+		var next: Button = UI.menu_button("Next chapter (coming soon)", _back_to_town)
+		next.disabled = true
+		%Choices.add_child(next)
+		return
 	%TurnLabel.text = "Victory!"
 	_add_choice("Continue", _continue)
 

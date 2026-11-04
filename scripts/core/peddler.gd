@@ -48,7 +48,7 @@ static func buy(offer: Dictionary) -> void:
 ## d20 + Charisma vs DC 12: success = 25% off, natural 1 = 25% more. Returns {"outcome", "text"}.
 static func haggle() -> Dictionary:
 	haggled = true
-	var result: Dictionary = Dice.check(Run.hero.charisma, HAGGLE_DC)
+	var result: Dictionary = Dice.check(Run.hero.charisma, HAGGLE_DC, Run.hero.roll_mode())
 	var outcome: String = "haggle_bad" if result.fumble else ("haggle_win" if result.success else "haggle_fail")
 	rate = HAGGLE_RATES[outcome]
 	var effect: Dictionary = {"haggle_win": "25% off everything!", "haggle_fail": "no deal.", "haggle_bad": "a natural 1, prices up 25%!"}

@@ -31,6 +31,14 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 
 ## Session log (newest first)
 
+### 2026-11-05 – Tester fixes (fix/tester-bugs)
+- Events PR #48 merged. Game tester run: 7 bugs fixed.
+- Boss now gives EXP and gold; Chosen One advantage on events, haggling, forging, upgrades.
+- Allies act when the hero is stunned or fails to flee; strike-first shows no leftover dice;
+  no hidden 1-sided target die; no dog named Bandit; shield log shows gained and total.
+- Open balance notes from the tester (Kha to decide): Attack stacking, Charisma/Luck can't be raised,
+  trash fights don't scale, Mage too strong, Bone Knight shield stacking, room 1 swarms, Train timing.
+
 ### 2026-11-05 – Events (feature/events)
 - Lives PR #46 and the design-class-evolution skill PR #47 merged.
 - Event door works: 4 events with check choices, dice roll, outcomes, next-fight effects.
