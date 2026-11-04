@@ -6,6 +6,7 @@ const PATH: String = "user://settings.cfg"
 
 static var animate_background: bool = true
 static var fullscreen: bool = false
+static var animate_dice: bool = true
 
 
 static func load_file() -> void:
@@ -13,6 +14,7 @@ static func load_file() -> void:
 	file.load(PATH)  # no file yet: the defaults below are used
 	animate_background = file.get_value("options", "animate_background", true)
 	fullscreen = file.get_value("options", "fullscreen", false)
+	animate_dice = file.get_value("options", "animate_dice", true)
 	_apply()
 
 
@@ -20,6 +22,7 @@ static func save_file() -> void:
 	var file: ConfigFile = ConfigFile.new()
 	file.set_value("options", "animate_background", animate_background)
 	file.set_value("options", "fullscreen", fullscreen)
+	file.set_value("options", "animate_dice", animate_dice)
 	file.save(PATH)
 	_apply()
 

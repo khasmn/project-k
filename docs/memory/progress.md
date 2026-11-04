@@ -31,6 +31,10 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 
 ## Session log (newest first)
 
+### 2026-11-04 – Dice roll animation
+- DiceTray shows recorded rolls as tumbling dice in the battle area; Settings > Dice animation.
+- Buttons stay locked until the first turn is decided.
+
 ### 2026-11-04 – Bandit sprites and target arrow
 - Two Bandit looks drawn (rogue, brigand); each Bandit picks one at random.
 - Target arrow above the chosen monster replaces the gold frame.

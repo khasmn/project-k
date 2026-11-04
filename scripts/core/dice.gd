@@ -6,15 +6,23 @@ enum Mode { NORMAL, ADVANTAGE, DISADVANTAGE }
 static var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 ## Testing only: the next dice return these numbers in order, whatever the die.
 static var forced_rolls: Array[int] = []
+## When on, every roll is noted as [sides, result] so the battle screen can show it (DiceTray).
+static var recording: bool = false
+static var history: Array = []
 
 
 static func roll(sides: int) -> int:
-	if not forced_rolls.is_empty():
+	var result: int
+	if forced_rolls.is_empty():
+		result = rng.randi_range(1, sides)
+	else:
 		var forced: int = forced_rolls.pop_front()
 		if forced < 1 or forced > sides:
 			push_error("Forced roll %d doesn't fit a d%d, using %d" % [forced, sides, clampi(forced, 1, sides)])
-		return clampi(forced, 1, sides)
-	return rng.randi_range(1, sides)
+		result = clampi(forced, 1, sides)
+	if recording:
+		history.append([sides, result])
+	return result
 
 
 ## Roll a d20. Advantage keeps the higher of two rolls, disadvantage the lower.

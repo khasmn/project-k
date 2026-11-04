@@ -5,6 +5,7 @@ if a decision changes, add a new entry that says what it replaces.
 
 | Date | Decision | Why |
 | --- | --- | --- |
+| 2026-11-04 | Dice animation: every roll (attacks, damage, initiative, flee) tumbles as a pixel die (~0.8 s) before the log line; same dice land together (advantage); nat 20 gold, nat 1 red; Settings switch to turn it off. Display only: rolls are decided first (Dice.history) | Kha's choices |
 | 2026-11-04 | Bandit has two looks (hooded rogue, rough brigand); enemies.json "sprite" can be a list, one picked per monster via Dice. Target is marked by a bobbing gold arrow above it (2 FPS), replacing the yellow frame | Kha's choices |
 | 2026-11-04 | Hero customization on the creation screen (LOOK box): name, skin tone per race, hair style and color, 3 outfits; class changes only the weapon; layered tinted sprites | Kha's choices |
 | 2026-11-04 | Main menu (New Game, Continue greyed out, Settings, Quit) over grim title art; Settings = background animation + fullscreen | Kha's choices; animation toggle for motion sickness |

@@ -23,6 +23,7 @@ var hero: Combatant
 var enemies: Array[Combatant] = []
 var target: Combatant  # the monster the hero attacks; click a card to change it
 var fight_over: bool = false  # true after a win or a flee, so Continue only works once
+var dice: DiceTray = DiceTray.new()
 var animations: Dictionary = {}  # AtlasTexture -> frames per second
 
 
@@ -36,6 +37,10 @@ func _ready() -> void:
 		BACKGROUND_FPS if Settings.animate_background else 0)  # 0 FPS = stays on frame 1
 	back.set_content_margin_all(12)
 	%Arena.add_theme_stylebox_override("panel", back)
+	dice.alignment = BoxContainer.ALIGNMENT_CENTER
+	dice.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	%Arena.add_child(dice)  # a PanelContainer stacks its children: the dice float over the fight
+	Dice.recording = Settings.animate_dice
 	if Run.hero_look:  # a created hero has a sprite; the test hero keeps its name label
 		var sprite: HeroSprite = HeroSprite.new()
 		sprite.custom_minimum_size = Vector2(SPRITE_SIZE, SPRITE_SIZE)
@@ -50,6 +55,7 @@ func _ready() -> void:
 		UI.add_cursor(button)
 	if Run.hero == null:
 		Run.start_test()  # this scene was started on its own, not from character creation
+	_set_buttons_enabled(false)  # nothing to click until the first turn is decided
 	_start_fight()
 
 
@@ -72,6 +78,7 @@ func _start_fight() -> void:
 		Run.room_note = ""
 	_update_labels()
 
+	Dice.history.clear()  # building the monster group rolled dice too; only show the fight's rolls
 	# Initiative: your d20 + Speed vs one d20 for the group + its fastest Speed. Ties go to the monsters (Elf wins ties).
 	var hero_rolls: Array[int] = Dice.roll_d20s(hero.roll_mode())
 	var hero_init: int = Dice.keep(hero_rolls, hero.roll_mode()) + hero.speed
@@ -83,6 +90,7 @@ func _start_fight() -> void:
 	if hero_init == enemy_init:
 		order += " Tie! %s first." % (
 			"%s (%s wins ties) goes" % [hero.display_name, hero.passive("wins_ties")] if hero.wins_ties else "The monsters go")
+	await dice.show_rolls()
 	_log(order)
 	if hero_init > enemy_init or (hero_init == enemy_init and hero.wins_ties):
 		_hero_turn()
@@ -109,7 +117,8 @@ func _show_info(on: bool) -> void:
 	%InfoText.visible = on
 	%HeroInfo.visible = not on
 	%HeroTab.text = target.display_name.to_upper() if on else "HERO"
-	%InfoText.text = _info(target)
+	if on:
+		%InfoText.text = _info(target)
 
 
 func _info(foe: Combatant) -> String:
@@ -128,7 +137,9 @@ func _hero_turn() -> void:
 
 func _on_attack() -> void:
 	_set_buttons_enabled(false)
-	_log(hero.strike(target))
+	var line: String = hero.strike(target)
+	await dice.show_rolls()  # the strike is already decided; show its dice, then the result
+	_log(line)
 	_after_action()
 
 
@@ -181,6 +192,7 @@ func _on_flee() -> void:
 	var result: Dictionary = Dice.check(hero.speed, dc, hero.roll_mode())
 	var line: String = "%s tries to flee: rolled %s, %+d Speed = %d vs %d (10 + fastest monster's Speed)" % [
 		hero.display_name, hero.rolled_text(result.rolls), hero.speed, result.total, dc]
+	await dice.show_rolls()
 	if not result.success:
 		_log(line + ": failed!")
 		_enemy_turn()
@@ -208,7 +220,9 @@ func _enemy_turn() -> void:
 		%TurnLabel.text = "%s's turn..." % foe.display_name
 		# await pauses this function until the timer runs out, so the turns don't happen instantly.
 		await get_tree().create_timer(ENEMY_TURN_DELAY).timeout
-		_log(foe.strike(hero))
+		var line: String = foe.strike(hero)
+		await dice.show_rolls()
+		_log(line)
 		_update_labels()
 		if not hero.is_alive():
 			_log("[color=%s][b]Defeated![/b][/color] Run over %s." % [ENEMY_COLOR,
@@ -266,7 +280,6 @@ func _add_choice(text: String, on_pressed: Callable) -> void:
 	%Buttons.hide()  # the fight is over: only the choice buttons make sense now
 
 
-## A menu line in the COMMAND style (same look as Attack/Defend), with the hover cursor.
 func _alive() -> Array[Combatant]:
 	var alive: Array[Combatant] = []
 	alive.assign(enemies.filter(func(foe: Combatant) -> bool: return foe.is_alive()))

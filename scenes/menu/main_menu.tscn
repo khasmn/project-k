@@ -96,6 +96,12 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "Background animation"
 
+[node name="DiceCheck" type="CheckButton" parent="SettingsPanel/Panel/Options"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Dice animation"
+
 [node name="FullscreenCheck" type="CheckButton" parent="SettingsPanel/Panel/Options"]
 unique_name_in_owner = true
 layout_mode = 2
