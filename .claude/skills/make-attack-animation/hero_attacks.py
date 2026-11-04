@@ -8,6 +8,7 @@ GLOVE, GLOVE_D = (120, 88, 62, 255), (92, 66, 46, 255)
 ORB, WHITE = (80, 150, 210, 255), (255, 255, 255, 255)
 WRAP, WRAP_D = (232, 228, 216, 255), (190, 186, 176, 255)
 SMEAR = (255, 255, 255, 150)
+ICE, ICE_AURA = (150, 220, 250, 255), (200, 240, 255, 120)
 
 
 def outline(img):
@@ -66,6 +67,10 @@ def fists(d, front, back=(21, 21), streaks=False):
         for y, x0 in ((fy - 3, 6), (fy + 3, 7)): d.line([(x0, y), (x0 + 5, y)], fill=SMEAR)
 
 
+def back_fist(d):
+    d.rectangle([21, 19, 22, 21], fill=WRAP_D)
+
+
 FRAMES = {
     "warrior_attack": [lambda d: sword(d, 18, 14, 60, 14), lambda d: sword(d, 12, 12, 100, 11),
                 lambda d: (d.arc([0, 0, 26, 30], 180, 285, fill=SMEAR, width=2), sword(d, 14, 17, 165, 14)),
@@ -105,6 +110,26 @@ FRAMES = {
                       lambda d: (fists(d, (8, 20), (21, 21)), d.rectangle([1, 15, 3, 17], fill=WRAP), d.rectangle([4, 16, 9, 16], fill=WRAP_D),
                                  [d.line([(5, y), (11, y)], fill=SMEAR) for y in (13, 19)]),
                       lambda d: fists(d, (6, 20), (20, 19)), lambda d: fists(d, (9, 21))],
+    # Second skills. Iron Guard: the sword comes up in front like a wall, with a gold glow.
+    "warrior_guard": [lambda d: sword(d, 8, 22, 95, 15), lambda d: sword(d, 9, 19, 105, 14),
+                      lambda d: (d.ellipse([0, 4, 14, 30], fill=(255, 214, 90, 90)), sword(d, 6, 21, 90, 16)),
+                      lambda d: (d.ellipse([-1, 3, 15, 31], fill=(255, 214, 90, 130)), sword(d, 6, 21, 90, 16)),
+                      lambda d: sword(d, 7, 22, 92, 15), lambda d: sword(d, 7, 22, 90, 15)],
+    # Aimed Shot: a long, steady full draw; the arrow tip glints before the release.
+    "archer_aimed": [lambda d: bow(d, 0, True, -1), lambda d: bow(d, 4, True), lambda d: bow(d, 8, True),
+                     lambda d: bow(d, 9, True, 0, (WHITE, STEEL_L), (255, 255, 255, 110)),
+                     lambda d: (bow(d, 0, False), d.line([(2, 15), (0, 13)], fill=SMEAR), d.line([(2, 25), (0, 27)], fill=SMEAR)),
+                     lambda d: bow(d, 0, False)],
+    # Frost Bolt: the staff is pulled back, then thrust forward with an icy orb.
+    "mage_frost": [lambda d: staff(d, 8, 21, 90, 1, 18, ICE, ICE_AURA), lambda d: staff(d, 10, 20, 85, 3, 17, ICE, ICE_AURA),
+                   lambda d: staff(d, 10, 22, 105, 3, 17, ICE, ICE_AURA), lambda d: staff(d, 10, 23, 110, 2, 17, ICE, ICE_AURA),
+                   lambda d: staff(d, 8, 23, 100, 1, 19), lambda d: staff(d, 8, 23, 90, 0, 20)],
+    # Uppercut: a low crouch, then the front fist rises high.
+    "brawler_uppercut": [lambda d: fists(d, (8, 21), (20, 20)), lambda d: fists(d, (7, 23), (20, 21)),
+                         lambda d: (d.rectangle([4, 12, 5, 19], fill=WRAP_D), d.rectangle([3, 9, 5, 11], fill=WRAP), back_fist(d),
+                                    [d.line([(x, 14), (x, 20)], fill=SMEAR) for x in (1, 7)]),
+                         lambda d: (d.rectangle([4, 8, 5, 17], fill=WRAP_D), d.rectangle([3, 5, 5, 7], fill=WRAP), back_fist(d)),
+                         lambda d: fists(d, (6, 19), (20, 19)), lambda d: fists(d, (9, 21))],
 }
 
 sheet = Image.new("RGBA", (6 * 34, len(FRAMES) * 34), (60, 72, 64, 255))

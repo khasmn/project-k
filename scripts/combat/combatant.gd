@@ -19,7 +19,7 @@ var sprite: String = ""  # file in assets/sprites/enemies/, a strip of square fr
 var exp_reward: int = 0
 var gold_reward: int = 0
 var defending: bool = false
-var skill: Dictionary = {}  # from data/skills.json; {} = no skill
+var skills: Array[Dictionary] = []  # from data/skills.json: heroes list "skills", monsters have one "skill"
 var energy: int = MAX_ENERGY  # heroes pay a skill's "cost" in Energy; monsters use theirs by chance
 var shield: int = 0  # absorbs this much damage, then breaks
 var statuses: Dictionary = {}  # "poison"/"burn" -> {"power", "turns"}, "stun" -> true
@@ -49,8 +49,8 @@ func _init(data: Dictionary) -> void:
 	weapon = data.get("weapon", "weapon")
 	var looks: Variant = data.get("sprite", "")
 	sprite = looks[Dice.roll(looks.size()) - 1] if looks is Array else looks  # a list of looks: pick one
-	if data.has("skill"):
-		skill = Run.data("skills")[data.skill]
+	for id: String in data.get("skills", [data.skill] if data.has("skill") else []):
+		skills.append(Run.data("skills")[id])
 	exp_reward = int(data.get("exp", 0))
 	gold_reward = int(data.get("gold", 0))
 	passive_names = data.get("passive_names", {})
@@ -244,8 +244,8 @@ func _set_status(target: Combatant, effect: Dictionary, name: String) -> String:
 	return "%s: %d damage a turn for %d turns!" % [name, effect.power, effect.turns]
 
 
-## Use this fighter's skill. foes: who it can hit (the target first); allies: its own side (itself included).
-func use_skill(foes: Array[Combatant], allies: Array[Combatant]) -> String:
+## Use one of this fighter's skills. foes: who it can hit (the target first); allies: its own side (itself included).
+func use_skill(skill: Dictionary, foes: Array[Combatant], allies: Array[Combatant]) -> String:
 	energy -= int(skill.get("cost", 0))
 	var lines: PackedStringArray = ["%s uses %s!" % [display_name, skill.name]]
 	if skill.has("shield"):
@@ -255,7 +255,7 @@ func use_skill(foes: Array[Combatant], allies: Array[Combatant]) -> String:
 			lines.append("    %s gains Shield %d." % [ally.display_name, ally.shield])
 	elif skill.has("save"):
 		for foe in (foes if skill.get("area", "") == "all" else foes.slice(0, 1)):
-			lines.append(_blast(foe))
+			lines.append(_blast(foe, skill))
 	else:
 		for i in int(skill.get("attacks", 1)):
 			if foes[0].is_alive():
@@ -264,7 +264,7 @@ func use_skill(foes: Array[Combatant], allies: Array[Combatant]) -> String:
 
 
 ## A save-based attack (no attack roll): fail = full damage and the effect, pass = half damage.
-func _blast(foe: Combatant) -> String:
+func _blast(foe: Combatant, skill: Dictionary) -> String:
 	var stat: int = foe.get(skill.save)
 	var result: Dictionary = Dice.check(stat, save_dc())
 	var die: int = int(skill.get("damage_die", damage_die))
