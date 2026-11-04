@@ -5,6 +5,8 @@ const ENEMY_TURN_DELAY: float = 0.6
 const CREATION_SCENE: String = "res://scenes/character/character_creation.tscn"
 const PATH_SCENE: String = "res://scenes/path/path.tscn"
 const CARD_STYLE: StyleBoxFlat = preload("res://scenes/ui/box_style.tres")
+const SPRITE_FPS: int = 6
+const SPRITE_SIZE: int = 64  # 32x32 art shown 2x
 const FLEE_DC_BASE: int = 10  # flee: d20 + Speed vs 10 + fastest monster's Speed
 ## Battle log colors (BBCode: the log understands tags like [b]bold[/b] and [color=#hex]text[/color]).
 const HERO_COLOR: String = "#7fd17f"
@@ -18,6 +20,7 @@ var hero: Combatant
 var enemies: Array[Combatant] = []
 var target: Combatant  # the monster the hero attacks; click a card to change it
 var fight_over: bool = false  # true after a win or a flee, so Continue only works once
+var animations: Array[AtlasTexture] = []
 
 
 func _ready() -> void:
@@ -67,6 +70,14 @@ func _start_fight() -> void:
 		_hero_turn()
 	else:
 		_enemy_turn()
+
+
+## Play every sprite strip: show frame N of the strip, moving on SPRITE_FPS times a second.
+func _process(_delta: float) -> void:
+	var tick: int = Time.get_ticks_msec() * SPRITE_FPS / 1000
+	for frames in animations:
+		var size: int = frames.atlas.get_height()
+		frames.region = Rect2(tick % (frames.atlas.get_width() / size) * size, 0, size, size)
 
 
 func _hero_turn() -> void:
@@ -272,7 +283,21 @@ func _make_card(foe: Combatant) -> Button:
 	fill.bg_color = Color(0.85, 0.3, 0.3)
 	bar.add_theme_stylebox_override("fill", fill)
 	lines.get_node("Name").add_theme_font_size_override("font_size", 18)
+	lines.get_node("Stats").add_theme_font_size_override("font_size", 13)
 	card.add_child(lines)
+	if foe.sprite != "":
+		var frames: AtlasTexture = AtlasTexture.new()
+		frames.atlas = load("res://assets/sprites/enemies/%s.png" % foe.sprite)
+		frames.region = Rect2(0, 0, frames.atlas.get_height(), frames.atlas.get_height())
+		animations.append(frames)
+		var picture: TextureRect = TextureRect.new()
+		picture.texture = frames
+		picture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		picture.position = Vector2(4, 30)
+		picture.size = Vector2(SPRITE_SIZE, SPRITE_SIZE)
+		picture.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card.add_child(picture)
+		lines.offset_left = SPRITE_SIZE + 8
 	return card
 
 
@@ -309,7 +334,7 @@ func _update_labels() -> void:
 		lines.get_node("HPBar").max_value = foe.max_hp
 		lines.get_node("HPBar").value = foe.hp
 		lines.get_node("HP").text = "HP %d / %d" % [foe.hp, foe.max_hp] if foe.is_alive() else "Defeated"
-		lines.get_node("Stats").text = "Atk %d d%d  Arm %d  Spd %d" % [foe.attack, foe.damage_die, foe.armor(), foe.speed]
+		lines.get_node("Stats").text = "Atk %d d%d Arm %d Spd %d" % [foe.attack, foe.damage_die, foe.armor(), foe.speed]
 		card.disabled = not foe.is_alive()
 		card.modulate = Color(1, 1, 1, 1 if foe.is_alive() else 0.4)
 		var style: StyleBoxFlat = CARD_STYLE.duplicate()

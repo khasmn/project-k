@@ -5,6 +5,7 @@ if a decision changes, add a new entry that says what it replaces.
 
 | Date | Decision | Why |
 | --- | --- | --- |
+| 2026-11-05 | Art in Pixelorama: 32x32, exported as a strip of square frames (assets/sprites/enemies/<id>_idle.png), 6 FPS; enemies.json "sprite" field; nearest filter project-wide | First sprite: Kha's Giant Rat with a 5-frame breathing idle |
 | 2026-11-05 | When sprites exist: battle area is art only; monster info by mouse hover tooltip or an Info command that shows it in the HERO box (tab renamed to the monster) | Kha's plan for later; see design.md "Battle screen once art exists" |
 | 2026-11-05 | Combat screen in classic RPG layout: BATTLE area (monster cards + hero), BATTLE LOG, bottom bar ENEMIES / COMMAND / HERO; dark fantasy boxes with gold title tabs, hover cursor on commands | Kha's reference picture; replaces the log/actions half-half row |
 | 2026-11-05 | Combat bottom row: battle log and actions side by side (half/half); Item button | Kha's layout request |
