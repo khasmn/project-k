@@ -7,6 +7,7 @@ const PATH_SCENE: String = "res://scenes/path/path.tscn"
 const CARD_STYLE: StyleBoxFlat = preload("res://scenes/ui/box_style.tres")
 const SPRITE_FPS: int = 6
 const SPRITE_SIZE: int = 96  # 32x32 art shown 3x
+const BACKGROUND_FRAME: int = 384  # backgrounds are strips of 384x128 frames
 const FLEE_DC_BASE: int = 10  # flee: d20 + Speed vs 10 + fastest monster's Speed
 ## Battle log colors (BBCode: the log understands tags like [b]bold[/b] and [color=#hex]text[/color]).
 const HERO_COLOR: String = "#7fd17f"
@@ -28,6 +29,10 @@ func _ready() -> void:
 	%DefendButton.pressed.connect(_on_defend)
 	%FleeButton.pressed.connect(_on_flee)
 	%ItemButton.pressed.connect(_open_items)
+	var back: StyleBoxTexture = StyleBoxTexture.new()
+	back.texture = _strip("res://assets/backgrounds/%s.png" % Run.BACKGROUND, BACKGROUND_FRAME)
+	back.set_content_margin_all(12)
+	%Arena.add_theme_stylebox_override("panel", back)
 	%Log.get_v_scroll_bar().modulate.a = 0  # floating log: no visible scrollbar, the mouse wheel still scrolls
 	%InfoButton.pressed.connect(func() -> void: _show_info(not %InfoText.visible))
 	for button in %Buttons.get_children():
@@ -74,12 +79,23 @@ func _start_fight() -> void:
 		_enemy_turn()
 
 
-## Play every sprite strip: show frame N of the strip, moving on SPRITE_FPS times a second.
+## Play every strip: show frame N of the strip, moving on SPRITE_FPS times a second.
 func _process(_delta: float) -> void:
 	var tick: int = Time.get_ticks_msec() * SPRITE_FPS / 1000
 	for frames in animations:
-		var size: int = frames.atlas.get_height()
-		frames.region = Rect2(tick % (frames.atlas.get_width() / size) * size, 0, size, size)
+		var width: int = int(frames.region.size.x)
+		frames.region.position.x = tick % (frames.atlas.get_width() / width) * width
+
+
+## An animated strip of frames side by side (frame_width 0 = square frames, like 32x32 sprites).
+## AtlasTexture is a texture that shows one rectangle ("region") of a bigger picture.
+func _strip(path: String, frame_width: int = 0) -> AtlasTexture:
+	var frames: AtlasTexture = AtlasTexture.new()
+	frames.atlas = load(path)
+	var height: int = frames.atlas.get_height()
+	frames.region = Rect2(0, 0, frame_width if frame_width else height, height)
+	animations.append(frames)
+	return frames
 
 
 ## Info: the HERO box shows the target's info instead, and its tab shows the target's name. Free action.
@@ -301,12 +317,8 @@ func _make_card(foe: Combatant) -> Button:
 	lines.get_node("Stats").add_theme_font_size_override("font_size", 13)
 	card.add_child(lines)
 	if foe.sprite != "":
-		var frames: AtlasTexture = AtlasTexture.new()
-		frames.atlas = load("res://assets/sprites/enemies/%s.png" % foe.sprite)
-		frames.region = Rect2(0, 0, frames.atlas.get_height(), frames.atlas.get_height())
-		animations.append(frames)
 		var picture: TextureRect = TextureRect.new()
-		picture.texture = frames
+		picture.texture = _strip("res://assets/sprites/enemies/%s.png" % foe.sprite)
 		picture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		picture.set_anchors_and_offsets_preset(Control.PRESET_CENTER, Control.PRESET_MODE_KEEP_SIZE)
 		picture.custom_minimum_size = Vector2(SPRITE_SIZE, SPRITE_SIZE)
@@ -358,6 +370,9 @@ func _update_labels() -> void:
 		card.disabled = not foe.is_alive()
 		card.modulate = Color(1, 1, 1, 1 if foe.is_alive() else 0.4)
 		var style: StyleBoxFlat = CARD_STYLE.duplicate()
+		if foe.sprite != "":  # art stands on the background: no box, only the gold frame on the target
+			style.draw_center = false
+			style.border_color.a = 0
 		if foe == target and foe.is_alive():
 			style.border_color = Color(1, 0.83, 0.3)
 		for state in ["normal", "hover", "pressed", "focus", "disabled"]:

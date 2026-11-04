@@ -33,7 +33,8 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 
 ### 2026-11-04 – Background skill and chapter 1 woods
 - make-background skill (setup/background-skill, not merged yet).
-- assets/backgrounds/woods.png drawn (feature/background-woods, on top of the skill branch). Not shown in the game yet: needs code, waiting for Kha's OK.
+- assets/backgrounds/woods.png: deep jungle, 5-frame leaf sway, shown behind every fight (Run.BACKGROUND, one per chapter later).
+- Art monsters stand on the background with no card box; the target gets a gold frame. Turn text and hero name have outlines.
 
 ### 2026-11-05 – Art pipeline, Giant Rat sprite, battle screen
 - Code-style rule in CLAUDE.md + cleanup; Continue-button fix; add-enemy skill.
