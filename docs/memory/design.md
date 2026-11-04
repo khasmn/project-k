@@ -116,7 +116,9 @@ Status effects: burn, poison, stun, shield.
 ### Skills and Energy (built 2026-11-04, data/skills.json)
 
 - Energy: max 7, shown as 7 boxes. 1 at your first turn (Mage: 3 Mana), +1 at the start of each turn.
-- Skill list also holds Meditate/Concentrate (skip your attack, +1 Energy) and Flee (not in boss fights). No Flee button in COMMAND. A Mage calls it Mana (same rules, blue bar; others a gold Energy bar under HP). Each class has 2 skills; the Skill button opens a list (name + cost), Back closes it.
+- COMMAND: Attack, Skill, Meditate/Concentrate (skip your attack, +1 Energy), Defend, Item. No Info button: monster info shows on mouse hover.
+- Skill list: your skills, then Flee (not in boss fights).
+- Cooldown: a used skill waits its cost + 2 of your turns (Iron Guard 3, Fireball 5, others 4). Monster skills wait 2 turns. A Mage calls it Mana (same rules, blue bar; others a gold Energy bar under HP). Each class has 2 skills; the Skill button opens a list (name + cost), Back closes it.
 - A save is d20 + a stat vs 10 + the user's Attack (Magic for a Mage). Nat 20 always passes, nat 1 always fails.
 - Poison and burn hurt at the start of the victim's turn and ignore shields. Stun = lose your next turn.
   Shield soaks attack damage, then breaks. A new fight clears everything.

@@ -91,6 +91,17 @@ func _init() -> void:
 	boxer.use_skill(boxer.skills[0], [foe], [boxer])
 	_check(foe.hp == 42, "Uppercut damage wrong: %d HP" % foe.hp)
 
+	# Cooldown: cost + 2 turns. Fireball (3) used on turn 1 waits turns 2-6, ready on turn 7.
+	var caster: Combatant = _fighter("fireball", 3)
+	caster.start_fight()
+	caster.start_turn()
+	caster.use_skill(caster.skills[0], [_dummy()], [caster])
+	for i in 5:
+		caster.start_turn()
+		_check(caster.skill_wait(caster.skills[0]) == 5 - i, "Fireball cooldown wrong on turn %d" % caster.turn)
+	caster.start_turn()
+	_check(caster.skill_wait(caster.skills[0]) == 0, "Fireball not ready after 5 turns")
+
 	# A new fight clears Energy, statuses and shields.
 	far.start_fight()
 	_check(far.statuses.is_empty() and far.shield == 0 and far.energy == far.start_energy - 1, "start_fight didn't reset")

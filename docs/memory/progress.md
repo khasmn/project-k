@@ -31,6 +31,9 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 
 ## Session log (newest first)
 
+### 2026-11-04 – Commands and cooldowns (update/commands-cooldowns)
+- Info button removed (hover shows monster info); Meditate/Concentrate is a COMMAND button; Flee stays in the skill list.
+- Skill cooldowns: cost + 2 turns for heroes, 2 for monsters; the list shows "wait N".
 ### 2026-11-04 – Town, step 1 (feature/city)
 - Town screen after character creation: animated sunset art, clickable Farm, Blacksmith, Inn, Shop; Leave town starts the run.
 - Inn heals to full; the other buildings are "coming soon". Menu and creation pictures now animate gently.
