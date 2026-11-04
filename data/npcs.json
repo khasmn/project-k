@@ -26,5 +26,16 @@
 		"haggle_win": ["Oof, you drive a hard bargain. Fine, fine, a quarter off!"],
 		"haggle_fail": ["Hah! Nice try, friend. Prices stay as they are."],
 		"haggle_bad": ["Insulting! For that, prices just went up."]
+	},
+	"farmer": {
+		"name": "Marta Hayes",
+		"portrait": "farmer",
+		"greet": [
+			"Mind the mud, dear. Come to meet the animals?",
+			"Every hero needs a friend who bites. Or clucks.",
+			"They're well fed and ready for adventure!"
+		],
+		"buy": ["Treat them kindly and they'll follow you anywhere.", "A fine little one. Give it a good name!"],
+		"bring": ["Off you go, then. Bring them back in one piece!", "Good choice. They've been itching for a walk."]
 	}
 }

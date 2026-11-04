@@ -1,0 +1,20 @@
+{
+	"dog": {"price": 40, "skill": "howl", "weapon": "bite", "names": ["Fang", "Biscuit", "Scout", "Rusty", "Pepper", "Bandit"],
+		"stages": [
+			{"name": "Puppy", "hp": 8, "attack": 1, "damage_die": 4, "defense": 0, "speed": 3, "power": 1},
+			{"name": "Young Dog", "hp": 14, "attack": 2, "damage_die": 6, "defense": 1, "speed": 4, "power": 1},
+			{"name": "Dog", "hp": 20, "attack": 3, "damage_die": 8, "defense": 2, "speed": 5, "power": 2}
+		]},
+	"chicken": {"price": 25, "skill": "warm_egg", "weapon": "beak", "names": ["Nugget", "Clucky", "Pip", "Sunny", "Dottie", "Feathers"],
+		"stages": [
+			{"name": "Chick", "hp": 5, "attack": 0, "damage_die": 2, "defense": 0, "speed": 4, "power": 3},
+			{"name": "Pullet", "hp": 8, "attack": 1, "damage_die": 3, "defense": 1, "speed": 5, "power": 5},
+			{"name": "Hen", "hp": 12, "attack": 1, "damage_die": 4, "defense": 1, "speed": 6, "power": 8}
+		]},
+	"boar": {"price": 50, "skill": "charge", "weapon": "tusks", "names": ["Bristle", "Truffle", "Tank", "Mudge", "Hamhock", "Boulder"],
+		"stages": [
+			{"name": "Piglet", "hp": 12, "attack": 1, "damage_die": 4, "defense": 1, "speed": 1, "power": 0},
+			{"name": "Young Boar", "hp": 20, "attack": 2, "damage_die": 6, "defense": 2, "speed": 1, "power": 0},
+			{"name": "Boar", "hp": 28, "attack": 3, "damage_die": 8, "defense": 3, "speed": 2, "power": 0}
+		]}
+}

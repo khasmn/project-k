@@ -31,6 +31,13 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 
 ## Session log (newest first)
 
+### 2026-11-05 – Farm step 1 (feature/farm)
+- Boss background PR #43 merged.
+- Farm window (farmer Marta Hayes): buy Puppy, Chick, Piglet; name them; pick one to bring.
+- Companion fights with its own AI turn, can be attacked, runs off at 0 HP, grows Baby -> Young -> Adult.
+- New: data/animals.json, scripts/core/farm.gd, tests/test_farm.gd, animal and farmer art.
+- Next: Farm step 2, eggs from loot.
+
 ### 2026-11-05 – Boss background (feature/background-bandit-fortress)
 - Peddler's Cart PR #42 merged.
 - Bandit fortress at night with a blood moon for the boss fight (darker, more epic).

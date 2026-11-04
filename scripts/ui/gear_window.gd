@@ -1,14 +1,15 @@
 class_name GearWindow
 extends Control
 ## One window for the Shop (buy and sell), the GEAR screen (wear and take off), the Blacksmith (forge and
-## upgrade, with a ForgeScene cutscene after each try) and the Peddler's Cart (random offers, haggling).
+## upgrade, with a ForgeScene cutscene after each try), the Peddler's Cart (random offers, haggling) and the Farm
+## (buy, name and pick a companion).
 ## The Blacksmith and the Peddler have their NPC talking above the lists (data/npcs.json),
 ## with the hero in the middle so you see the gear on them. Built in code; the town and path screens add one.
 ## It covers the whole screen with a dark backdrop, so nothing behind it can be clicked while it's open.
 
 signal closed
 
-enum Mode { SHOP, GEAR, FORGE, PEDDLER }
+enum Mode { SHOP, GEAR, FORGE, PEDDLER, FARM }
 
 const BOX: StyleBox = preload("res://scenes/ui/gold_box.tres")
 const TAB: StyleBox = preload("res://scenes/ui/gold_tab.tres")
@@ -22,8 +23,8 @@ const SLOT_NAMES: Dictionary = {"helmet": "Helmet", "armor": "Armor", "weapon": 
 	"jewelry1": "Jewelry", "jewelry2": "Jewelry"}
 ## GEAR page: which slot boxes stand left and right of the hero.
 const SLOT_SIDES: Array = [["helmet", "armor", "weapon"], ["offhand", "jewelry1", "jewelry2"]]
-const TITLES: Array[String] = ["SHOP", "GEAR", "BLACKSMITH", "PEDDLER'S CART"]
-const NPCS: Dictionary = {Mode.FORGE: "blacksmith", Mode.PEDDLER: "peddler"}  # modes with an NPC and framed boxes
+const TITLES: Array[String] = ["SHOP", "GEAR", "BLACKSMITH", "PEDDLER'S CART", "FARM"]
+const NPCS: Dictionary = {Mode.FORGE: "blacksmith", Mode.PEDDLER: "peddler", Mode.FARM: "farmer"}  # modes with an NPC and framed boxes
 const FORGE_SECTIONS: Dictionary = {"basic": "BASIC RECIPES", "blueprint": "BLUEPRINTS (dropped by monsters)",
 	"starmetal": "STARMETAL (1 Shard each, the boss drops them)"}
 
@@ -131,7 +132,7 @@ func refresh() -> void:
 			old.queue_free()
 	list_box.visible = mode != Mode.GEAR
 	npc_box.visible = mode in NPCS
-	right_tab.text = "YOUR BAG" if mode == Mode.PEDDLER else "MATERIALS"
+	right_tab.text = {Mode.PEDDLER: "YOUR BAG", Mode.FARM: "YOUR BARN (%d / %d)" % [Run.animals.size(), Farm.MAX_ANIMALS]}.get(mode, "MATERIALS")
 	for section: Array in sections:
 		section[0].visible = mode in NPCS
 		section[1].add_theme_stylebox_override("panel", BOX if mode in NPCS else no_box)
@@ -146,6 +147,7 @@ func refresh() -> void:
 		Mode.GEAR: _show_gear()
 		Mode.FORGE: _show_forge()
 		Mode.PEDDLER: _show_peddler()
+		Mode.FARM: _show_farm()
 
 
 func _show_shop() -> void:
@@ -217,6 +219,70 @@ func _buy_offer(offer: Dictionary) -> void:
 	Peddler.buy(offer)
 	forge_text = "Bought %s." % Peddler.title(offer)
 	_say("buy")
+	refresh()
+
+
+## Baby animals for sale on the left; your barn on the right: a name box, its stage and EXP, and Bring along.
+func _show_farm() -> void:
+	list_tab.text = "ANIMALS FOR SALE"
+	var animals: Dictionary = Run.data("animals")
+	for kind: String in animals:
+		var baby: Dictionary = {"kind": kind, "name": "", "exp": 0}
+		var stats: Dictionary = Farm.stats(baby)
+		var adult: Dictionary = animals[kind].stages[-1]
+		var buy: Button = _button(left, "%s  %dg  (grows into a %s)\nHP %d, %s d%d, skill: %s" % [stats.stage_name, animals[kind].price,
+			adult.name, stats.hp, stats.weapon, stats.damage_die, Run.data("skills")[stats.skill].name], _buy_animal.bind(kind), "")
+		buy.tooltip_text = Farm.skill_text(baby)
+		buy.icon = UI.strip(Farm.picture(baby))
+		buy.disabled = not Farm.can_buy(kind)
+	if Run.animals.size() == Farm.MAX_ANIMALS:
+		_header(left, "Your barn is full (%d animals)." % Farm.MAX_ANIMALS)
+	if forge_text:
+		_header(right, forge_text)
+	for i in Run.animals.size():
+		var animal: Dictionary = Run.animals[i]
+		var row: HBoxContainer = HBoxContainer.new()
+		var picture: TextureRect = TextureRect.new()
+		picture.texture = UI.strip(Farm.picture(animal))
+		picture.custom_minimum_size = Vector2(48, 48)
+		picture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		row.add_child(picture)
+		var name_box: LineEdit = LineEdit.new()
+		name_box.text = animal.name
+		name_box.max_length = 12
+		name_box.custom_minimum_size.x = 120
+		name_box.tooltip_text = "Click to rename"
+		name_box.text_changed.connect(func(text: String) -> void: animal.name = text.strip_edges() if text.strip_edges() else animal.name)
+		row.add_child(name_box)
+		var along: bool = Run.companion == i
+		row.add_child(UI.menu_button("Coming along" if along else "Bring along", _bring.bind(-1 if along else i), FONT_SIZE))
+		if along:
+			row.get_child(-1).add_theme_color_override("font_color", UI.GOLD)
+		right.add_child(row)
+		var about: Label = Label.new()
+		about.text = Farm.title(animal).trim_prefix(animal.name + " ")
+		about.add_theme_font_size_override("font_size", 13)
+		about.tooltip_text = Farm.skill_text(animal)
+		about.mouse_filter = Control.MOUSE_FILTER_PASS
+		right.add_child(about)
+	if Run.animals.is_empty():
+		_header(right, "No animals yet. Buy a baby on the left.")
+	else:
+		_header(right, "One animal comes along and fights\non its own after you. It grows\nwith every won fight.")
+
+
+func _buy_animal(kind: String) -> void:
+	var animal: Dictionary = Farm.buy(kind)
+	forge_text = "%s the %s joins your farm!" % [animal.name, Farm.stats(animal).stage_name]
+	_say("buy")
+	refresh()
+
+
+## Pick who comes along (-1 = nobody; click the one coming along to leave it at home).
+func _bring(index: int) -> void:
+	Run.companion = index
+	if index >= 0:
+		_say("bring")
 	refresh()
 
 
@@ -364,7 +430,8 @@ func _header(column: VBoxContainer, text: String) -> void:
 
 func _button(column: VBoxContainer, text: String, on_pressed: Callable, icon_id: String) -> Button:
 	var button: Button = UI.menu_button(text, on_pressed, FONT_SIZE)
-	button.icon = Gear.icon(icon_id)
+	if icon_id:
+		button.icon = Gear.icon(icon_id)
 	button.expand_icon = true  # scale the 16x16 picture up to the line height
 	button.add_theme_constant_override("icon_max_width", ICON_SIZE)
 	column.add_child(button)

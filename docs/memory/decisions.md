@@ -5,6 +5,7 @@ if a decision changes, add a new entry that says what it replaces.
 
 | Date | Decision | Why |
 | --- | --- | --- |
+| 2026-11-05 | Farm: buy babies + eggs from loot (step 2); companion has its own AI turn, grows with fights, barn of 4, 1 in battle, belongs to the hero | Kha's choices |
 | 2026-11-05 | Boss fight background: bandit fortress, night, blood moon, epic + grim | Kha's choices |
 | 2026-11-05 | Peddler's Cart: 4 random offers (graded gear, materials, new potions), haggle d20 + Charisma vs DC 12 | Kha's choices |
 | 2026-11-05 | The cart never sells Starmetal gear | Keeps it the boss reward |

@@ -262,6 +262,19 @@ the hero; currency earned still unlocks content for future runs.
 - Blacksmith window layout: framed boxes with gold name tabs (LADIS WASHRUM, FORGE/UPGRADE, HERO, MATERIALS),
   like the battle screen. Shop and GEAR windows keep the plain layout.
 
+### Farm and companions (Kha 2026-11-05)
+
+- The Farm in town (farmer Marta Hayes) sells baby animals: Puppy 40g (-> Dog, Howl: hero +power to hit and
+  damage on the next 2 attacks), Chick 25g (-> Hen, Warm Egg: heals the hero power HP), Piglet 50g
+  (-> Boar, Charge: +1d4 damage, stuns on a crit). Stats per stage in data/animals.json.
+- Barn holds 4; you name them (random name first). One comes along (the first bought, or pick "Bring along").
+- In battle it stands left of the hero and acts on its own right after the hero: skill when ready
+  (cooldown 2 turns), otherwise it attacks the hero's target. Each monster attacks the hero or it (d2).
+  At 0 HP it runs back to the farm; next fight it's back at full HP.
+- It gets the monsters' EXP after each won fight: Young at 20 EXP, Adult at 60 (bigger art and stats).
+- Animals belong to the hero like gear: kept on Back to town, a new hero starts with an empty farm.
+- Step 2 (later): eggs from loot that hatch into rarer animals (Owl, Raven, Drake).
+
 ### Boss background (Kha 2026-11-05)
 
 - The boss fight uses `assets/backgrounds/bandit_fortress.png` (Run.BOSS_BACKGROUND): the bandits' fortress at night
