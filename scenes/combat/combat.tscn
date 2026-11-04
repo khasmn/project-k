@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scripts/combat/combat_screen.gd" id="1"]
 
@@ -25,6 +25,17 @@ content_margin_bottom = 2.0
 bg_color = Color(0.85, 0.68, 0.3, 1)
 corner_radius_top_left = 4
 corner_radius_top_right = 4
+
+[sub_resource type="StyleBoxFlat" id="arena"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 12.0
+bg_color = Color(0.09, 0.085, 0.11, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
 
 [sub_resource type="StyleBoxFlat" id="hero_fill"]
 bg_color = Color(0.3, 0.75, 0.35, 1)
@@ -78,41 +89,39 @@ theme_override_colors/font_color = Color(0.95, 0.8, 0.45, 1)
 theme_override_font_sizes/font_size = 18
 horizontal_alignment = 1
 
-[node name="Arena" type="VBoxContainer" parent="Margin/VBox"]
-layout_mode = 2
-theme_override_constants/separation = 0
-
-[node name="Tab" type="PanelContainer" parent="Margin/VBox/Arena"]
-layout_mode = 2
-size_flags_horizontal = 0
-theme_override_styles/panel = SubResource("tab")
-
-[node name="Label" type="Label" parent="Margin/VBox/Arena/Tab"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.12, 0.09, 0.04, 1)
-theme_override_font_sizes/font_size = 13
-text = "BATTLE"
-
-[node name="Panel" type="PanelContainer" parent="Margin/VBox/Arena"]
+[node name="Arena" type="PanelContainer" parent="Margin/VBox"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_styles/panel = SubResource("box")
+theme_override_styles/panel = SubResource("arena")
 
-[node name="VBox" type="VBoxContainer" parent="Margin/VBox/Arena/Panel"]
+[node name="VBox" type="VBoxContainer" parent="Margin/VBox/Arena"]
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="TurnLabel" type="Label" parent="Margin/VBox/Arena/Panel/VBox"]
+[node name="TurnLabel" type="Label" parent="Margin/VBox/Arena/VBox"]
 layout_mode = 2
 unique_name_in_owner = true
 theme_override_font_sizes/font_size = 16
 horizontal_alignment = 1
 
-[node name="Field" type="HBoxContainer" parent="Margin/VBox/Arena/Panel/VBox"]
+[node name="Log" type="RichTextLabel" parent="Margin/VBox/Arena/VBox"]
+layout_mode = 2
+unique_name_in_owner = true
+size_flags_horizontal = 0
+size_flags_vertical = 3
+custom_minimum_size = Vector2(560, 0)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/normal_font_size = 14
+theme_override_font_sizes/bold_font_size = 14
+bbcode_enabled = true
+scroll_following = true
+
+[node name="Field" type="HBoxContainer" parent="Margin/VBox/Arena/VBox"]
 layout_mode = 2
 theme_override_constants/separation = 24
 
-[node name="EnemyList" type="GridContainer" parent="Margin/VBox/Arena/Panel/VBox/Field"]
+[node name="EnemyList" type="GridContainer" parent="Margin/VBox/Arena/VBox/Field"]
 layout_mode = 2
 unique_name_in_owner = true
 size_flags_horizontal = 3
@@ -120,51 +129,24 @@ theme_override_constants/h_separation = 8
 theme_override_constants/v_separation = 8
 columns = 4
 
-[node name="HeroToken" type="VBoxContainer" parent="Margin/VBox/Arena/Panel/VBox/Field"]
+[node name="HeroToken" type="VBoxContainer" parent="Margin/VBox/Arena/VBox/Field"]
 layout_mode = 2
 custom_minimum_size = Vector2(180, 0)
 size_flags_vertical = 4
 
-[node name="HeroTokenName" type="Label" parent="Margin/VBox/Arena/Panel/VBox/Field/HeroToken"]
+[node name="HeroTokenName" type="Label" parent="Margin/VBox/Arena/VBox/Field/HeroToken"]
 layout_mode = 2
 unique_name_in_owner = true
 theme_override_colors/font_color = Color(0.5, 0.82, 0.5, 1)
 theme_override_font_sizes/font_size = 18
 horizontal_alignment = 1
 
-[node name="HeroTokenBar" type="ProgressBar" parent="Margin/VBox/Arena/Panel/VBox/Field/HeroToken"]
+[node name="HeroTokenBar" type="ProgressBar" parent="Margin/VBox/Arena/VBox/Field/HeroToken"]
 layout_mode = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 12)
 theme_override_styles/fill = SubResource("hero_fill")
 show_percentage = false
-
-[node name="LogBox" type="VBoxContainer" parent="Margin/VBox"]
-layout_mode = 2
-size_flags_vertical = 3
-theme_override_constants/separation = 0
-
-[node name="Tab" type="PanelContainer" parent="Margin/VBox/LogBox"]
-layout_mode = 2
-size_flags_horizontal = 0
-theme_override_styles/panel = SubResource("tab")
-
-[node name="Label" type="Label" parent="Margin/VBox/LogBox/Tab"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.12, 0.09, 0.04, 1)
-theme_override_font_sizes/font_size = 13
-text = "BATTLE LOG"
-
-[node name="Panel" type="PanelContainer" parent="Margin/VBox/LogBox"]
-layout_mode = 2
-size_flags_vertical = 3
-theme_override_styles/panel = SubResource("box")
-
-[node name="Log" type="RichTextLabel" parent="Margin/VBox/LogBox/Panel"]
-layout_mode = 2
-unique_name_in_owner = true
-bbcode_enabled = true
-scroll_following = true
 
 [node name="Bottom" type="HBoxContainer" parent="Margin/VBox"]
 layout_mode = 2
@@ -270,6 +252,20 @@ theme_override_styles/focus = SubResource("flat")
 text = "   Item"
 alignment = 0
 
+[node name="InfoButton" type="Button" parent="Margin/VBox/Bottom/Command/Panel/ActionPanel/Buttons"]
+layout_mode = 2
+unique_name_in_owner = true
+theme_override_colors/font_hover_color = Color(1, 0.83, 0.3, 1)
+theme_override_colors/font_disabled_color = Color(1, 1, 1, 0.3)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("flat")
+theme_override_styles/hover = SubResource("flat")
+theme_override_styles/pressed = SubResource("flat")
+theme_override_styles/disabled = SubResource("flat")
+theme_override_styles/focus = SubResource("flat")
+text = "   Info"
+alignment = 0
+
 [node name="FleeButton" type="Button" parent="Margin/VBox/Bottom/Command/Panel/ActionPanel/Buttons"]
 layout_mode = 2
 unique_name_in_owner = true
@@ -305,8 +301,9 @@ layout_mode = 2
 size_flags_horizontal = 0
 theme_override_styles/panel = SubResource("tab")
 
-[node name="Label" type="Label" parent="Margin/VBox/Bottom/Hero/Tab"]
+[node name="HeroTab" type="Label" parent="Margin/VBox/Bottom/Hero/Tab"]
 layout_mode = 2
+unique_name_in_owner = true
 theme_override_colors/font_color = Color(0.12, 0.09, 0.04, 1)
 theme_override_font_sizes/font_size = 13
 text = "HERO"
@@ -316,35 +313,42 @@ layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("box")
 
-[node name="VBox" type="VBoxContainer" parent="Margin/VBox/Bottom/Hero/Panel"]
+[node name="InfoText" type="Label" parent="Margin/VBox/Bottom/Hero/Panel"]
 layout_mode = 2
+unique_name_in_owner = true
+visible = false
+theme_override_font_sizes/font_size = 18
+
+[node name="HeroInfo" type="VBoxContainer" parent="Margin/VBox/Bottom/Hero/Panel"]
+layout_mode = 2
+unique_name_in_owner = true
 theme_override_constants/separation = 2
 
-[node name="HeroName" type="Label" parent="Margin/VBox/Bottom/Hero/Panel/VBox"]
+[node name="HeroName" type="Label" parent="Margin/VBox/Bottom/Hero/Panel/HeroInfo"]
 layout_mode = 2
 unique_name_in_owner = true
 theme_override_font_sizes/font_size = 18
 
-[node name="HeroHPBar" type="ProgressBar" parent="Margin/VBox/Bottom/Hero/Panel/VBox"]
+[node name="HeroHPBar" type="ProgressBar" parent="Margin/VBox/Bottom/Hero/Panel/HeroInfo"]
 layout_mode = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 14)
 theme_override_styles/fill = SubResource("hero_fill")
 show_percentage = false
 
-[node name="HeroHP" type="Label" parent="Margin/VBox/Bottom/Hero/Panel/VBox"]
+[node name="HeroHP" type="Label" parent="Margin/VBox/Bottom/Hero/Panel/HeroInfo"]
 layout_mode = 2
 unique_name_in_owner = true
 
-[node name="HeroStats" type="Label" parent="Margin/VBox/Bottom/Hero/Panel/VBox"]
+[node name="HeroStats" type="Label" parent="Margin/VBox/Bottom/Hero/Panel/HeroInfo"]
 layout_mode = 2
 unique_name_in_owner = true
 
-[node name="Level" type="Label" parent="Margin/VBox/Bottom/Hero/Panel/VBox"]
+[node name="Level" type="Label" parent="Margin/VBox/Bottom/Hero/Panel/HeroInfo"]
 layout_mode = 2
 unique_name_in_owner = true
 
-[node name="ExpBar" type="ProgressBar" parent="Margin/VBox/Bottom/Hero/Panel/VBox"]
+[node name="ExpBar" type="ProgressBar" parent="Margin/VBox/Bottom/Hero/Panel/HeroInfo"]
 layout_mode = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 8)

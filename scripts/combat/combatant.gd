@@ -13,6 +13,7 @@ var defense: int
 var speed: int
 var damage_die: int
 var weapon: String = "weapon"  # for the log: "sword (d8)"
+var sprite: String = ""  # file in assets/sprites/enemies/, a strip of square frames
 var exp_reward: int = 0
 var gold_reward: int = 0
 var defending: bool = false
@@ -40,6 +41,7 @@ func _init(data: Dictionary) -> void:
 	speed = int(data.speed)
 	damage_die = int(data.damage_die)
 	weapon = data.get("weapon", "weapon")
+	sprite = data.get("sprite", "")
 	exp_reward = int(data.get("exp", 0))
 	gold_reward = int(data.get("gold", 0))
 	passive_names = data.get("passive_names", {})

@@ -4,7 +4,7 @@ extends SceneTree
 ## /Applications/Godot.app/Contents/MacOS/Godot --headless --script res://tests/play.gd -- [options] actions...
 ## Options: --seed N, --force 20,1,..., --race elf, --talent lucky, --class mage (ids from data/*.json;
 ## race and talent are rolled and class is warrior if not given).
-## Actions in a fight: t1-t4 to target a monster card, attack, defend, flee, item (then 1 = first item, or back),
+## Actions in a fight: t1-t4 to target a monster card, attack, defend, flee, info, item (then 1 = first item, or back),
 ## 1 to click a choice ("Continue", "New hero").
 ## On the path screen: 1/2/3 to pick a door (or Rest/Train), character to open the stat panel,
 ## then +hp, +attack, +defense, +speed to add a point (-hp etc. to take it back), confirm or close.
@@ -14,7 +14,7 @@ extends SceneTree
 ## the boss room starts with initiative.
 
 const BUTTONS: Dictionary = {
-	"attack": "%AttackButton", "defend": "%DefendButton", "flee": "%FleeButton", "item": "%ItemButton", "character": "%CharacterButton",
+	"attack": "%AttackButton", "defend": "%DefendButton", "flee": "%FleeButton", "item": "%ItemButton", "info": "%InfoButton", "character": "%CharacterButton",
 	"confirm": "%CharacterPanel/%ConfirmButton", "close": "%CharacterPanel/%CloseButton",
 }
 const STAT_IDS: Dictionary = {"hp": "max_hp", "attack": "attack", "defense": "defense", "speed": "speed"}
@@ -112,6 +112,8 @@ func _print_fight() -> void:
 		var lines: Node = cards[n].get_node("Lines")
 		var targeted: String = "  (target)" if _node("%TargetList").get_child(n).text.begins_with("▶") else ""
 		print("  t%d) %s%s  |  %s  |  %s" % [n + 1, lines.get_node("Name").text, targeted, lines.get_node("HP").text, lines.get_node("Stats").text])
+	if _node("%InfoText").visible:
+		print("Info (%s): %s" % [_node("%HeroTab").text, _node("%InfoText").text.replace("\n", "  |  ")])
 	var choices: Array = _node("%Choices").get_children()
 	if _node("%ItemMenu").visible:
 		var items: Array = _node("%ItemMenu").get_children()

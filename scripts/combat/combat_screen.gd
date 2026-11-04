@@ -5,6 +5,8 @@ const ENEMY_TURN_DELAY: float = 0.6
 const CREATION_SCENE: String = "res://scenes/character/character_creation.tscn"
 const PATH_SCENE: String = "res://scenes/path/path.tscn"
 const CARD_STYLE: StyleBoxFlat = preload("res://scenes/ui/box_style.tres")
+const SPRITE_FPS: int = 6
+const SPRITE_SIZE: int = 96  # 32x32 art shown 3x
 const FLEE_DC_BASE: int = 10  # flee: d20 + Speed vs 10 + fastest monster's Speed
 ## Battle log colors (BBCode: the log understands tags like [b]bold[/b] and [color=#hex]text[/color]).
 const HERO_COLOR: String = "#7fd17f"
@@ -18,6 +20,7 @@ var hero: Combatant
 var enemies: Array[Combatant] = []
 var target: Combatant  # the monster the hero attacks; click a card to change it
 var fight_over: bool = false  # true after a win or a flee, so Continue only works once
+var animations: Array[AtlasTexture] = []
 
 
 func _ready() -> void:
@@ -25,6 +28,8 @@ func _ready() -> void:
 	%DefendButton.pressed.connect(_on_defend)
 	%FleeButton.pressed.connect(_on_flee)
 	%ItemButton.pressed.connect(_open_items)
+	%Log.get_v_scroll_bar().modulate.a = 0  # floating log: no visible scrollbar, the mouse wheel still scrolls
+	%InfoButton.pressed.connect(func() -> void: _show_info(not %InfoText.visible))
 	for button in %Buttons.get_children():
 		_add_cursor(button)
 	if Run.hero == null:
@@ -67,6 +72,27 @@ func _start_fight() -> void:
 		_hero_turn()
 	else:
 		_enemy_turn()
+
+
+## Play every sprite strip: show frame N of the strip, moving on SPRITE_FPS times a second.
+func _process(_delta: float) -> void:
+	var tick: int = Time.get_ticks_msec() * SPRITE_FPS / 1000
+	for frames in animations:
+		var size: int = frames.atlas.get_height()
+		frames.region = Rect2(tick % (frames.atlas.get_width() / size) * size, 0, size, size)
+
+
+## Info: the HERO box shows the target's info instead, and its tab shows the target's name. Free action.
+func _show_info(on: bool) -> void:
+	%InfoText.visible = on
+	%HeroInfo.visible = not on
+	%HeroTab.text = target.display_name.to_upper() if on else "HERO"
+	%InfoText.text = _info(target)
+
+
+func _info(foe: Combatant) -> String:
+	return "%s\nHP %d / %d\nAttack %d, %s (d%d)\nArmor %d   Speed %d" % [
+		foe.display_name, foe.hp, foe.max_hp, foe.attack, foe.weapon, foe.damage_die, foe.armor(), foe.speed]
 
 
 func _hero_turn() -> void:
@@ -272,7 +298,23 @@ func _make_card(foe: Combatant) -> Button:
 	fill.bg_color = Color(0.85, 0.3, 0.3)
 	bar.add_theme_stylebox_override("fill", fill)
 	lines.get_node("Name").add_theme_font_size_override("font_size", 18)
+	lines.get_node("Stats").add_theme_font_size_override("font_size", 13)
 	card.add_child(lines)
+	if foe.sprite != "":
+		var frames: AtlasTexture = AtlasTexture.new()
+		frames.atlas = load("res://assets/sprites/enemies/%s.png" % foe.sprite)
+		frames.region = Rect2(0, 0, frames.atlas.get_height(), frames.atlas.get_height())
+		animations.append(frames)
+		var picture: TextureRect = TextureRect.new()
+		picture.texture = frames
+		picture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		picture.set_anchors_and_offsets_preset(Control.PRESET_CENTER, Control.PRESET_MODE_KEEP_SIZE)
+		picture.custom_minimum_size = Vector2(SPRITE_SIZE, SPRITE_SIZE)
+		picture.grow_horizontal = Control.GROW_DIRECTION_BOTH
+		picture.grow_vertical = Control.GROW_DIRECTION_BOTH
+		picture.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card.add_child(picture)
+		lines.hide()  # art only: the info shows on hover or with the Info command
 	return card
 
 
@@ -280,6 +322,8 @@ func _set_target(foe: Combatant) -> void:
 	if foe.is_alive():
 		target = foe
 		_update_labels()
+		if %InfoText.visible:
+			_show_info(true)
 
 
 func _update_labels() -> void:
@@ -309,7 +353,8 @@ func _update_labels() -> void:
 		lines.get_node("HPBar").max_value = foe.max_hp
 		lines.get_node("HPBar").value = foe.hp
 		lines.get_node("HP").text = "HP %d / %d" % [foe.hp, foe.max_hp] if foe.is_alive() else "Defeated"
-		lines.get_node("Stats").text = "Atk %d d%d  Arm %d  Spd %d" % [foe.attack, foe.damage_die, foe.armor(), foe.speed]
+		lines.get_node("Stats").text = "Atk %d d%d Arm %d Spd %d" % [foe.attack, foe.damage_die, foe.armor(), foe.speed]
+		card.tooltip_text = _info(foe) if foe.is_alive() else ""
 		card.disabled = not foe.is_alive()
 		card.modulate = Color(1, 1, 1, 1 if foe.is_alive() else 0.4)
 		var style: StyleBoxFlat = CARD_STYLE.duplicate()
@@ -325,6 +370,9 @@ func _update_labels() -> void:
 
 
 func _set_buttons_enabled(enabled: bool) -> void:
+	%InfoButton.disabled = not enabled
+	if not enabled:
+		_show_info(false)
 	%AttackButton.disabled = not enabled
 	%DefendButton.disabled = not enabled
 	%FleeButton.disabled = not enabled
