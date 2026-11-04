@@ -11,6 +11,7 @@ const MAX_ENEMIES: int = 4
 const POINTS_PER_LEVEL: int = 3
 const REST_HEAL_PERCENT: int = 30
 const TRAIN_POINTS: int = 1
+const START_ITEMS: Dictionary = {"healing_potion": 2}
 
 static var hero: Combatant
 static var hero_title: String = ""
@@ -21,6 +22,7 @@ static var level: int = 1
 static var experience: int = 0
 static var points: int = 0  # unspent stat points
 static var gold: int = 0
+static var items: Dictionary = {}  # item id -> how many, see data/items.json
 
 
 static func start(draft: CharacterDraft) -> void:
@@ -45,6 +47,7 @@ static func _reset() -> void:
 	experience = 0
 	points = 0
 	gold = 0
+	items = START_ITEMS.duplicate()
 
 
 static func is_boss() -> bool:

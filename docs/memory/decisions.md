@@ -5,6 +5,8 @@ if a decision changes, add a new entry that says what it replaces.
 
 | Date | Decision | Why |
 | --- | --- | --- |
+| 2026-11-05 | Combat bottom row: battle log and actions side by side (half/half); Item button | Kha's layout request |
+| 2026-11-05 | Every run starts with 2 Healing Potions (heal 30% Max HP, uses your turn); items in data/items.json | Kha picked potions now instead of waiting for the shop |
 | 2026-11-05 | Fights have 1-4 random monsters from the start (data "rooms": [first, last]); click a card to target | Kha's choice; monsters made much weaker one by one so groups stay fair |
 | 2026-11-05 | Elites are their own entries (Rat King, Bandit Captain, Dire Wolf, Bone Knight, Orc Warlord); elite room = elite + 0-2 helpers; boss = Bandit Chief + 2 Bandits | Kha picked 9 + groups; replaces the 1.5x HP "Elite X" formula |
 | 2026-11-05 | Damage = weapon die + half Attack (Attack still fully adds to hit) | Attack was the only good stat pick (5A) |

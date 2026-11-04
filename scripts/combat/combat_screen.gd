@@ -23,6 +23,7 @@ func _ready() -> void:
 	%AttackButton.pressed.connect(_on_attack)
 	%DefendButton.pressed.connect(_on_defend)
 	%FleeButton.pressed.connect(_on_flee)
+	%ItemButton.pressed.connect(_open_items)
 	if Run.hero == null:
 		Run.start_test()  # this scene was started on its own, not from character creation
 	_start_fight()
@@ -83,6 +84,44 @@ func _on_defend() -> void:
 	hero.defending = true
 	_log("%s defends: +%d Armor, and monsters attack with disadvantage until your next turn." % [
 		hero.display_name, Combatant.DEFEND_BONUS])
+	_after_action()
+
+
+## Item: swap the action buttons for a list of your items (and Back).
+func _open_items() -> void:
+	var all: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/items.json"))
+	for button in %ItemMenu.get_children():
+		button.queue_free()
+	for id in Run.items:
+		var item: Dictionary = all[id]
+		var button: Button = Button.new()
+		button.text = "%s x%d  (heal %d%% HP)" % [item.name, Run.items[id], item.heal_percent]
+		button.disabled = Run.items[id] == 0 or hero.hp == hero.max_hp
+		button.pressed.connect(_use_item.bind(id, item))
+		%ItemMenu.add_child(button)
+	var back: Button = Button.new()
+	back.text = "Back"
+	back.pressed.connect(_close_items)
+	%ItemMenu.add_child(back)
+	%Buttons.hide()
+	%ItemMenu.show()
+
+
+func _close_items() -> void:
+	%ItemMenu.hide()
+	%Buttons.show()
+
+
+## Using an item takes your turn.
+func _use_item(id: String, item: Dictionary) -> void:
+	if Run.items[id] == 0:
+		return
+	_close_items()
+	_set_buttons_enabled(false)
+	Run.items[id] -= 1
+	var healed: int = mini(ceili(hero.max_hp * item.heal_percent / 100.0), hero.max_hp - hero.hp)
+	hero.hp += healed
+	_log("%s drinks a %s: +%d HP (%d left)." % [hero.display_name, item.name, healed, Run.items[id]])
 	_after_action()
 
 
@@ -268,6 +307,7 @@ func _set_buttons_enabled(enabled: bool) -> void:
 	%AttackButton.disabled = not enabled
 	%DefendButton.disabled = not enabled
 	%FleeButton.disabled = not enabled
+	%ItemButton.disabled = not enabled or Run.items.values().all(func(count: int) -> bool: return count == 0)
 
 
 func _log(text: String) -> void:

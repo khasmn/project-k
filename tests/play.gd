@@ -4,7 +4,8 @@ extends SceneTree
 ## /Applications/Godot.app/Contents/MacOS/Godot --headless --script res://tests/play.gd -- [options] actions...
 ## Options: --seed N, --force 20,1,..., --race elf, --talent lucky, --class mage (ids from data/*.json;
 ## race and talent are rolled and class is warrior if not given).
-## Actions in a fight: t1-t4 to target a monster card, attack, defend, flee, 1 to click a choice ("Continue", "New hero").
+## Actions in a fight: t1-t4 to target a monster card, attack, defend, flee, item (then 1 = first item, or back),
+## 1 to click a choice ("Continue", "New hero").
 ## On the path screen: 1/2/3 to pick a door (or Rest/Train), character to open the stat panel,
 ## then +hp, +attack, +defense, +speed to add a point (-hp etc. to take it back), confirm or close.
 ## Same seed + same options + same actions = same run, so you can replay and add one action at a time.
@@ -13,7 +14,7 @@ extends SceneTree
 ## the boss room starts with initiative.
 
 const BUTTONS: Dictionary = {
-	"attack": "%AttackButton", "defend": "%DefendButton", "flee": "%FleeButton", "character": "%CharacterButton",
+	"attack": "%AttackButton", "defend": "%DefendButton", "flee": "%FleeButton", "item": "%ItemButton", "character": "%CharacterButton",
 	"confirm": "%CharacterPanel/%ConfirmButton", "close": "%CharacterPanel/%CloseButton",
 }
 const STAT_IDS: Dictionary = {"hp": "max_hp", "attack": "attack", "defense": "defense", "speed": "speed"}
@@ -111,8 +112,13 @@ func _print_fight() -> void:
 		var lines: Node = cards[n].get_node("Lines")
 		print("  t%d) %s  |  %s  |  %s" % [n + 1, lines.get_node("Name").text, lines.get_node("HP").text, lines.get_node("Stats").text])
 	var choices: Array = _node("%Choices").get_children()
-	if choices.is_empty():
-		print(_node("%TurnLabel").text + ". Possible: t1-t%d, attack, defend%s" % [cards.size(), ", flee" if _node("%FleeButton").visible else ""])
+	if _node("%ItemMenu").visible:
+		var items: Array = _node("%ItemMenu").get_children()
+		for n in items.size() - 1:
+			print("  %d) %s%s" % [n + 1, items[n].text, " (can't use now)" if items[n].disabled else ""])
+		print("Items open. Possible: 1-%d, back" % (items.size() - 1))
+	elif choices.is_empty():
+		print(_node("%TurnLabel").text + ". Possible: t1-t%d, attack, defend%s, item" % [cards.size(), ", flee" if _node("%FleeButton").visible else ""])
 	else:
 		print("Choices: 1) " + choices[0].text)
 
@@ -148,6 +154,11 @@ func _button_for(action: String) -> Button:
 		var cards: Array = _node("%EnemyList").get_children()
 		var n: int = int(action[1])
 		return cards[n - 1] if n >= 1 and n <= cards.size() else null
+	if not _on_path() and _node("%ItemMenu").visible:
+		var items: Array = _node("%ItemMenu").get_children()
+		if action == "back":
+			return items[-1]
+		return items[int(action) - 1] if action.is_valid_int() and int(action) >= 1 and int(action) < items.size() else null
 	var options: Array = _node("%Doors" if _on_path() else "%Choices").get_children()
 	if action.is_valid_int() and int(action) >= 1 and int(action) <= options.size():
 		return options[int(action) - 1]
@@ -188,5 +199,6 @@ func _wait_for_input() -> void:
 			var cards: Array = scene.get_node("%Doors").get_children()
 			if (not cards.is_empty() and not cards[0].disabled) or scene.get_node("%CharacterPanel").visible:
 				return
-		elif not scene.get_node("%AttackButton").disabled or scene.get_node("%Choices").get_child_count() > 0:
+		elif (not scene.get_node("%AttackButton").disabled or scene.get_node("%ItemMenu").visible
+				or scene.get_node("%Choices").get_child_count() > 0):
 			return
