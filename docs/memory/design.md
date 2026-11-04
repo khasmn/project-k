@@ -84,7 +84,9 @@ Lancer (planned): HP 32, Attack 3, Defense 2, Speed 2, Charisma 1, Luck 1, spear
 
 ### Secret classes (Kha 2026-11-05)
 
-A 3-step quest, open from chapter 6 (after twist 1). Fail the event check or lose the trial: that path is
+A 3-step quest, open from chapter 6 (after twist 1); sealed hints of each path appear in ch 3-4. The token
+event offers 2 stat choices (e.g. Charisma DC 16 or Defense DC 17), so one stat you can't raise doesn't lock
+you out. Fail the event check or lose the trial: that path is
 gone this run (it can come back in a later run). Dying during the deed resets its counter. The trial is
 fought ALONE (no companion, no helper, no potions); trial bosses are 48x48, about chapter 6 boss strength.
 Win: the class changes, +stat boost, 2 new skills, a short scene line.
@@ -92,7 +94,7 @@ Win: the class changes, +stat boost, 2 new skills, a short scene line.
 | Secret class | Needs | 1. Event (rare, ch 6+) -> token | 2. Deed | 3. Trial boss | Boost | Skills |
 | --- | --- | --- | --- | --- | --- | --- |
 | Holy Knight | Knight | The Last Oath (dying paladin), Charisma DC 16 -> Oath Sigil | Defeat 3 demon/Hollow elites | Ashmaw, horned fire demon (HP 70, Atk 6, Def 4, Spd 3, d10; Hellbrand: Speed save, burn 3 x2) | Defense +3 | Sacred Aegis (3: shield 10 all), Radiant Smite (4: advantage, extra_die 10) |
-| Necromancer | Dark Mage | The Bone Lantern (graveyard ghost), Magic DC 16 -> Forbidden Tome | Defeat 25 undead | The Grave Warden, crowned skeleton king (HP 60, Atk 5, Def 3, Spd 2, d8; Bone Legion: shield 6 all) | Magic +3 | Raise Dead (4: a skeleton ally this fight, NEW key summon), Soul Drain (3: extra_die 8, heal half, NEW key drain) |
+| Necromancer | Dark Mage | The Bone Lantern (graveyard ghost), Magic DC 16 -> Forbidden Tome | Defeat 12 undead (does not reset on death) | The Grave Warden, crowned skeleton king (HP 60, Atk 5, Def 3, Spd 2, d8; Bone Legion: shield 6 all) | Magic +3 | Raise Dead (4: a skeleton ally this fight, NEW key summon), Soul Drain (3: extra_die 8, heal half, NEW key drain) |
 | Grove Warden | Ranger + an Adult Owl | The White Stag, Speed DC 16 -> Stag Antler | Win 6 fights in a row without the Owl falling | Thornmaw, bramble-grown wolf (HP 65, Atk 5, Def 3, Spd 5, d8; Rot Thorns: poison 2 x3) | Speed +2, Attack +1 | Hail of Thorns (3: Speed save, all, poison 2 x3), Hunter's Mark (2: advantage, extra_die 6, stun save) |
 | Tempest Fist | Monk | The Silent Waterfall (old master), Defense DC 15 -> Master's Sash | Win 6 fights without a potion | Gravel, stone mountain ogre (HP 80, Atk 5, Def 5, Spd 1, d10; Quake: Speed save, stun) | Speed +3 | Hundred Blows (3: 4 attacks at -3), Eye of the Storm (2: shield 6 + next attack advantage) |
 | Drakerider | Skylancer + an Adult Drake | The Sky Altar, Charisma DC 16 -> Drake Horn | Beat a chapter boss with the Drake standing | Stormwing, wild drake matriarch (HP 75, Atk 6, Def 3, Spd 6, d10; Gale Dive: advantage, extra_die 6) | Attack +2, Speed +1 | Diving Lance (4: advantage, extra_die 12), Dragonfire Charge (4: Speed save, all, burn 2 x2) |
@@ -195,25 +197,41 @@ Example event, "a bandit blocks the bridge":
 | Intimidate | Charisma (Emberkin +2) | 12 |
 | Sneak | Speed | 15 |
 
-## Story: 10 chapters (Kha 2026-11-05)
+## Story: 10 chapters (Kha 2026-11-05, adjusted after the review panel)
 
-Monsters keep attacking the kingdom. The King summons the hero: kill the Demon King and the evil stops.
+Monsters keep attacking the kingdom. King Oswin summons the hero: kill the Demon King and the evil stops.
 His castle is sealed behind 4 Crystals, each guarded by one of his 4 Demon Lords.
 
-| Ch | Place | Story | Boss |
+Characters:
+- **King Oswin**: warm and grateful on screen. After each Demon Lord a royal envoy visits town, pays a royal
+  reward and asks for "the crystal's dust, for the royal vault". Once he says of his late queen: "She would
+  have liked you." His real motive: bring his dead queen back through the Hollow.
+- **Sir Corwin Vale**: the royal knight who brings the summons in ch 1; returns between chapters with the
+  King's letters, which grow colder the more you die ("His Majesty grows impatient"). Turns on the King in
+  ch 7 and leads the betrayed knights in ch 8.
+- **Malzareth, the Demon King**: the warden of the seal, not the plague.
+
+| Ch | Place | Story beats | Boss |
 | --- | --- | --- | --- |
-| 1 | Whispering Woods (built) | Bandits raid villages (monsters drove them from the hills). After the boss a royal knight brings the King's summons. | Bandit Chief |
-| 2 | Frostfang Peaks | Crystal of Frost | Demon Lord Vharn the Frost Tyrant |
-| 3 | Sunken Marsh | Crystal of Venom | Demon Lord Mother Silt (swamp witch-demon) |
-| 4 | Ember Wastes | Crystal of Flame | Demon Lord Pyrrax the Cinder Beast |
-| 5 | Obsidian Citadel | Crystal of Shadow (Lord Nyxara, mid-chapter), then the Demon King | Malzareth, the Demon King |
-| 6 | The Shattered Lands | TWIST 1 (end of ch 5): dying, Malzareth says he was not the plague but the lock; the crystals sealed the Hollow and the hero broke all four. Hollow creatures pour out; some demons offer a truce. Secret class paths open. | The First Herald of the Hollow |
-| 7 | Royal Capital | TWIST 2: the King knew all along. He made a pact with the Hollow for eternal life and used the hero to break the seal. | The King, twisted by the Hollow |
-| 8 | Forgotten Temple | Loyal demons and the King's betrayed knights show how to reforge the seal from the crystals' remains. | Nyxara Reborn (now serving the Hollow) |
-| 9 | The Abyss Gate | Fight to the gate with the reforged seal. | The Gatekeeper |
+| 1 | Whispering Woods (built) | Bandits raid villages (monsters drove them from the hills). Hook: the Bandit Chief's last words "They pay us in shards... the hills are cracking." The Starmetal Shard is a chip of a crystal; forging with it plays a Hollow whisper. Sir Corwin brings the King's summons. | Bandit Chief |
+| 2 | Frostfang Peaks | Crystal of Frost. Last words: "Three more locks, little key. Then you will wish for my cold." Lore event: a dying minion begs "Don't break it, it holds them back." The envoy collects the crystal dust. | Demon Lord Vharn the Frost Tyrant |
+| 3 | Sunken Marsh | Crystal of Venom. Last words: "Every crack you make, something below is listening." Sealed secret-class hints appear ("The paladin's oath is bound until the locks break"). Lore event. | Demon Lord Mother Silt (swamp witch-demon) |
+| 4 | Ember Wastes | Crystal of Flame. Last words: "Burn me. Fire was never the thing to fear." Lore event. Hollow-touched monsters start to appear. | Demon Lord Pyrrax the Cinder Beast |
+| 5 | Obsidian Citadel | Crystal of Shadow: Lord Nyxara (mid-chapter) speaks before she dies. Malzareth only blocks for his first 2 turns: "Not yet... you don't understand." TWIST 1: dying, he says he was the lock; the crystals sealed the Hollow and the hero broke all four. End of the first act (cliffhanger). | Malzareth, the Demon King |
+| 6 | The Shattered Lands | Hollow creatures pour out; some demons offer a truce. Secret class paths open. From now on the death screen speaks in the Hollow's voice: "Again, little key. We are patient." | The First Herald of the Hollow |
+| 7 | Royal Capital | TWIST 2: the crystal dust you sent burns in Oswin's crown. He used the hero to break the seal to bring his queen back. Sir Corwin turns on him. | King Oswin, twisted by the Hollow |
+| 8 | Forgotten Temple | Sir Corwin leads the betrayed knights; loyal demons show how to reforge the seal from the crystals' remains. | Nyxara Reborn (now serving the Hollow) |
+| 9 | The Abyss Gate | Fight to the gate with the reforged seal. The Gatekeeper is the queen, returned by the Hollow as a monster: what Oswin wanted. | The Gatekeeper (the queen) |
 | 10 | The Hollow Throne | Final battle. | The Hollow One |
 
-Each chapter gets its own background, monsters and boss (like chapter 1).
+How the story is shown and built:
+- The world visibly breaks: a new crack in the town sky for each crystal taken; recolored "Hollow-touched"
+  monsters (enemies.json "variant_of" + "tint") from ch 3-4 on.
+- Lore events: check-free event-door scenes (events.json "lore": true); events get a "chapters" list.
+- Twist scenes play only the first time (a flag); a chapter retry shows a one-line "intro_retry".
+- data/chapters.json, one entry per chapter: background, enemy_pool, elite_pool, boss, intro, intro_retry,
+  outro, hp_mult, dc_bonus (difficulty scaling). Build it before chapter 2.
+- Cut line: chapters 1-5 are a complete first act (ending on twist 1 as a cliffhanger) before the Hollow half.
 
 ## Run loop and meta-progression
 
