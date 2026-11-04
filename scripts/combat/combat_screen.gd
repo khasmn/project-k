@@ -6,6 +6,7 @@ const CREATION_SCENE: String = "res://scenes/character/character_creation.tscn"
 const PATH_SCENE: String = "res://scenes/path/path.tscn"
 const CARD_STYLE: StyleBoxFlat = preload("res://scenes/ui/box_style.tres")
 const SPRITE_FPS: int = 6
+const START_DELAY: float = 1.0  # seconds before the initiative roll
 const SPRITE_SIZE: int = 96  # 32x32 art shown 3x
 const BACKGROUND_FRAME: int = 384  # backgrounds are strips of 384x128 frames
 const ARROW_FPS: int = 2  # the target arrow bobs slowly
@@ -90,6 +91,8 @@ func _start_fight() -> void:
 		_log(Run.room_note)
 		Run.room_note = ""
 	_update_labels()
+	if Settings.animate_dice:  # a moment to see the fight before the first dice (the play tool skips it)
+		await get_tree().create_timer(START_DELAY).timeout
 
 	Dice.history.clear()  # building the monster group rolled dice too; only show the fight's rolls
 	# Initiative: your d20 + Speed vs one d20 for the group + its fastest Speed. Ties go to the monsters (Elf wins ties).

@@ -36,6 +36,7 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 - Skill cooldowns: cost + 2 turns for heroes, 2 for monsters; the list shows "wait N".
 ### 2026-11-04 – Town, step 1 (feature/city)
 - Town screen after character creation: animated sunset art, clickable Farm, Blacksmith, Inn, Shop; Leave town starts the run.
+- Every fight waits 1 second on the fight screen before the initiative dice (skipped when dice animation is off).
 - Inn heals to full; the other buildings are "coming soon". Menu and creation pictures now animate gently.
 - Next town steps: Shop (buy potions), Blacksmith + gear slots, Farm, lives (town after 1st/2nd death).
 

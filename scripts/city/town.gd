@@ -3,7 +3,6 @@ extends Control
 ## Shown after character creation (later also after the 1st and 2nd death).
 
 const COMBAT_SCENE: String = "res://scenes/combat/combat.tscn"
-const LEAVE_DELAY: float = 1.0  # a short pause after Leave town before the fight starts
 const ART_SIZE: Vector2 = Vector2(384, 216)
 ## Each building: its clickable rectangle in art pixels (x, y, width, height) and what its window says.
 const BUILDINGS: Array = [
@@ -17,7 +16,7 @@ const BUILDINGS: Array = [
 func _ready() -> void:
 	for building: Dictionary in BUILDINGS:
 		%Picture.add_child(_building_button(building))
-	%Leave.add_child(UI.menu_button("Leave town", _leave, 24))
+	%Leave.add_child(UI.menu_button("Leave town", get_tree().change_scene_to_file.bind(COMBAT_SCENE), 24))
 	for button: Button in %Leave.get_children():
 		button.add_theme_color_override("font_outline_color", Color.BLACK)
 		button.add_theme_constant_override("outline_size", 6)
@@ -49,12 +48,6 @@ func _building_button(building: Dictionary) -> Button:
 	button.mouse_entered.connect(func() -> void: sign.add_theme_color_override("font_color", UI.GOLD))
 	button.mouse_exited.connect(func() -> void: sign.remove_theme_color_override("font_color"))
 	return button
-
-
-func _leave() -> void:
-	%Leave.get_child(0).disabled = true  # one click is enough
-	await get_tree().create_timer(LEAVE_DELAY).timeout
-	get_tree().change_scene_to_file(COMBAT_SCENE)
 
 
 func _open(building: Dictionary) -> void:
