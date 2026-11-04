@@ -215,10 +215,15 @@ the hero; currency earned still unlocks content for future runs.
 
 - A pixel town you click, shown after character creation and after the 1st and 2nd death (3 lives).
 - Buildings in the first version: Shop (buy items), Blacksmith (craft and upgrade gear),
-  Farm (plant before a run, harvest food when you're back), Inn/Temple (heal, see lives left).
+  Farm (raise animals; some become companions that fight with you; not food, Kha 2026-11-04), Inn/Temple (heal, see lives left).
 - Gear slots: helmet, armor, weapon 1, weapon 2 (a shield, or taken by a two-handed weapon 1),
   and 2 jewelry/artifact slots. Gear is crafted at the Blacksmith or dropped by monsters.
-- Details still to decide with Kha when this is built.
+- Details still to decide with Kha when each building is built.
+- Built 2026-11-04 (step 1): `scenes/city/town.tscn`, warm sunset art `assets/backgrounds/town.png` (8 frames: windmill,
+  smoke, forge fire, flag, lanterns). Character creation -> Town -> "Leave town" -> first fight.
+  Inn works (rest = full HP, free). Farm, Blacksmith and Shop windows say "coming soon". Town name: "Town" until Kha picks one.
+- Menu picture (title.png) is now an 8-frame strip too: birds, sun shimmer, scarf and cape flutter, stars.
+  All full-screen art uses `scripts/ui/animated_art.gd`; the "Background animation" switch stops it.
 
 ## Attack animations (Kha 2026-11-04)
 

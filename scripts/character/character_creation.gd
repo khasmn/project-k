@@ -153,7 +153,7 @@ func _refresh() -> void:
 
 func _start_run() -> void:
 	Run.start(draft)
-	get_tree().change_scene_to_file("res://scenes/combat/combat.tscn")
+	get_tree().change_scene_to_file("res://scenes/city/town.tscn")
 
 
 func _show_rolled(label: Label, entry: Dictionary) -> void:
