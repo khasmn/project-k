@@ -228,7 +228,7 @@ func _animate(user: Combatant, move: Dictionary, targets: Array, before: Diction
 	var node: Control = _node_of(user)
 	if move.has("aura"):
 		await fx.play(move.aura, node)
-	if move.has("shield") or move.has("heal") or move.has("buff"):  # no attack: shields light up, heals show
+	if move.has("shield") or move.has("heal") or move.has("buff") or move.has("charm"):  # no attack: shields light up, heals show
 		if user != hero:
 			await fx.monster_cast(node)
 		elif hero_sprite:
@@ -412,11 +412,14 @@ func _pet_turn() -> void:
 		_log("%s is stunned and loses this turn!" % pet.display_name)
 		return
 	var skill: Dictionary = pet.skills[0]
-	var uses_skill: bool = pet.skill_wait(skill) == 0 and (not skill.has("heal") or hero.max_hp - hero.hp >= pet.power)
+	var uses_skill: bool = pet.skill_wait(skill) == 0 and (not skill.has("heal") or hero.max_hp - hero.hp >= pet.power) and (
+		not skill.has("charm") or not hero.charmed)
+	var foes: Array[Combatant] = [target]
+	foes.append_array(_alive().filter(func(foe: Combatant) -> bool: return foe != target))
 	var before: Dictionary = _snapshot()
-	var line: String = pet.use_skill(skill, [target], [hero]) if uses_skill else pet.strike(target)
+	var line: String = pet.use_skill(skill, foes, [hero]) if uses_skill else pet.strike(target)
 	await dice.show_rolls(true)
-	await _animate(pet, skill if uses_skill else {}, [target], before)
+	await _animate(pet, skill if uses_skill else {}, foes if uses_skill and skill.get("area", "") == "all" else [target], before)
 	_log(line)
 
 
@@ -473,9 +476,9 @@ func _win() -> void:
 		_log(heal_text)
 	fight_over = true
 	for foe in enemies:
-		var loot: String = Gear.loot(foe)
-		if loot:
-			_log("[color=%s]%s[/color]" % [GOLD, loot])
+		for loot: String in [Gear.loot(foe), Farm.egg_drop(foe)]:
+			if loot:
+				_log("[color=%s]%s[/color]" % [GOLD, loot])
 	var exp_total: int = 0
 	var gold_total: int = 0
 	for foe in enemies:

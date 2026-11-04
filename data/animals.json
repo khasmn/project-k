@@ -16,5 +16,24 @@
 			{"name": "Piglet", "hp": 12, "attack": 1, "damage_die": 4, "defense": 1, "speed": 1, "power": 0},
 			{"name": "Young Boar", "hp": 20, "attack": 2, "damage_die": 6, "defense": 2, "speed": 1, "power": 0},
 			{"name": "Boar", "hp": 28, "attack": 3, "damage_die": 8, "defense": 3, "speed": 2, "power": 0}
+		]},
+
+	"owl": {"egg": "Owl Egg", "skill": "keen_sight", "weapon": "talons", "names": ["Hoot", "Sage", "Luna", "Pip", "Nimbus", "Whisper"],
+		"stages": [
+			{"name": "Owlet", "hp": 6, "attack": 1, "damage_die": 4, "defense": 0, "speed": 5, "power": 0},
+			{"name": "Young Owl", "hp": 10, "attack": 2, "damage_die": 4, "defense": 1, "speed": 6, "power": 0},
+			{"name": "Owl", "hp": 14, "attack": 3, "damage_die": 6, "defense": 1, "speed": 7, "power": 0}
+		]},
+	"raven": {"egg": "Raven Egg", "skill": "snatch", "weapon": "beak", "names": ["Shade", "Corvus", "Ink", "Nevermore", "Soot", "Magpie"],
+		"stages": [
+			{"name": "Raven Chick", "hp": 5, "attack": 1, "damage_die": 3, "defense": 0, "speed": 6, "power": 1},
+			{"name": "Young Raven", "hp": 8, "attack": 2, "damage_die": 4, "defense": 0, "speed": 7, "power": 2},
+			{"name": "Raven", "hp": 12, "attack": 3, "damage_die": 6, "defense": 1, "speed": 8, "power": 3}
+		]},
+	"drake": {"egg": "Drake Egg", "skill": "fire_breath", "weapon": "claws", "names": ["Ember", "Cinder", "Blaze", "Scorch", "Ash", "Ignis"],
+		"stages": [
+			{"name": "Drake Hatchling", "hp": 12, "attack": 2, "damage_die": 6, "defense": 1, "speed": 2, "power": 0},
+			{"name": "Young Drake", "hp": 20, "attack": 3, "damage_die": 8, "defense": 2, "speed": 3, "power": 0},
+			{"name": "Drake", "hp": 30, "attack": 4, "damage_die": 10, "defense": 3, "speed": 3, "power": 0}
 		]}
 }

@@ -34,6 +34,7 @@ static var materials: Dictionary = {}  # material id -> how many, see data/mater
 static var blueprints: Array[String] = []
 static var animals: Array[Dictionary] = []  # the Farm: {"kind", "name", "exp"}, see Farm
 static var companion: int = -1  # index in animals of the one that comes along, -1 = none
+static var eggs: Array[String] = []  # animal kinds, waiting to hatch at the Farm
 
 
 static func start(draft: CharacterDraft) -> void:
@@ -65,6 +66,7 @@ static func _reset() -> void:
 	gear = {}
 	animals = []
 	companion = -1
+	eggs = []
 	for material: String in materials.keys():
 		if not data("materials")[material].get("kept", false):
 			materials.erase(material)

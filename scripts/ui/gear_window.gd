@@ -121,6 +121,11 @@ func open(as_mode: Mode) -> void:
 		portrait.texture = load("res://assets/sprites/npc/%s.png" % npc.portrait)
 		npc_tab.text = npc.name.to_upper()
 		_say("greet")
+	if mode == Mode.FARM and not Run.eggs.is_empty():
+		var born: Array = Farm.hatch().map(func(animal: Dictionary) -> String:
+			return "%s the %s" % [animal.name, Farm.stats(animal).stage_name])
+		_say("hatch")
+		forge_text = "Your egg hatched: %s!" % ", ".join(born)
 	close_button.text = "   Leave the cart (on to the battle)" if mode == Mode.PEDDLER else "   Close"
 	refresh()
 	show()
@@ -227,6 +232,8 @@ func _show_farm() -> void:
 	list_tab.text = "ANIMALS FOR SALE"
 	var animals: Dictionary = Run.data("animals")
 	for kind: String in animals:
+		if not animals[kind].has("price"):
+			continue  # egg animals: only from monster eggs
 		var baby: Dictionary = {"kind": kind, "name": "", "exp": 0}
 		var stats: Dictionary = Farm.stats(baby)
 		var adult: Dictionary = animals[kind].stages[-1]
@@ -258,6 +265,9 @@ func _show_farm() -> void:
 		row.add_child(UI.menu_button("Coming along" if along else "Bring along", _bring.bind(-1 if along else i), FONT_SIZE))
 		if along:
 			row.get_child(-1).add_theme_color_override("font_color", UI.GOLD)
+		var release: Button = UI.menu_button("Release", _release.bind(i), 13)
+		release.tooltip_text = "Let %s go free to make room in the barn. It can't come back." % animal.name
+		row.add_child(release)
 		right.add_child(row)
 		var about: Label = Label.new()
 		about.text = Farm.title(animal).trim_prefix(animal.name + " ")
@@ -268,13 +278,20 @@ func _show_farm() -> void:
 	if Run.animals.is_empty():
 		_header(right, "No animals yet. Buy a baby on the left.")
 	else:
-		_header(right, "One animal comes along and fights\non its own after you. It grows\nwith every won fight.")
+		_header(right, "One animal comes along and fights\non its own after you. It grows\nwith every won fight. Some monsters\ndrop eggs that hatch here.")
 
 
 func _buy_animal(kind: String) -> void:
 	var animal: Dictionary = Farm.buy(kind)
 	forge_text = "%s the %s joins your farm!" % [animal.name, Farm.stats(animal).stage_name]
 	_say("buy")
+	refresh()
+
+
+func _release(index: int) -> void:
+	forge_text = "%s is free." % Run.animals[index].name
+	Farm.release(index)
+	_say("release")
 	refresh()
 
 

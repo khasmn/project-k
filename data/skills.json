@@ -20,6 +20,11 @@
 	"warm_egg": {"name": "Warm Egg", "aura": "rally", "heal": true, "description": "Gives its hero a warm egg: heals {power} HP (only when the hero is hurt that much)."},
 	"charge": {"name": "Charge", "aura": "dust", "impact": "punch", "extra_die": 4, "effect": {"status": "stun", "crit_only": true},
 		"description": "Attack with +1d4 damage. A critical hit also stuns."},
+	"keen_sight": {"name": "Keen Sight", "aura": "rally", "charm": true, "description": "Spots an opening: its hero's next attack rolls with advantage."},
+	"snatch": {"name": "Snatch", "aura": "dust", "impact": "bite", "steal": 3, "description": "Attack. A hit also steals 1-3 gold, times {power}."},
+	"fire_breath": {"name": "Fire Breath", "projectile": "fireball", "impact": "explosion", "save": "speed", "area": "all",
+		"effect": {"status": "burn", "power": 2, "turns": 2},
+		"description": "No attack roll: every monster makes a Speed save. Fail: full damage and burning (2 a turn for 2 turns). Pass: half damage."},
 
 	"diseased_bite": {"name": "Diseased Bite", "impact": "bite", "effect": {"status": "poison", "power": 1, "turns": 3, "save": "defense"}},
 	"cheap_shot": {"name": "Cheap Shot", "aura": "dust", "impact": "slash", "advantage": true},

@@ -241,6 +241,10 @@ func strike(target: Combatant, move: Dictionary = {}) -> String:
 	if dice_total + bonus < 1:
 		damage_text += " (minimum 1)"
 	line += "\n    Damage: " + damage_text + "." + target.take_damage(damage)
+	if move.has("steal"):  # a Raven's Snatch: d3 gold times its power
+		var gold: int = Dice.roll(int(move.steal)) * power
+		Run.gold += gold
+		line += "\n    %s steals %d gold!" % [display_name, gold]
 	if move.has("effect") and target.is_alive() and (result.crit or not move.effect.get("crit_only", false)):
 		line += "\n    " + afflict(target, move.effect)
 	return line
@@ -296,6 +300,9 @@ func use_skill(skill: Dictionary, foes: Array[Combatant], allies: Array[Combatan
 		var healed: int = mini(power, allies[0].max_hp - allies[0].hp)
 		allies[0].hp += healed
 		lines.append("    %s heals %d HP." % [allies[0].display_name, healed])
+	elif skill.has("charm"):
+		allies[0].charmed = true
+		lines.append("    %s's next attack rolls with advantage." % allies[0].display_name)
 	elif skill.has("buff"):
 		allies[0].statuses[skill.buff] = {"power": power, "turns": int(skill.turns)}
 		lines.append("    %s is %s: %+d to hit and damage on the next %d attacks." % [allies[0].display_name, skill.buff, power, skill.turns])
