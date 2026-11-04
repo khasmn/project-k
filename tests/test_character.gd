@@ -37,7 +37,7 @@ func _init() -> void:
 	draft.talent_id = "fast_learner"  # a talent without stat changes
 	draft.class_id = "mage"
 	var stats: Dictionary = draft.stats()
-	_check(stats.hp == 20 and stats.magic == 7 and stats.attack == 0, "stats math wrong: %s" % stats)
+	_check(stats.hp == 24 and stats.magic == 7 and stats.attack == 0, "stats math wrong: %s" % stats)
 
 	if failed:
 		quit(1)

@@ -52,7 +52,7 @@ func _enter(type: String) -> void:
 		"event":
 			Run.room_note = "Nobody's there anymore, but something is waiting for you..."
 		"elite":
-			Run.room_note = "A tough foe blocks the way! Double gold and EXP if you win."
+			Run.room_note = "A tough foe and its pack block the way!"
 	_to_battle()
 
 
@@ -61,7 +61,7 @@ func _show_rest() -> void:
 	%HeadingTitle.text = "TAKE A BREAK"
 	%HeadingText.text = "Pick one, then the battle starts"
 	_add_card("Rest", "heal", "Heal %d%% of your Max HP (+%d HP)." % [Run.REST_HEAL_PERCENT, Run.rest_amount()], _rest)
-	_add_card("Train", "train", "Gain %d%% of your EXP bar (+%d EXP)." % [Run.TRAIN_EXP_PERCENT, Run.train_amount()], _train)
+	_add_card("Train", "train", "Gain %d stat point to spend with CHARACTER." % Run.TRAIN_POINTS, _train)
 	for card in %Doors.get_children():
 		card.disabled = true
 	await get_tree().create_timer(REST_CLICK_DELAY).timeout
@@ -77,11 +77,8 @@ func _rest() -> void:
 
 
 func _train() -> void:
-	var amount: int = Run.train_amount()
-	var levels: int = Run.gain_exp(amount)
-	Run.room_note = "You trained hard: +%d EXP." % amount
-	if levels > 0:
-		Run.room_note += " Level up! Spend your points with CHARACTER after this fight."
+	Run.points += Run.TRAIN_POINTS
+	Run.room_note = "You trained hard: +%d stat point. Spend it with CHARACTER after this fight." % Run.TRAIN_POINTS
 	_to_battle()
 
 

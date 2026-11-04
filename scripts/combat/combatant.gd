@@ -68,11 +68,24 @@ func roll_mode() -> Dice.Mode:
 	return Dice.Mode.ADVANTAGE if advantage else Dice.Mode.NORMAL
 
 
-## How a d20 roll reads in the log: "14", or with advantage "9 and 15 (Chosen One keeps 15)".
-func rolled_text(rolls: Array[int]) -> String:
+## How a d20 roll reads in the log: "14", "9 and 15 (Chosen One keeps 15)" or "9 and 15 (Hero defends, keeps 9)".
+func rolled_text(rolls: Array[int], mode: Dice.Mode = roll_mode(), defender: String = "") -> String:
 	if rolls.size() < 2:
 		return str(rolls[0])
-	return "%d and %d (%s keeps %d)" % [rolls[0], rolls[1], passive("advantage"), Dice.keep(rolls, roll_mode())]
+	var reason: String = passive("advantage") if mode == Dice.Mode.ADVANTAGE else defender + " defends,"
+	return "%d and %d (%s keeps %d)" % [rolls[0], rolls[1], reason, Dice.keep(rolls, mode)]
+
+
+## Attacking a defending target rolls with disadvantage (it cancels out advantage, like in D&D).
+func attack_mode(target: Combatant) -> Dice.Mode:
+	if not target.defending:
+		return roll_mode()
+	return Dice.Mode.NORMAL if advantage else Dice.Mode.DISADVANTAGE
+
+
+## Damage bonus from Attack: +1 per 2 points (Attack 5 = +2).
+func damage_from_attack() -> int:
+	return attack / 2
 
 
 ## The race or talent name behind an effect, for the log.
@@ -114,25 +127,27 @@ func take_damage(amount: int) -> String:
 	return ""
 
 
-## Attack roll vs target's Armor; on a hit, roll damage (always at least 1).
-## A crit rolls the damage die twice. Returns two log lines, e.g.
-## "Warrior attacks: rolled 14, +5 Attack = 19 vs Armor 10: hit!"
-## "    Damage: sword (d8) rolled 7, +5 Attack = 12 damage."
+## Attack roll (d20 + Attack) vs target's Armor; on a hit, roll damage (always at least 1).
+## Damage = weapon die + half Attack. A crit rolls the damage die twice. Returns two log lines, e.g.
+## "Warrior attacks Bandit: rolled 14, +5 Attack = 19 vs Armor 10: hit!"
+## "    Damage: sword (d8) rolled 7, +2 (half Attack) = 9 damage."
 func strike(target: Combatant) -> String:
-	var line: String = "%s attacks: " % display_name
-	var result: Dictionary = Dice.check(attack, target.armor(), roll_mode(), crit_min)
+	var line: String = "%s attacks %s: " % [display_name, target.display_name]
+	var mode: Dice.Mode = attack_mode(target)
+	var result: Dictionary = Dice.check(attack, target.armor(), mode, crit_min)
 	if result.fumble and lucky and not lucky_used:
 		lucky_used = true
-		line += "rolled %s, a natural 1! %s rerolls: " % [rolled_text(result.rolls), passive("lucky")]
-		result = Dice.check(attack, target.armor(), roll_mode(), crit_min)
+		line += "rolled %s, a natural 1! %s rerolls: " % [rolled_text(result.rolls, mode, target.display_name), passive("lucky")]
+		result = Dice.check(attack, target.armor(), mode, crit_min)
+	var rolled: String = rolled_text(result.rolls, mode, target.display_name)
 	if result.fumble:
-		return line + "rolled %s, a natural 1: automatic miss!" % rolled_text(result.rolls)
+		return line + "rolled %s, a natural 1: automatic miss!" % rolled
 	if result.crit:
-		line += "rolled %s, a natural %d: CRITICAL HIT!" % [rolled_text(result.rolls), result.natural]
+		line += "rolled %s, a natural %d: CRITICAL HIT!" % [rolled, result.natural]
 		if result.natural < 20:
 			line += " (%s: crits on %d or more)" % [passive("crit_min"), crit_min]
 	else:
-		line += "rolled %s, %+d %s = %d vs Armor %d: %s" % [rolled_text(result.rolls), attack, attack_name,
+		line += "rolled %s, %+d %s = %d vs Armor %d: %s" % [rolled, attack, attack_name,
 			result.total, target.armor(), "hit!" if result.success else "miss."]
 		if not result.success:
 			return line
@@ -143,12 +158,13 @@ func strike(target: Combatant) -> String:
 	var dice_total: int = rolls[0] + (rolls[1] if rolls.size() > 1 else 0)
 	var damage_text: String = "%s (d%d) rolled %s" % [weapon, damage_die,
 		"twice: %d + %d" % [rolls[0], rolls[1]] if result.crit else str(rolls[0])]
-	damage_text += ", %+d %s" % [attack, attack_name]
+	var bonus: int = damage_from_attack() + damage_bonus
+	damage_text += ", %+d (half %s)" % [damage_from_attack(), attack_name]
 	if damage_bonus != 0:
-		damage_text += ", %+d bonus" % damage_bonus
-	var damage: int = maxi(dice_total + attack + damage_bonus, 1)
+		damage_text += ", %+d %s" % [damage_bonus, passive("damage_bonus")]
+	var damage: int = maxi(dice_total + bonus, 1)
 	damage_text += " = %d damage" % damage
-	if dice_total + attack + damage_bonus < 1:
+	if dice_total + bonus < 1:
 		damage_text += " (minimum 1)"
 	return line + "\n    Damage: " + damage_text + "." + target.take_damage(damage)
 

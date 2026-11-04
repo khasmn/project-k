@@ -1,11 +1,11 @@
 {
 	"elite": [
-		{"name": "Dark Hollow", "description": "Something growls in the dark. Tougher foe, double gold and EXP."},
-		{"name": "Old Watchtower", "description": "Someone guards the stairs. Tougher foe, double gold and EXP."}
+		{"name": "Dark Hollow", "description": "Something growls in the dark. An elite and its pack, big rewards."},
+		{"name": "Old Watchtower", "description": "Someone guards the stairs. An elite and its pack, big rewards."}
 	],
 	"rest": [
-		{"name": "Old Campfire", "description": "Warm embers. Sit down to heal, or train with your weapon."},
-		{"name": "Quiet Spring", "description": "Cool water and soft grass. Rest a while, or practice."}
+		{"name": "Old Campfire", "description": "Warm embers. Sit down to heal, or train for a stat point."},
+		{"name": "Quiet Spring", "description": "Cool water and soft grass. Rest a while, or practice for a stat point."}
 	],
 	"shop": [
 		{"name": "Peddler's Cart", "description": "A cheerful peddler waves you over. (The shop opens in a later update.)"},

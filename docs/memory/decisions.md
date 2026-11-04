@@ -5,6 +5,12 @@ if a decision changes, add a new entry that says what it replaces.
 
 | Date | Decision | Why |
 | --- | --- | --- |
+| 2026-11-05 | Fights have 1-4 random monsters from the start (data "rooms": [first, last]); click a card to target | Kha's choice; monsters made much weaker one by one so groups stay fair |
+| 2026-11-05 | Elites are their own entries (Rat King, Bandit Captain, Dire Wolf, Bone Knight, Orc Warlord); elite room = elite + 0-2 helpers; boss = Bandit Chief + 2 Bandits | Kha picked 9 + groups; replaces the 1.5x HP "Elite X" formula |
+| 2026-11-05 | Damage = weapon die + half Attack (Attack still fully adds to hit) | Attack was the only good stat pick (5A) |
+| 2026-11-05 | Speed: initiative and Flee (d20 + Speed vs 10 + fastest monster's Speed; escape = no rewards, fail = lose turn; no flee from boss) | 6C |
+| 2026-11-05 | Defend: +4 Armor and attacks on you roll with disadvantage until your next turn | 7B |
+| 2026-11-05 | Train gives +1 stat point (replaces +10% EXP); Archer 34 HP, Mage 30 HP; Orc Raider added rooms 5-8, rats rooms 1-2 | 8A, 11B, 10 |
 | 2026-11-04 | Run = 8 rooms + Bandit Chief boss; after each fight pick 1 of 3 different doors (Elite, Rest, Shop, Event) | Kha wants choices between fights; replaces the fixed 5-fight list |
 | 2026-11-04 | Stat points are saved; spend them any time with the CHARACTER button on the path screen (replaces the level-up popup) | Kha's reference layout |
 | 2026-11-04 | Shop and Event doors show as cards but lead to a plain battle until steps 3 and 4 | Kha's choice |

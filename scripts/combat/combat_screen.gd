@@ -1,9 +1,10 @@
 extends Control
-## Combat screen: the run's hero vs this room's enemy, turn by turn, then EXP and gold, then the path screen.
+## Combat screen: the run's hero vs this room's monsters (1-4), turn by turn, then EXP and gold, then the path screen.
 
 const ENEMY_TURN_DELAY: float = 0.6
 const CREATION_SCENE: String = "res://scenes/character/character_creation.tscn"
 const PATH_SCENE: String = "res://scenes/path/path.tscn"
+const FLEE_DC_BASE: int = 10  # flee: d20 + Speed vs 10 + fastest monster's Speed
 ## Battle log colors (BBCode: the log understands tags like [b]bold[/b] and [color=#hex]text[/color]).
 const HERO_COLOR: String = "#7fd17f"
 const ENEMY_COLOR: String = "#ff7a7a"
@@ -13,13 +14,15 @@ const PASSIVE_COLOR: String = "#6fd3ff"
 const EXP_COLOR: String = "#8fb4ff"
 
 var hero: Combatant
-var enemy: Combatant
-var fight_won: bool = false  # true after a win, so Continue only works once
+var enemies: Array[Combatant] = []
+var target: Combatant  # the monster the hero attacks; click a card to change it
+var fight_over: bool = false  # true after a win or a flee, so Continue only works once
 
 
 func _ready() -> void:
 	%AttackButton.pressed.connect(_on_attack)
 	%DefendButton.pressed.connect(_on_defend)
+	%FleeButton.pressed.connect(_on_flee)
 	if Run.hero == null:
 		Run.start_test()  # this scene was started on its own, not from character creation
 	_start_fight()
@@ -27,28 +30,32 @@ func _ready() -> void:
 
 func _start_fight() -> void:
 	hero = Run.hero
-	enemy = Run.enemy()
+	enemies = Run.enemies()
+	target = enemies[0]
 	hero.start_fight()
+	%FleeButton.visible = not Run.is_boss()
+	for foe in enemies:
+		%EnemyList.add_child(_make_card(foe))
 	var where: String = "Boss fight" if Run.is_boss() else "Room %d of %d" % [Run.room, Run.ROOMS]
-	%Title.text = "%s:  %s" % [where, enemy.display_name]
-	_log("[color=%s][b]--- %s: %s ---[/b][/color]" % [GOLD, where, enemy.display_name])
+	var names: String = ", ".join(enemies.map(func(foe: Combatant) -> String: return foe.display_name))
+	%Title.text = "%s:  %s" % [where, names]
+	_log("[color=%s][b]--- %s: %s ---[/b][/color]" % [GOLD, where, names])
 	if Run.room_note != "":
 		_log(Run.room_note)
 		Run.room_note = ""
 	_update_labels()
 
-	# Initiative: d20 + Speed, highest goes first. Ties go to the enemy, unless the hero wins ties (Elf).
+	# Initiative: your d20 + Speed vs one d20 for the group + its fastest Speed. Ties go to the monsters (Elf wins ties).
 	var hero_rolls: Array[int] = Dice.roll_d20s(hero.roll_mode())
-	var hero_roll: int = Dice.keep(hero_rolls, hero.roll_mode())
+	var hero_init: int = Dice.keep(hero_rolls, hero.roll_mode()) + hero.speed
 	var enemy_roll: int = Dice.roll_d20()
-	var hero_init: int = hero_roll + hero.speed
-	var enemy_init: int = enemy_roll + enemy.speed
-	var order: String = "Who goes first: %s rolled %s %+d Speed = %d, %s rolled %d %+d Speed = %d." % [
-		hero.display_name, hero.rolled_text(hero_rolls), hero.speed, hero_init,
-		enemy.display_name, enemy_roll, enemy.speed, enemy_init]
+	var fastest: int = _fastest_speed()
+	var enemy_init: int = enemy_roll + fastest
+	var order: String = "Who goes first: %s rolled %s %+d Speed = %d, monsters rolled %d %+d Speed = %d." % [
+		hero.display_name, hero.rolled_text(hero_rolls), hero.speed, hero_init, enemy_roll, fastest, enemy_init]
 	if hero_init == enemy_init:
-		order += " Tie! %s goes first." % (
-			"%s (%s wins ties)" % [hero.display_name, hero.passive("wins_ties")] if hero.wins_ties else enemy.display_name)
+		order += " Tie! %s first." % (
+			"%s (%s wins ties) goes" % [hero.display_name, hero.passive("wins_ties")] if hero.wins_ties else "The monsters go")
 	_log(order)
 	if hero_init > enemy_init or (hero_init == enemy_init and hero.wins_ties):
 		_hero_turn()
@@ -62,43 +69,67 @@ func _hero_turn() -> void:
 		_log(regen_text)
 	_update_labels()
 	_set_buttons_enabled(true)
-	%TurnLabel.text = "Your turn: choose an action"
+	%TurnLabel.text = "Your turn: pick a target, then an action"
 
 
 func _on_attack() -> void:
 	_set_buttons_enabled(false)
-	_log(hero.strike(enemy))
+	_log(hero.strike(target))
 	_after_action()
 
 
 func _on_defend() -> void:
 	_set_buttons_enabled(false)
 	hero.defending = true
-	_log("%s defends (+%d Armor until next turn)." % [hero.display_name, Combatant.DEFEND_BONUS])
+	_log("%s defends: +%d Armor, and monsters attack with disadvantage until your next turn." % [
+		hero.display_name, Combatant.DEFEND_BONUS])
 	_after_action()
+
+
+## Flee: d20 + Speed vs 10 + the fastest monster's Speed. Escape = no gold or EXP. Fail = you lose your turn.
+func _on_flee() -> void:
+	_set_buttons_enabled(false)
+	var dc: int = FLEE_DC_BASE + _fastest_speed()
+	var result: Dictionary = Dice.check(hero.speed, dc, hero.roll_mode())
+	var line: String = "%s tries to flee: rolled %s, %+d Speed = %d vs %d (10 + fastest monster's Speed)" % [
+		hero.display_name, hero.rolled_text(result.rolls), hero.speed, result.total, dc]
+	if not result.success:
+		_log(line + ": failed!")
+		_enemy_turn()
+		return
+	_log(line + ": [b]escaped![/b] No gold or EXP from this fight.")
+	fight_over = true
+	%TurnLabel.text = "You got away."
+	_add_choice("Continue", _continue)
 
 
 func _after_action() -> void:
 	_update_labels()
-	if not enemy.is_alive():
+	if _alive().is_empty():
 		_win()
-	else:
-		_enemy_turn()
+		return
+	if not target.is_alive():
+		target = _alive()[0]
+		_update_labels()
+	_enemy_turn()
 
 
+## Every living monster attacks once, with a short pause before each.
 func _enemy_turn() -> void:
 	_set_buttons_enabled(false)
-	%TurnLabel.text = "%s's turn..." % enemy.display_name
-	# await pauses this function until the timer runs out, so the turn doesn't happen instantly.
-	await get_tree().create_timer(ENEMY_TURN_DELAY).timeout
-	_log(enemy.strike(hero))
-	_update_labels()
-	if not hero.is_alive():
-		_log("[color=" + ENEMY_COLOR + "][b]Defeated![/b][/color] Run over %s." % ("at the boss fight" if Run.is_boss() else "in room %d of %d" % [Run.room, Run.ROOMS]))
-		%TurnLabel.text = "Defeated! Your run is over."
-		_add_choice("New hero", _new_hero)
-	else:
-		_hero_turn()
+	for foe in _alive():
+		%TurnLabel.text = "%s's turn..." % foe.display_name
+		# await pauses this function until the timer runs out, so the turns don't happen instantly.
+		await get_tree().create_timer(ENEMY_TURN_DELAY).timeout
+		_log(foe.strike(hero))
+		_update_labels()
+		if not hero.is_alive():
+			_log("[color=%s][b]Defeated![/b][/color] Run over %s." % [ENEMY_COLOR,
+				"at the boss fight" if Run.is_boss() else "in room %d of %d" % [Run.room, Run.ROOMS]])
+			%TurnLabel.text = "Defeated! Your run is over."
+			_add_choice("New hero", _new_hero)
+			return
+	_hero_turn()
 
 
 func _win() -> void:
@@ -106,16 +137,21 @@ func _win() -> void:
 	var heal_text: String = hero.win_fight()
 	if heal_text != "":
 		_log(heal_text)
-	fight_won = true
+	fight_over = true
 	if Run.is_boss():
-		_log("[color=" + GOLD + "][b]Run complete![/b][/color] You beat the %s!" % enemy.display_name)
-		%TurnLabel.text = "Run complete! You beat the %s!" % enemy.display_name
+		_log("[color=" + GOLD + "][b]Run complete![/b][/color] You beat the %s!" % enemies[0].display_name)
+		%TurnLabel.text = "Run complete! You beat the %s!" % enemies[0].display_name
 		_add_choice("New hero", _new_hero)
 		_update_labels()
 		return
-	var levels: int = Run.gain_exp(enemy.exp_reward)
-	Run.gold += enemy.gold_reward
-	_log("[color=%s]+%d EXP.[/color]  [color=%s]+%d gold.[/color]" % [EXP_COLOR, enemy.exp_reward, GOLD, enemy.gold_reward])
+	var exp_total: int = 0
+	var gold_total: int = 0
+	for foe in enemies:
+		exp_total += foe.exp_reward
+		gold_total += foe.gold_reward
+	var levels: int = Run.gain_exp(exp_total)
+	Run.gold += gold_total
+	_log("[color=%s]+%d EXP.[/color]  [color=%s]+%d gold.[/color]" % [EXP_COLOR, exp_total, GOLD, gold_total])
 	if levels > 0:
 		_log("[color=" + GOLD + "][b]Level up![/b][/color] Now level %d: +%d stat points. Spend them with CHARACTER on the path screen." % [
 			Run.level, levels * Run.POINTS_PER_LEVEL])
@@ -125,9 +161,9 @@ func _win() -> void:
 
 
 func _continue() -> void:
-	if not fight_won:
+	if not fight_over:
 		return  # a second click on a button that was already used
-	fight_won = false
+	fight_over = false
 	Run.room += 1
 	Run.room_type = ""
 	get_tree().change_scene_to_file(PATH_SCENE)
@@ -147,6 +183,53 @@ func _add_choice(text: String, on_pressed: Callable) -> void:
 	%Buttons.hide()  # the fight is over: only the choice buttons make sense now
 
 
+func _alive() -> Array[Combatant]:
+	var alive: Array[Combatant] = []
+	alive.assign(enemies.filter(func(foe: Combatant) -> bool: return foe.is_alive()))
+	return alive
+
+
+func _fastest_speed() -> int:
+	return _alive().map(func(foe: Combatant) -> int: return foe.speed).max()
+
+
+## A clickable monster card: name, HP bar, HP and stats. Clicking it makes that monster the target.
+func _make_card(foe: Combatant) -> Button:
+	var card: Button = Button.new()
+	card.custom_minimum_size = Vector2(0, 104)
+	card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	card.pressed.connect(_set_target.bind(foe))
+	var lines: VBoxContainer = VBoxContainer.new()
+	lines.name = "Lines"
+	lines.set_anchors_preset(Control.PRESET_FULL_RECT)
+	lines.offset_left = 10
+	lines.offset_top = 6
+	lines.offset_right = -10
+	lines.mouse_filter = Control.MOUSE_FILTER_IGNORE  # clicks go through to the card
+	for part in ["Name", "HPBar", "HP", "Stats"]:
+		var node: Control = ProgressBar.new() if part == "HPBar" else Label.new()
+		if node is Label:
+			node.clip_text = true  # long text is cut instead of stretching the card
+		node.name = part
+		node.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		lines.add_child(node)
+	var bar: ProgressBar = lines.get_node("HPBar")
+	bar.custom_minimum_size = Vector2(0, 12)
+	bar.show_percentage = false
+	var fill: StyleBoxFlat = StyleBoxFlat.new()
+	fill.bg_color = Color(0.85, 0.3, 0.3)
+	bar.add_theme_stylebox_override("fill", fill)
+	lines.get_node("Name").add_theme_font_size_override("font_size", 18)
+	card.add_child(lines)
+	return card
+
+
+func _set_target(foe: Combatant) -> void:
+	if foe.is_alive():
+		target = foe
+		_update_labels()
+
+
 func _update_labels() -> void:
 	%HeroName.text = Run.hero_title
 	%HeroHPBar.max_value = hero.max_hp
@@ -163,16 +246,28 @@ func _update_labels() -> void:
 	%ExpBar.max_value = Run.exp_needed()
 	%ExpBar.value = Run.experience
 
-	%EnemyName.text = enemy.display_name
-	%EnemyHPBar.max_value = enemy.max_hp
-	%EnemyHPBar.value = enemy.hp
-	%EnemyHP.text = "HP %d / %d" % [enemy.hp, enemy.max_hp]
-	%EnemyStats.text = "Attack %d (d%d)   Armor %d   Speed %d" % [enemy.attack, enemy.damage_die, enemy.armor(), enemy.speed]
+	for i in enemies.size():
+		var foe: Combatant = enemies[i]
+		var card: Button = %EnemyList.get_child(i)
+		var lines: Node = card.get_node("Lines")
+		lines.get_node("Name").text = foe.display_name + ("   < TARGET" if foe == target and foe.is_alive() else "")
+		lines.get_node("HPBar").max_value = foe.max_hp
+		lines.get_node("HPBar").value = foe.hp
+		lines.get_node("HP").text = "HP %d / %d" % [foe.hp, foe.max_hp] if foe.is_alive() else "Defeated"
+		lines.get_node("Stats").text = "Atk %d (d%d)  Armor %d  Spd %d" % [foe.attack, foe.damage_die, foe.armor(), foe.speed]
+		card.disabled = not foe.is_alive()
+		card.modulate = Color(1, 1, 1, 1 if foe.is_alive() else 0.4)
+		var style: StyleBoxFlat = load("res://scenes/ui/box_style.tres").duplicate()
+		if foe == target and foe.is_alive():
+			style.border_color = Color(1, 0.83, 0.3)
+		for state in ["normal", "hover", "pressed", "focus", "disabled"]:
+			card.add_theme_stylebox_override(state, style)
 
 
 func _set_buttons_enabled(enabled: bool) -> void:
 	%AttackButton.disabled = not enabled
 	%DefendButton.disabled = not enabled
+	%FleeButton.disabled = not enabled
 
 
 func _log(text: String) -> void:
@@ -183,9 +278,13 @@ func _log(text: String) -> void:
 func _highlight(text: String) -> String:
 	for passive in hero.passive_names.values():
 		text = text.replace(passive, "[color=%s]%s[/color]" % [PASSIVE_COLOR, passive])
-	for fighter in [[hero, HERO_COLOR], [enemy, ENEMY_COLOR]]:
-		var name_text: String = fighter[0].display_name + " attacks:"
-		text = text.replace(name_text, "[color=%s][b]%s[/b][/color]" % [fighter[1], name_text])
+	var attackers: Array = [[hero, HERO_COLOR]]
+	for foe in enemies:
+		attackers.append([foe, ENEMY_COLOR])
+	for fighter in attackers:
+		var name_text: String = fighter[0].display_name + " attacks"
+		if text.begins_with(name_text):
+			text = "[color=%s][b]%s[/b][/color]%s" % [fighter[1], name_text, text.substr(name_text.length())]
 	text = text.replace("CRITICAL HIT!", "[color=%s][b]CRITICAL HIT![/b][/color]" % GOLD)
 	text = text.replace(": hit!", ": [b]hit![/b]")
 	text = text.replace("automatic miss!", "[color=%s]automatic miss![/color]" % GRAY)

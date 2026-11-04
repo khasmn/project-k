@@ -23,7 +23,7 @@ Every bug needs a repro command.
 
 Play tool (both agents):
 `$G --headless --script res://tests/play.gd -- [--seed N] [--race R] [--talent T] [--class C] [--force 20,1,...] actions...`
-- Fight actions: `attack`, `defend`, `1` ("Continue" or "New hero"). Path screen: `1`/`2`/`3` (door, or Rest/Train),
+- Fight actions: `t1`-`t4` (target a monster), `attack`, `defend`, `flee`, `1` ("Continue" or "New hero"). Path screen: `1`/`2`/`3` (door, or Rest/Train),
   `character`, `+hp`/`+attack`/`+defense`/`+speed` (`-stat` undoes), `confirm`, `close`.
 - Without `--race`/`--talent` the hero is rolled; class defaults to warrior. Ids are in `data/*.json`.
 - It plays a whole run from fight 1 and prints the log, the state and what you can click next.
@@ -48,7 +48,7 @@ as missing), the top rows of `docs/memory/decisions.md` (latest rule changes), a
 tested. Hunt for bugs where the code breaks the rules, crashes or gets stuck. Tools:
 - Self-checks: `tests/test_*.gd`
 - Play tool (above). `--force` sets the next dice in roll order, after the hero is rolled.
-  In rooms 1-8 the first die picks the enemy (d2 or d3); then initiative: the hero's d20 (two with
+  In rooms 1-8 the first dice pick the monsters (a d4 for how many, then one die each); then initiative: the hero's d20 (two with
   advantage), then the enemy's d20. The boss room starts with initiative.
 - Your own probe scripts in `tests/tmp/tester/` (copy the style of `tests/test_run.gd`):
   set `Dice.rng.seed` and `Dice.forced_rolls`, build `Combatant`s and change stats directly,
