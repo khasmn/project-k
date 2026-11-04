@@ -31,6 +31,11 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 
 ## Session log (newest first)
 
+### 2026-11-04 – Skills, Energy and status effects
+- data/skills.json; classes and monsters name their skill. Skill button in COMMAND, Energy in the HERO box, statuses on rows and in Info.
+- Combatant: energy, shield, statuses, afflict (saves), use_skill; monsters tick poison/burn and can be stunned.
+- tests/test_skills.gd added. The balance bot in test_run still plays without skills.
+
 ### 2026-11-04 – Boss sprites
 - Rat King, Bandit Captain, Dire Wolf, Bone Knight, Orc Warlord (48x48) and Bandit Chief (64x64) drawn; every monster now has art.
 - Monster cards size the picture from the strip height, so bigger canvases just work.

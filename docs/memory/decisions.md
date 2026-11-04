@@ -5,6 +5,7 @@ if a decision changes, add a new entry that says what it replaces.
 
 | Date | Decision | Why |
 | --- | --- | --- |
+| 2026-11-04 | Skills: 1 per class now; Energy max 3, full each fight, +1 a turn; monsters use their skill on a d6 5-6 (that d6 isn't animated); status effects poison, burn, stun, shield with saves vs 10 + Attack (full list in design.md) | Kha's choices; makes classes feel different |
 | 2026-11-04 | Rat King is skinny and starving (arched spine, ribs, long thin legs) but still scary (scars, fangs, red eye); the Orc Warlord is the fat one (big gut, iron collar). Replaces the fat Rat King | Kha changed their mind |
 | 2026-11-04 | Rat King redrawn as one big, fat, scary rat (no crown): round hump, sagging belly, wide maw of fangs, drool, spiky matted fur, many scars, torn ear, glowing red eye, yellow fangs, claws; Giant Rat colors. Replaces the three-rat knot | Kha's request |
 | 2026-11-04 | Dire Wolf redrawn: slate blue-grey, big spiky mane, bushy tail, prowling with a paw raised, calm amber eye (inspired by a Fear & Hunger wolf, made less scary); normal Wolf unchanged | Kha's reference |

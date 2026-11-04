@@ -29,6 +29,7 @@ var animations: Dictionary = {}  # AtlasTexture -> frames per second
 
 func _ready() -> void:
 	%AttackButton.pressed.connect(_on_attack)
+	%SkillButton.pressed.connect(_on_skill)
 	%DefendButton.pressed.connect(_on_defend)
 	%FleeButton.pressed.connect(_on_flee)
 	%ItemButton.pressed.connect(_open_items)
@@ -65,9 +66,14 @@ func _start_fight() -> void:
 	target = enemies[0]
 	hero.start_fight()
 	%FleeButton.visible = not Run.is_boss()
+	%SkillButton.visible = not hero.skill.is_empty()
+	if not hero.skill.is_empty():
+		%SkillButton.text = "   %s (%d)" % [hero.skill.name, hero.skill.cost]
+		%SkillButton.tooltip_text = "%s Costs %d Energy; you get 1 back each turn." % [hero.skill.description, hero.skill.cost]
 	for foe in enemies:
 		%EnemyList.add_child(_make_card(foe))
 		var row: Button = UI.menu_button("", _set_target.bind(foe))
+		row.clip_text = true  # status text like "(Poison 2)" is cut instead of widening the box
 		%TargetList.add_child(row)
 	var where: String = "Boss fight" if Run.is_boss() else "Room %d of %d" % [Run.room, Run.ROOMS]
 	var names: String = ", ".join(enemies.map(func(foe: Combatant) -> String: return foe.display_name))
@@ -123,15 +129,27 @@ func _show_info(on: bool) -> void:
 
 
 func _info(foe: Combatant) -> String:
-	return "%s\nHP %d / %d\nAttack %d, %s (d%d)\nArmor %d   Speed %d" % [
+	var text: String = "%s\nHP %d / %d\nAttack %d, %s (d%d)\nArmor %d   Speed %d" % [
 		foe.display_name, foe.hp, foe.max_hp, foe.attack, foe.weapon, foe.damage_die, foe.armor(), foe.speed]
+	if not foe.skill.is_empty():
+		text += "\nSkill: %s" % foe.skill.name
+	if foe.status_text():
+		text += "\n" + foe.status_text()
+	return text
 
 
 func _hero_turn() -> void:
-	var regen_text: String = hero.start_turn()
-	if regen_text != "":
-		_log(regen_text)
+	var turn_text: String = hero.start_turn()
+	if turn_text != "":
+		_log(turn_text)
 	_update_labels()
+	if not hero.is_alive():
+		_defeat()
+		return
+	if hero.shake_off_stun():
+		_log("%s is stunned and loses this turn!" % hero.display_name)
+		_enemy_turn()
+		return
 	_set_buttons_enabled(true)
 	%TurnLabel.text = "Your turn: pick a target, then an action"
 
@@ -140,6 +158,16 @@ func _on_attack() -> void:
 	_set_buttons_enabled(false)
 	var line: String = hero.strike(target)
 	await dice.show_rolls(true)  # the strike is already decided; show its dice, then the result
+	_log(line)
+	_after_action()
+
+
+func _on_skill() -> void:
+	_set_buttons_enabled(false)
+	var foes: Array[Combatant] = [target]
+	foes.append_array(_alive().filter(func(foe: Combatant) -> bool: return foe != target))
+	var line: String = hero.use_skill(foes, [hero])
+	await dice.show_rolls(true)
 	_log(line)
 	_after_action()
 
@@ -221,17 +249,36 @@ func _enemy_turn() -> void:
 		%TurnLabel.text = "%s's turn..." % foe.display_name
 		# await pauses this function until the timer runs out, so the turns don't happen instantly.
 		await get_tree().create_timer(ENEMY_TURN_DELAY).timeout
-		var line: String = foe.strike(hero)
+		var turn_text: String = foe.start_turn()
+		if turn_text != "":
+			_log(turn_text)
+			_update_labels()
+		if not foe.is_alive():
+			continue
+		if foe.shake_off_stun():
+			_log("%s is stunned and loses this turn!" % foe.display_name)
+			continue
+		# The skill-chance d6 isn't animated: it would add a throw to every monster turn.
+		var line: String = foe.use_skill([hero], _alive()) if not foe.skill.is_empty() and Dice.roll(6, false) >= Combatant.SKILL_CHANCE else foe.strike(hero)
 		await dice.show_rolls(false)
 		_log(line)
 		_update_labels()
 		if not hero.is_alive():
-			_log("[color=%s][b]Defeated![/b][/color] Run over %s." % [ENEMY_COLOR,
-				"at the boss fight" if Run.is_boss() else "in room %d of %d" % [Run.room, Run.ROOMS]])
-			%TurnLabel.text = "Defeated! Your run is over."
-			_add_choice("New hero", _new_hero)
+			_defeat()
 			return
+	if _alive().is_empty():  # poison or burn finished the last monster
+		_win()
+		return
+	if not target.is_alive():
+		target = _alive()[0]
 	_hero_turn()
+
+
+func _defeat() -> void:
+	_log("[color=%s][b]Defeated![/b][/color] Run over %s." % [ENEMY_COLOR,
+		"at the boss fight" if Run.is_boss() else "in room %d of %d" % [Run.room, Run.ROOMS]])
+	%TurnLabel.text = "Defeated! Your run is over."
+	_add_choice("New hero", _new_hero)
 
 
 func _win() -> void:
@@ -370,9 +417,10 @@ func _update_labels() -> void:
 	%HeroTokenName.text = hero.display_name
 	%HeroTokenBar.max_value = hero.max_hp
 	%HeroTokenBar.value = hero.hp
-	%HeroStats.text = "%s %d (d%d)   Armor %d%s   Speed %d\nPassives: %s" % [
+	%HeroStats.text = "%s %d (d%d)   Armor %d%s   Speed %d   Energy %d/%d%s\nPassives: %s" % [
 		hero.attack_name, hero.attack, hero.damage_die, hero.armor(), " (defending)" if hero.defending else "",
-		hero.speed, ", ".join(passives) if passives else "none in combat"]
+		hero.speed, hero.energy, Combatant.MAX_ENERGY, "   " + hero.status_text() if hero.status_text() else "",
+		", ".join(passives) if passives else "none in combat"]
 	%Level.text = "Level %d   EXP %d / %d   Gold %d" % [Run.level, Run.experience, Run.exp_needed(), Run.gold]
 	%ExpBar.max_value = Run.exp_needed()
 	%ExpBar.value = Run.experience
@@ -386,6 +434,8 @@ func _update_labels() -> void:
 		lines.get_node("HPBar").value = foe.hp
 		lines.get_node("HP").text = "HP %d / %d" % [foe.hp, foe.max_hp] if foe.is_alive() else "Defeated"
 		lines.get_node("Stats").text = "Atk %d d%d Arm %d Spd %d" % [foe.attack, foe.damage_die, foe.armor(), foe.speed]
+		if foe.status_text():
+			lines.get_node("Stats").text += "  " + foe.status_text()
 		card.tooltip_text = _info(foe) if foe.is_alive() else ""
 		card.disabled = not foe.is_alive()
 		card.modulate = Color(1, 1, 1, 1 if foe.is_alive() else 0.4)
@@ -399,6 +449,8 @@ func _update_labels() -> void:
 		var row: Button = %TargetList.get_child(i)
 		var is_target: bool = foe == target and foe.is_alive()
 		row.text = "%s %s  %s" % ["▶" if is_target else " ", foe.display_name, "%d/%d" % [foe.hp, foe.max_hp] if foe.is_alive() else "down"]
+		if foe.is_alive() and foe.status_text():
+			row.text += "  (%s)" % foe.status_text()
 		row.disabled = not foe.is_alive()
 		row.add_theme_color_override("font_color", Color(1, 0.83, 0.3) if is_target else Color(1, 1, 1))
 
@@ -408,6 +460,7 @@ func _set_buttons_enabled(enabled: bool) -> void:
 	if not enabled:
 		_show_info(false)
 	%AttackButton.disabled = not enabled
+	%SkillButton.disabled = not enabled or hero.energy < int(hero.skill.get("cost", 0))
 	%DefendButton.disabled = not enabled
 	%FleeButton.disabled = not enabled
 	%ItemButton.disabled = not enabled or Run.items.values().all(func(count: int) -> bool: return count == 0)
