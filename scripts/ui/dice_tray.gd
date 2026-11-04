@@ -3,15 +3,17 @@ extends HBoxContainer
 ## Dice tumbling in the middle of the battle area, landing on rolls the Dice module already made.
 ## Only for show: the results are decided before the animation starts.
 
-const SPIN_TIME: float = 0.6
-const HOLD_TIME: float = 0.25
+const SPIN_TIME: float = 1.1
+const HOLD_TIME: float = 0.4
 const DIE_SIZE: int = 72
-const INK: Color = Color(0.16, 0.12, 0.12)
+## Who rolls sets the die color, so your dice never get mixed up with the monsters': [die tint, number color].
+const HERO_COLORS: Array[Color] = [Color(0.8, 1, 0.82), Color(0.16, 0.12, 0.12)]
+const MONSTER_COLORS: Array[Color] = [Color(0.6, 0.22, 0.24), Color(1, 0.92, 0.86)]
 
 
 ## Show the rolls noted since the last call. Rolls of the same die land together
 ## (both d20s of advantage, or both initiative d20s); a different die starts a new throw.
-func show_rolls() -> void:
+func show_rolls(hero_rolls: bool) -> void:
 	var rolls: Array = Dice.history.duplicate()
 	Dice.history.clear()
 	while not rolls.is_empty():
@@ -19,10 +21,10 @@ func show_rolls() -> void:
 		var results: Array[int] = []
 		while not rolls.is_empty() and rolls[0][0] == sides:
 			results.append(rolls.pop_front()[1])
-		await _throw(sides, results)
+		await _throw(sides, results, HERO_COLORS if hero_rolls else MONSTER_COLORS)
 
 
-func _throw(sides: int, results: Array[int]) -> void:
+func _throw(sides: int, results: Array[int], colors: Array[Color]) -> void:
 	var numbers: Array[Label] = []
 	for value in results:
 		var die: TextureRect = TextureRect.new()
@@ -31,12 +33,13 @@ func _throw(sides: int, results: Array[int]) -> void:
 		die.size_flags_vertical = Control.SIZE_SHRINK_CENTER  # keep the die square, not stretched to the area
 		die.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		die.pivot_offset = Vector2(DIE_SIZE, DIE_SIZE) / 2  # spin around the middle
+		die.self_modulate = colors[0]  # self_ = tint the die only, not the number on it
 		var number: Label = Label.new()
 		number.set_anchors_preset(Control.PRESET_FULL_RECT)
 		number.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		number.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		number.add_theme_font_size_override("font_size", 24)
-		number.add_theme_color_override("font_color", INK)
+		number.add_theme_color_override("font_color", colors[1])
 		die.add_child(number)
 		add_child(die)
 		numbers.append(number)
@@ -53,7 +56,7 @@ func _throw(sides: int, results: Array[int]) -> void:
 	for i in numbers.size():
 		numbers[i].text = str(results[i])
 		if sides == 20 and results[i] in [1, 20]:  # natural 20 gold, natural 1 red
-			numbers[i].get_parent().modulate = Color(1, 0.85, 0.35) if results[i] == 20 else Color(1, 0.5, 0.45)
+			numbers[i].get_parent().self_modulate = Color(1, 0.85, 0.35) if results[i] == 20 else Color(1, 0.5, 0.45)
 	await get_tree().create_timer(HOLD_TIME).timeout
 	for die in get_children():
 		die.queue_free()

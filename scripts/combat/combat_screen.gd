@@ -82,7 +82,9 @@ func _start_fight() -> void:
 	# Initiative: your d20 + Speed vs one d20 for the group + its fastest Speed. Ties go to the monsters (Elf wins ties).
 	var hero_rolls: Array[int] = Dice.roll_d20s(hero.roll_mode())
 	var hero_init: int = Dice.keep(hero_rolls, hero.roll_mode()) + hero.speed
+	await dice.show_rolls(true)
 	var enemy_roll: int = Dice.roll_d20()
+	await dice.show_rolls(false)
 	var fastest: int = _fastest_speed()
 	var enemy_init: int = enemy_roll + fastest
 	var order: String = "Who goes first: %s rolled %s %+d Speed = %d, monsters rolled %d %+d Speed = %d." % [
@@ -90,7 +92,6 @@ func _start_fight() -> void:
 	if hero_init == enemy_init:
 		order += " Tie! %s first." % (
 			"%s (%s wins ties) goes" % [hero.display_name, hero.passive("wins_ties")] if hero.wins_ties else "The monsters go")
-	await dice.show_rolls()
 	_log(order)
 	if hero_init > enemy_init or (hero_init == enemy_init and hero.wins_ties):
 		_hero_turn()
@@ -138,7 +139,7 @@ func _hero_turn() -> void:
 func _on_attack() -> void:
 	_set_buttons_enabled(false)
 	var line: String = hero.strike(target)
-	await dice.show_rolls()  # the strike is already decided; show its dice, then the result
+	await dice.show_rolls(true)  # the strike is already decided; show its dice, then the result
 	_log(line)
 	_after_action()
 
@@ -192,7 +193,7 @@ func _on_flee() -> void:
 	var result: Dictionary = Dice.check(hero.speed, dc, hero.roll_mode())
 	var line: String = "%s tries to flee: rolled %s, %+d Speed = %d vs %d (10 + fastest monster's Speed)" % [
 		hero.display_name, hero.rolled_text(result.rolls), hero.speed, result.total, dc]
-	await dice.show_rolls()
+	await dice.show_rolls(true)
 	if not result.success:
 		_log(line + ": failed!")
 		_enemy_turn()
@@ -221,7 +222,7 @@ func _enemy_turn() -> void:
 		# await pauses this function until the timer runs out, so the turns don't happen instantly.
 		await get_tree().create_timer(ENEMY_TURN_DELAY).timeout
 		var line: String = foe.strike(hero)
-		await dice.show_rolls()
+		await dice.show_rolls(false)
 		_log(line)
 		_update_labels()
 		if not hero.is_alive():
