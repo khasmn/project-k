@@ -101,7 +101,7 @@ theme_override_constants/separation = 24
 [node name="EnemyList" type="GridContainer" parent="Margin/VBox/Arena/VBox/Field"]
 layout_mode = 2
 unique_name_in_owner = true
-size_flags_horizontal = 3
+size_flags_horizontal = 6
 theme_override_constants/h_separation = 8
 theme_override_constants/v_separation = 8
 columns = 4

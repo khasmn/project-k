@@ -424,8 +424,7 @@ func _fastest_speed() -> int:
 ## A clickable monster card: name, HP bar, HP and stats. Clicking it makes that monster the target.
 func _make_card(foe: Combatant) -> Button:
 	var card: Button = Button.new()
-	card.custom_minimum_size = Vector2(0, 116)
-	card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	card.custom_minimum_size = Vector2(SPRITE_SIZE + 20, 116)  # fixed width keeps the group close together
 	card.pressed.connect(_set_target.bind(foe))
 	var lines: VBoxContainer = VBoxContainer.new()
 	lines.name = "Lines"
@@ -476,6 +475,7 @@ func _make_card(foe: Combatant) -> Button:
 		arrow.offset_bottom = arrow.offset_top + 24
 		picture.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(picture)
+		card.custom_minimum_size.x = maxf(card.custom_minimum_size.x, shown)  # bosses are wider
 		pictures[foe] = picture
 		lines.hide()  # art only: the info shows on hover or with the Info command
 	return card
