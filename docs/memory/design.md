@@ -17,6 +17,16 @@ through chapters of rooms until you beat the boss or lose all your lives.
 
 ## Character creation
 
+### Hero look (Kha 2026-11-04)
+- Name: typed, or a Random button (names in data/looks.json) so it works mouse-only.
+- Each race has its own look and 3 skin tones (races.json "skins"): Human normal tones, Elf pointed ears,
+  Orc green with tusks, Dwarf beard, Ironhide grey with rivets, Undead pale with sunken eyes,
+  Mossfolk bark skin with leaves, Emberkin red-orange with glowing eyes, Glimmerfae lilac with wings.
+- Player picks: skin tone, hair style (short, long, ponytail, mohawk, bald), hair color, outfit
+  (Peasant, Adventurer, Noble; looks only). The class only changes the weapon.
+- Art: 32x32 layered 5-frame strips in assets/sprites/hero/ (race, face, outfit, hair, weapon);
+  grey layers are tinted with the skin or hair color. Drafted by Claude, Kha polishes in Pixelorama.
+
 Race and talent are rolled at random, weighted by rarity. Class is picked freely.
 
 Rolling rules:

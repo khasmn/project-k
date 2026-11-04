@@ -19,6 +19,22 @@ static func menu_button(text: String, on_pressed: Callable, font_size: int = 18)
 	return button
 
 
+## An animated strip of frames side by side (frame_width 0 = square frames, like 32x32 sprites).
+## AtlasTexture is a texture that shows one rectangle ("region") of a bigger picture.
+static func strip(path: String, frame_width: int = 0) -> AtlasTexture:
+	var frames: AtlasTexture = AtlasTexture.new()
+	frames.atlas = load(path)
+	var height: int = frames.atlas.get_height()
+	frames.region = Rect2(0, 0, frame_width if frame_width else height, height)
+	return frames
+
+
+## Move a strip to the frame for the current time, fps frames per second (0 = stay on frame 1).
+static func animate(frames: AtlasTexture, fps: int) -> void:
+	var width: int = int(frames.region.size.x)
+	frames.region.position.x = Time.get_ticks_msec() * fps / 1000 % (frames.atlas.get_width() / width) * width
+
+
 static func add_cursor(button: Button) -> void:
 	button.mouse_entered.connect(func() -> void:
 		if not button.disabled:

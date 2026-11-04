@@ -1,0 +1,7 @@
+{
+	"hair_styles": {"short": "Short", "long": "Long", "ponytail": "Ponytail", "mohawk": "Mohawk", "bald": "Bald"},
+	"hair_colors": {"brown": "#8a5a38", "black": "#4a4048", "blonde": "#e6c870", "red": "#b8442e", "white": "#e8e8ec", "teal": "#4fa0a0"},
+	"outfits": {"adventurer": "Adventurer", "peasant": "Peasant", "noble": "Noble"},
+	"names": ["Aldric", "Brenna", "Cael", "Dara", "Edrin", "Fenna", "Garrick", "Hilde", "Ivo", "Jessa", "Kael", "Liora", "Marek", "Nyra",
+		"Orin", "Petra", "Quill", "Rowan", "Sable", "Torin", "Ulla", "Varek", "Wren", "Yara", "Zane", "Ash", "Briar", "Corin", "Ember", "Thorne"]
+}

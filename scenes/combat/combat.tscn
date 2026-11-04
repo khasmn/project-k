@@ -108,8 +108,9 @@ columns = 4
 
 [node name="HeroToken" type="VBoxContainer" parent="Margin/VBox/Arena/VBox/Field"]
 layout_mode = 2
+unique_name_in_owner = true
 custom_minimum_size = Vector2(180, 0)
-size_flags_vertical = 4
+size_flags_vertical = 8
 
 [node name="HeroTokenName" type="Label" parent="Margin/VBox/Arena/VBox/Field/HeroToken"]
 layout_mode = 2
