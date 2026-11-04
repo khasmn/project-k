@@ -8,8 +8,8 @@
 		{"name": "Quiet Spring", "description": "Cool water and soft grass. Rest a while, or practice for a stat point."}
 	],
 	"shop": [
-		{"name": "Peddler's Cart", "description": "A cheerful peddler waves you over. (The shop opens in a later update.)"},
-		{"name": "Traveling Smith", "description": "Hammers, potions, odd trinkets. (The shop opens in a later update.)"}
+		{"name": "Peddler's Cart", "description": "A cheerful peddler waves you over. Odd wares, odd prices."},
+		{"name": "Wandering Trader", "description": "A cart piled high with gear, potions and trinkets."}
 	],
 	"event": [
 		{"name": "Stranger on the Road", "description": "A hooded figure wants a word. (Events arrive in a later update.)"},

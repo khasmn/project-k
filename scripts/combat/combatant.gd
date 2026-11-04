@@ -21,6 +21,8 @@ var sprite: String = ""  # file in assets/sprites/enemies/, a strip of square fr
 var exp_reward: int = 0
 var gold_reward: int = 0
 var luck: int = 0  # forging grade (Gear.forge)
+var charisma: int = 0  # haggling (Peddler.haggle)
+var charmed: bool = false  # Luck Charm: the next attack rolls with advantage
 var loot: Dictionary = {}  # what a monster drops when beaten (Gear.loot)
 var defending: bool = false
 var skills: Array[Dictionary] = []  # from data/skills.json: heroes list "skills", monsters have one "skill"
@@ -62,6 +64,7 @@ func _init(data: Dictionary) -> void:
 		skills.append(Run.data("skills")[id])
 	exp_reward = int(data.get("exp", 0))
 	luck = int(data.get("luck", 0))
+	charisma = int(data.get("charisma", 0))
 	loot = data.get("loot", {})
 	gold_reward = int(data.get("gold", 0))
 	passive_names = data.get("passive_names", {})
@@ -111,6 +114,7 @@ func passive(effect: String) -> String:
 func start_fight() -> void:
 	defending = false
 	lucky_used = false
+	charmed = false
 	energy = start_energy - 1  # your first turn adds the 1 back
 	turn = 0
 	ready_on.clear()
@@ -185,7 +189,8 @@ func take_damage(amount: int, blockable: bool = true) -> String:
 ## A skill can change the attack: "to_hit", "advantage", "extra_die" and an "effect" on a hit.
 func strike(target: Combatant, move: Dictionary = {}) -> String:
 	var line: String = "%s attacks %s: " % [display_name, target.display_name]
-	var mode: Dice.Mode = attack_mode(target, advantage or move.get("advantage", false))
+	var mode: Dice.Mode = attack_mode(target, advantage or charmed or move.get("advantage", false))
+	charmed = false
 	var to_hit: int = attack + int(move.get("to_hit", 0))
 	var result: Dictionary = Dice.check(to_hit, target.armor(), mode, crit_min)
 	if result.fumble and lucky and not lucky_used:

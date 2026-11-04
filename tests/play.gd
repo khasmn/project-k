@@ -8,6 +8,7 @@ extends SceneTree
 ## 1 to click a choice ("Continue", "New hero").
 ## On the path screen: 1/2/3 to pick a door (or Rest/Train), character to open the stat panel,
 ## then +hp, +attack, +defense, +speed to add a point (-hp etc. to take it back), confirm or close.
+## The Shop door opens the Peddler's Cart: leave to go on to the battle.
 ## Same seed + same options + same actions = same run, so you can replay and add one action at a time.
 ## --force makes the next dice (any die, in roll order, after the hero is rolled) come out as those numbers.
 ## In rooms 1-8 the first dice pick the monsters (a d4 for how many, then one die per monster), then initiative;
@@ -85,7 +86,7 @@ func _play(actions: Array[String]) -> void:
 		await _wait_for_input()
 		var button: Button = _button_for(action)
 		if button == null:
-			print(">> can't '%s' here (fight: t1-t4, attack, skill, meditate, defend, item, 1; path: 1/2/3, character, +stat/-stat, confirm, close)" % action)
+			print(">> can't '%s' here (fight: t1-t4, attack, skill, meditate, defend, item, 1; path: 1/2/3, character, +stat/-stat, confirm, close, leave)" % action)
 		elif button.disabled or not button.is_visible_in_tree():  # a player can't click a hidden button (e.g. Attack while Items is open)
 			print(">> can't %s right now" % action)
 		elif button.text == "New hero":
@@ -148,6 +149,8 @@ func _print_path() -> void:
 func _button_for(action: String) -> Button:
 	if BUTTONS.has(action):
 		return current_scene.get_node_or_null(BUTTONS[action])
+	if action == "leave" and _on_path() and current_scene.gear_window.visible:
+		return current_scene.gear_window.close_button
 	if action.length() > 1 and action[0] in "+-" and STAT_IDS.has(action.substr(1)):
 		var panel: Node = current_scene.get_node_or_null("%CharacterPanel")
 		if panel == null or not panel.visible:

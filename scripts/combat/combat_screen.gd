@@ -292,8 +292,8 @@ func _open_items() -> void:
 	for id in Run.items:
 		var item: Dictionary = all[id]
 		var button: Button = UI.menu_button("%s x%d" % [item.name, Run.items[id]], _use_item.bind(id, item))
-		button.tooltip_text = "Heal %d%% of your Max HP" % item.heal_percent
-		button.disabled = Run.items[id] == 0 or hero.hp == hero.max_hp
+		button.tooltip_text = item.description
+		button.disabled = Run.items[id] == 0 or not _item_helps(item)
 		buttons.append(button)
 	_open_menu(buttons)
 
@@ -321,10 +321,29 @@ func _use_item(id: String, item: Dictionary) -> void:
 	_close_menu()
 	_set_buttons_enabled(false)
 	Run.items[id] -= 1
-	var healed: int = mini(ceili(hero.max_hp * item.heal_percent / 100.0), hero.max_hp - hero.hp)
-	hero.hp += healed
-	_log("%s drinks a %s: +%d HP (%d left)." % [hero.display_name, item.name, healed, Run.items[id]])
+	var effect: String = ""
+	if item.has("heal_percent"):
+		var healed: int = mini(ceili(hero.max_hp * item.heal_percent / 100.0), hero.max_hp - hero.hp)
+		hero.hp += healed
+		effect = "+%d HP" % healed
+	if item.has("energy"):
+		var gained: int = mini(int(item.energy), Combatant.MAX_ENERGY - hero.energy)
+		hero.energy += gained
+		effect = "+%d %s" % [gained, hero.energy_name]
+	if item.has("advantage"):
+		hero.charmed = true
+		effect = "the next attack rolls with advantage"
+	_log("%s uses a %s: %s (%d left)." % [hero.display_name, item.name, effect, Run.items[id]])
 	_after_action()
+
+
+## An item is greyed out when it would do nothing: full HP, full Energy, or a Luck Charm already glowing.
+func _item_helps(item: Dictionary) -> bool:
+	if item.has("heal_percent"):
+		return hero.hp < hero.max_hp
+	if item.has("energy"):
+		return hero.energy < Combatant.MAX_ENERGY
+	return not hero.charmed
 
 
 ## Flee: d20 + Speed vs 10 + the fastest monster's Speed. Escape = no gold or EXP. Fail = you lose your turn.

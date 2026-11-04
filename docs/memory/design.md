@@ -248,7 +248,11 @@ the hero; currency earned still unlocks content for future runs.
 - Blueprints and Starmetal Shards are kept for every future hero; other materials and gear belong to the hero.
 - BACK TO TOWN (path screen): restart the chapter at room 1, keep hero, level, gear, gold and materials.
   After the boss: Back to town, or Next chapter (coming soon).
-- Peddler's Cart (path Shop door, later): its own random stock, different from the town Shop (Kha 2026-11-04).
+- Peddler's Cart (built 2026-11-05, path Shop door): Pip Wanderwick (portrait + lines). 4 random offers per visit:
+  graded gear (Uncommon/Rare/Epic, also forge-only pieces, never Starmetal), material bundles (rarely a Starmetal
+  Shard), and potions the town Shop doesn't sell: Greater Healing Potion (50%), Energy Tonic (+2 Energy),
+  Luck Charm (next attack with advantage). Haggle once per visit: d20 + Charisma vs DC 12, success 25% off,
+  natural 1 = prices +25%. "Leave the cart" starts the battle. Rules in scripts/core/peddler.gd.
 - Upgrades (built 2026-11-05): +1 to +3, each +1 adds +1 to the main stat. d20 + Luck vs DC 6 / 10 / 14.
   Cost 2/3/4 of the piece's "upgrade" material (gear.json) + 10/20/30 gold. Fail: cost gone, piece safe.
   Natural 1: also -1 level. Beat the DC by 10+: +2 levels (Kha: high Luck can give +2). Natural 20 always works.
