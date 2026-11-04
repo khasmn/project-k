@@ -7,9 +7,9 @@ signal closed
 ## [stat, label, amount per point, hint]. "{attack}" becomes Attack or Magic.
 const STATS: Array = [
 	["max_hp", "Max HP", 3, "also heals"],
-	["attack", "{attack}", 1, "hit and damage"],
+	["attack", "{attack}", 1, "hit, and +1 damage per 2"],
 	["defense", "Defense", 1, "+1 Armor (Armor = 10 + Defense)"],
-	["speed", "Speed", 1, "initiative"],
+	["speed", "Speed", 1, "go first, and flee"],
 ]
 
 var hero: Combatant

@@ -1,31 +1,41 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/combat/combat_screen.gd" id="1"]
 
 [sub_resource type="StyleBoxFlat" id="box"]
 content_margin_left = 12.0
-content_margin_top = 8.0
+content_margin_top = 10.0
 content_margin_right = 12.0
-content_margin_bottom = 8.0
-bg_color = Color(0.11, 0.11, 0.15, 1)
+content_margin_bottom = 10.0
+bg_color = Color(0.1, 0.09, 0.12, 1)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.42, 0.42, 0.52, 1)
-corner_radius_top_left = 6
+border_color = Color(0.55, 0.45, 0.25, 1)
 corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
+[sub_resource type="StyleBoxFlat" id="tab"]
+content_margin_left = 10.0
+content_margin_top = 2.0
+content_margin_right = 10.0
+content_margin_bottom = 2.0
+bg_color = Color(0.85, 0.68, 0.3, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+
 [sub_resource type="StyleBoxFlat" id="hero_fill"]
 bg_color = Color(0.3, 0.75, 0.35, 1)
 
-[sub_resource type="StyleBoxFlat" id="enemy_fill"]
-bg_color = Color(0.85, 0.3, 0.3, 1)
-
 [sub_resource type="StyleBoxFlat" id="exp_fill"]
 bg_color = Color(0.4, 0.6, 1, 1)
+
+[sub_resource type="StyleBoxEmpty" id="flat"]
+content_margin_left = 6.0
+content_margin_top = 4.0
+content_margin_bottom = 4.0
 
 [node name="Combat" type="Control"]
 layout_mode = 3
@@ -43,7 +53,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.06, 0.06, 0.08, 1)
+color = Color(0.05, 0.045, 0.06, 1)
 
 [node name="Margin" type="MarginContainer" parent="."]
 layout_mode = 1
@@ -53,159 +63,290 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/margin_left = 16
-theme_override_constants/margin_top = 12
+theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 16
 theme_override_constants/margin_bottom = 12
 
 [node name="VBox" type="VBoxContainer" parent="Margin"]
 layout_mode = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 8
 
-[node name="TopBar" type="PanelContainer" parent="Margin/VBox"]
+[node name="Title" type="Label" parent="Margin/VBox"]
 layout_mode = 2
-theme_override_styles/panel = SubResource("box")
-
-[node name="Title" type="Label" parent="Margin/VBox/TopBar"]
 unique_name_in_owner = true
-layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.8, 0.45, 1)
 theme_override_font_sizes/font_size = 18
 horizontal_alignment = 1
 
-[node name="Arena" type="HBoxContainer" parent="Margin/VBox"]
+[node name="Arena" type="VBoxContainer" parent="Margin/VBox"]
 layout_mode = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 0
 
-[node name="HeroPanel" type="PanelContainer" parent="Margin/VBox/Arena"]
+[node name="Tab" type="PanelContainer" parent="Margin/VBox/Arena"]
 layout_mode = 2
-size_flags_horizontal = 3
+size_flags_horizontal = 0
+theme_override_styles/panel = SubResource("tab")
+
+[node name="Label" type="Label" parent="Margin/VBox/Arena/Tab"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.12, 0.09, 0.04, 1)
+theme_override_font_sizes/font_size = 13
+text = "BATTLE"
+
+[node name="Panel" type="PanelContainer" parent="Margin/VBox/Arena"]
+layout_mode = 2
+size_flags_vertical = 3
 theme_override_styles/panel = SubResource("box")
 
-[node name="VBox" type="VBoxContainer" parent="Margin/VBox/Arena/HeroPanel"]
+[node name="VBox" type="VBoxContainer" parent="Margin/VBox/Arena/Panel"]
 layout_mode = 2
+theme_override_constants/separation = 6
 
-[node name="Header" type="Label" parent="Margin/VBox/Arena/HeroPanel/VBox"]
-modulate = Color(1, 1, 1, 0.6)
+[node name="TurnLabel" type="Label" parent="Margin/VBox/Arena/Panel/VBox"]
 layout_mode = 2
-text = "YOUR HERO"
-
-[node name="HeroName" type="Label" parent="Margin/VBox/Arena/HeroPanel/VBox"]
 unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 16
+horizontal_alignment = 1
 
-[node name="HeroHPBar" type="ProgressBar" parent="Margin/VBox/Arena/HeroPanel/VBox"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 16)
+[node name="Field" type="HBoxContainer" parent="Margin/VBox/Arena/Panel/VBox"]
 layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="EnemyList" type="GridContainer" parent="Margin/VBox/Arena/Panel/VBox/Field"]
+layout_mode = 2
+unique_name_in_owner = true
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 8
+columns = 4
+
+[node name="HeroToken" type="VBoxContainer" parent="Margin/VBox/Arena/Panel/VBox/Field"]
+layout_mode = 2
+custom_minimum_size = Vector2(180, 0)
+size_flags_vertical = 4
+
+[node name="HeroTokenName" type="Label" parent="Margin/VBox/Arena/Panel/VBox/Field/HeroToken"]
+layout_mode = 2
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(0.5, 0.82, 0.5, 1)
+theme_override_font_sizes/font_size = 18
+horizontal_alignment = 1
+
+[node name="HeroTokenBar" type="ProgressBar" parent="Margin/VBox/Arena/Panel/VBox/Field/HeroToken"]
+layout_mode = 2
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 12)
 theme_override_styles/fill = SubResource("hero_fill")
 show_percentage = false
 
-[node name="HeroHP" type="Label" parent="Margin/VBox/Arena/HeroPanel/VBox"]
-unique_name_in_owner = true
-layout_mode = 2
-
-[node name="HeroStats" type="Label" parent="Margin/VBox/Arena/HeroPanel/VBox"]
-unique_name_in_owner = true
-layout_mode = 2
-
-[node name="Level" type="Label" parent="Margin/VBox/Arena/HeroPanel/VBox"]
-unique_name_in_owner = true
-layout_mode = 2
-
-[node name="ExpBar" type="ProgressBar" parent="Margin/VBox/Arena/HeroPanel/VBox"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 10)
-layout_mode = 2
-theme_override_styles/fill = SubResource("exp_fill")
-show_percentage = false
-
-[node name="EnemyPanel" type="PanelContainer" parent="Margin/VBox/Arena"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("box")
-
-[node name="VBox" type="VBoxContainer" parent="Margin/VBox/Arena/EnemyPanel"]
-layout_mode = 2
-
-[node name="Header" type="Label" parent="Margin/VBox/Arena/EnemyPanel/VBox"]
-modulate = Color(1, 1, 1, 0.6)
-layout_mode = 2
-text = "ENEMY"
-
-[node name="EnemyName" type="Label" parent="Margin/VBox/Arena/EnemyPanel/VBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 20
-
-[node name="EnemyHPBar" type="ProgressBar" parent="Margin/VBox/Arena/EnemyPanel/VBox"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 16)
-layout_mode = 2
-theme_override_styles/fill = SubResource("enemy_fill")
-show_percentage = false
-
-[node name="EnemyHP" type="Label" parent="Margin/VBox/Arena/EnemyPanel/VBox"]
-unique_name_in_owner = true
-layout_mode = 2
-
-[node name="EnemyStats" type="Label" parent="Margin/VBox/Arena/EnemyPanel/VBox"]
-unique_name_in_owner = true
-layout_mode = 2
-
-[node name="LogPanel" type="PanelContainer" parent="Margin/VBox"]
+[node name="LogBox" type="VBoxContainer" parent="Margin/VBox"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_styles/panel = SubResource("box")
+theme_override_constants/separation = 0
 
-[node name="VBox" type="VBoxContainer" parent="Margin/VBox/LogPanel"]
+[node name="Tab" type="PanelContainer" parent="Margin/VBox/LogBox"]
 layout_mode = 2
+size_flags_horizontal = 0
+theme_override_styles/panel = SubResource("tab")
 
-[node name="Header" type="Label" parent="Margin/VBox/LogPanel/VBox"]
-modulate = Color(1, 1, 1, 0.6)
+[node name="Label" type="Label" parent="Margin/VBox/LogBox/Tab"]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.12, 0.09, 0.04, 1)
+theme_override_font_sizes/font_size = 13
 text = "BATTLE LOG"
 
-[node name="Log" type="RichTextLabel" parent="Margin/VBox/LogPanel/VBox"]
-unique_name_in_owner = true
+[node name="Panel" type="PanelContainer" parent="Margin/VBox/LogBox"]
 layout_mode = 2
 size_flags_vertical = 3
+theme_override_styles/panel = SubResource("box")
+
+[node name="Log" type="RichTextLabel" parent="Margin/VBox/LogBox/Panel"]
+layout_mode = 2
+unique_name_in_owner = true
 bbcode_enabled = true
 scroll_following = true
 
-[node name="ActionPanel" type="PanelContainer" parent="Margin/VBox"]
-unique_name_in_owner = true
+[node name="Bottom" type="HBoxContainer" parent="Margin/VBox"]
 layout_mode = 2
+custom_minimum_size = Vector2(0, 220)
+theme_override_constants/separation = 8
+
+[node name="Enemies" type="VBoxContainer" parent="Margin/VBox/Bottom"]
+layout_mode = 2
+custom_minimum_size = Vector2(230, 0)
+theme_override_constants/separation = 0
+
+[node name="Tab" type="PanelContainer" parent="Margin/VBox/Bottom/Enemies"]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_styles/panel = SubResource("tab")
+
+[node name="Label" type="Label" parent="Margin/VBox/Bottom/Enemies/Tab"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.12, 0.09, 0.04, 1)
+theme_override_font_sizes/font_size = 13
+text = "ENEMIES"
+
+[node name="Panel" type="PanelContainer" parent="Margin/VBox/Bottom/Enemies"]
+layout_mode = 2
+size_flags_vertical = 3
 theme_override_styles/panel = SubResource("box")
 
-[node name="VBox" type="VBoxContainer" parent="Margin/VBox/ActionPanel"]
+[node name="TargetList" type="VBoxContainer" parent="Margin/VBox/Bottom/Enemies/Panel"]
 layout_mode = 2
-
-[node name="TurnLabel" type="Label" parent="Margin/VBox/ActionPanel/VBox"]
 unique_name_in_owner = true
+theme_override_constants/separation = 2
+
+[node name="Command" type="VBoxContainer" parent="Margin/VBox/Bottom"]
 layout_mode = 2
+custom_minimum_size = Vector2(230, 0)
+theme_override_constants/separation = 0
+
+[node name="Tab" type="PanelContainer" parent="Margin/VBox/Bottom/Command"]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_styles/panel = SubResource("tab")
+
+[node name="Label" type="Label" parent="Margin/VBox/Bottom/Command/Tab"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.12, 0.09, 0.04, 1)
+theme_override_font_sizes/font_size = 13
+text = "COMMAND"
+
+[node name="Panel" type="PanelContainer" parent="Margin/VBox/Bottom/Command"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("box")
+
+[node name="ActionPanel" type="VBoxContainer" parent="Margin/VBox/Bottom/Command/Panel"]
+layout_mode = 2
+unique_name_in_owner = true
+theme_override_constants/separation = 2
+
+[node name="Buttons" type="VBoxContainer" parent="Margin/VBox/Bottom/Command/Panel/ActionPanel"]
+layout_mode = 2
+unique_name_in_owner = true
+theme_override_constants/separation = 2
+
+[node name="AttackButton" type="Button" parent="Margin/VBox/Bottom/Command/Panel/ActionPanel/Buttons"]
+layout_mode = 2
+unique_name_in_owner = true
+theme_override_colors/font_hover_color = Color(1, 0.83, 0.3, 1)
+theme_override_colors/font_disabled_color = Color(1, 1, 1, 0.3)
 theme_override_font_sizes/font_size = 18
-horizontal_alignment = 1
+theme_override_styles/normal = SubResource("flat")
+theme_override_styles/hover = SubResource("flat")
+theme_override_styles/pressed = SubResource("flat")
+theme_override_styles/disabled = SubResource("flat")
+theme_override_styles/focus = SubResource("flat")
+text = "   Attack"
+alignment = 0
 
-[node name="Buttons" type="HBoxContainer" parent="Margin/VBox/ActionPanel/VBox"]
-unique_name_in_owner = true
+[node name="DefendButton" type="Button" parent="Margin/VBox/Bottom/Command/Panel/ActionPanel/Buttons"]
 layout_mode = 2
-theme_override_constants/separation = 16
-alignment = 1
+unique_name_in_owner = true
+theme_override_colors/font_hover_color = Color(1, 0.83, 0.3, 1)
+theme_override_colors/font_disabled_color = Color(1, 1, 1, 0.3)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("flat")
+theme_override_styles/hover = SubResource("flat")
+theme_override_styles/pressed = SubResource("flat")
+theme_override_styles/disabled = SubResource("flat")
+theme_override_styles/focus = SubResource("flat")
+text = "   Defend"
+alignment = 0
 
-[node name="AttackButton" type="Button" parent="Margin/VBox/ActionPanel/VBox/Buttons"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(140, 40)
+[node name="ItemButton" type="Button" parent="Margin/VBox/Bottom/Command/Panel/ActionPanel/Buttons"]
 layout_mode = 2
-text = "Attack"
+unique_name_in_owner = true
+theme_override_colors/font_hover_color = Color(1, 0.83, 0.3, 1)
+theme_override_colors/font_disabled_color = Color(1, 1, 1, 0.3)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("flat")
+theme_override_styles/hover = SubResource("flat")
+theme_override_styles/pressed = SubResource("flat")
+theme_override_styles/disabled = SubResource("flat")
+theme_override_styles/focus = SubResource("flat")
+text = "   Item"
+alignment = 0
 
-[node name="DefendButton" type="Button" parent="Margin/VBox/ActionPanel/VBox/Buttons"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(140, 40)
+[node name="FleeButton" type="Button" parent="Margin/VBox/Bottom/Command/Panel/ActionPanel/Buttons"]
 layout_mode = 2
-text = "Defend"
+unique_name_in_owner = true
+theme_override_colors/font_hover_color = Color(1, 0.83, 0.3, 1)
+theme_override_colors/font_disabled_color = Color(1, 1, 1, 0.3)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("flat")
+theme_override_styles/hover = SubResource("flat")
+theme_override_styles/pressed = SubResource("flat")
+theme_override_styles/disabled = SubResource("flat")
+theme_override_styles/focus = SubResource("flat")
+text = "   Flee"
+alignment = 0
 
-[node name="Choices" type="HBoxContainer" parent="Margin/VBox/ActionPanel/VBox"]
-unique_name_in_owner = true
+[node name="ItemMenu" type="VBoxContainer" parent="Margin/VBox/Bottom/Command/Panel/ActionPanel"]
 layout_mode = 2
-theme_override_constants/separation = 16
-alignment = 1
+unique_name_in_owner = true
+visible = false
+theme_override_constants/separation = 2
+
+[node name="Choices" type="VBoxContainer" parent="Margin/VBox/Bottom/Command/Panel/ActionPanel"]
+layout_mode = 2
+unique_name_in_owner = true
+theme_override_constants/separation = 6
+
+[node name="Hero" type="VBoxContainer" parent="Margin/VBox/Bottom"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 0
+
+[node name="Tab" type="PanelContainer" parent="Margin/VBox/Bottom/Hero"]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_styles/panel = SubResource("tab")
+
+[node name="Label" type="Label" parent="Margin/VBox/Bottom/Hero/Tab"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.12, 0.09, 0.04, 1)
+theme_override_font_sizes/font_size = 13
+text = "HERO"
+
+[node name="Panel" type="PanelContainer" parent="Margin/VBox/Bottom/Hero"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("box")
+
+[node name="VBox" type="VBoxContainer" parent="Margin/VBox/Bottom/Hero/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="HeroName" type="Label" parent="Margin/VBox/Bottom/Hero/Panel/VBox"]
+layout_mode = 2
+unique_name_in_owner = true
+theme_override_font_sizes/font_size = 18
+
+[node name="HeroHPBar" type="ProgressBar" parent="Margin/VBox/Bottom/Hero/Panel/VBox"]
+layout_mode = 2
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 14)
+theme_override_styles/fill = SubResource("hero_fill")
+show_percentage = false
+
+[node name="HeroHP" type="Label" parent="Margin/VBox/Bottom/Hero/Panel/VBox"]
+layout_mode = 2
+unique_name_in_owner = true
+
+[node name="HeroStats" type="Label" parent="Margin/VBox/Bottom/Hero/Panel/VBox"]
+layout_mode = 2
+unique_name_in_owner = true
+
+[node name="Level" type="Label" parent="Margin/VBox/Bottom/Hero/Panel/VBox"]
+layout_mode = 2
+unique_name_in_owner = true
+
+[node name="ExpBar" type="ProgressBar" parent="Margin/VBox/Bottom/Hero/Panel/VBox"]
+layout_mode = 2
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 8)
+theme_override_styles/fill = SubResource("exp_fill")
+show_percentage = false

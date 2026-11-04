@@ -15,23 +15,27 @@ Read this first in every new session. Keep it short: replace "Current status" an
 
 ## Next step
 
-Kha picks balance ideas (see Open questions), on an `update/` branch. Then:
+Branch update/balance-and-groups is ready for Kha to test (monster groups, targeting, Flee, new Defend,
+half-Attack damage, elites, Train point, log/actions side by side, Item button with 2 potions). After merge:
+- setup/code-style from main: add CLAUDE.md rule (shortest code, no useless comments, no emoji,
+  delete unused code) and clean up all scripts/tests to match (Kha said yes, 2026-11-05).
 3. Shop + potions + Item button in combat.
 4. NPC events with d20 checks.
 
 ## Open questions
 
-Balance ideas from the 2026-11-04 playtest, waiting for Kha to pick (my pick in brackets):
-- 5 Attack too strong (hit + damage): A) hit only, damage +1 per 2 Attack; B) costs 2 points. [A]
-- 6 Speed useless: A) every 3 Speed = +1 Armor; B) extra attack if 5+ faster; C) flee chance. [A]
-- 7 Defend a trap: A) also heal 10%; B) enemy's next attack at disadvantage; C) stronger crit guard. [B]
-- 8 Train weak (~+2 EXP): A) +1 stat point; B) 50% of EXP bar. [A]
-- 9 Elite too easy: always toughest enemy for the room, x2 HP, card names the enemy.
-- 10 Difficulty ramp: rats only rooms 1-2, new mid enemy (Orc Raider 26 HP d8) rooms 5-8, boss 40 HP.
-- 11 Archer/Mage fragile: A) everyone heals 10% after a won fight; B) +4 HP for both. [A]
+- Bot sim clears 42-52% with groups (never defends or flees); real play should be easier. Retune after Kha plays.
+- Monsters are now small (4-9 HP) so a hero often kills one per hit; elites and the boss are the real threats.
 - Human +10% XP and Fast Learner not built yet.
+- Later (with art): art-only battle area, hover info and Info command (design.md).
 
 ## Session log (newest first)
+
+### 2026-11-05 – Balance and monster groups (update/balance-and-groups)
+- Kha picked 5A, 6C (Flee), 7B, 8A, 9 (own elite entries + groups of 1-4), 10, 11B.
+- Combat screen: monster cards in a 2x2 grid, click to target, Flee button (not in boss fight).
+- Enemies data: "rooms" range, "elite" partner, boss "guards"; Orc Raider + 5 elites added.
+- Play tool: t1-t4 to target, flee. Sim retuned to 42-52% for the always-attack bot.
 
 ### 2026-11-04 – Path choice (step 2) merged
 - Path screen: 3 door cards, hero sidebar, CHARACTER button with saved points; Elite, Rest/Train, gold, boss after room 8.

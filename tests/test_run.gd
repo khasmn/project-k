@@ -71,18 +71,33 @@ func _init() -> void:
 	for i in 200:
 		var types: Array = Run.door_choices().map(func(door: Dictionary) -> String: return door.type)
 		_check(types.size() == 3 and types.size() == _unique(types).size(), "doors wrong: %s" % [types])
-	Run.room = 7
-	Run.room_type = "elite"
-	var elite: Combatant = Run.enemy()
-	_check(elite.display_name.begins_with("Elite") and elite.gold_reward > 0, "elite wrong")
+	# Groups: 1-4 monsters that live in this room; elite rooms lead with an elite; the boss has guards.
+	var all: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/enemies.json"))
+	var elite_names: Array = all.values().filter(func(e: Dictionary) -> bool: return not e.has("rooms")).map(
+		func(e: Dictionary) -> String: return e.name)
+	for room in range(1, Run.ROOMS + 1):
+		Run.room = room
+		for i in 50:
+			Run.room_type = ""
+			var group: Array[Combatant] = Run.enemies()
+			_check(group.size() >= 1 and group.size() <= Run.MAX_ENEMIES, "group size %d" % group.size())
+			_check(room > 2 or group.all(func(c: Combatant) -> bool: return not c.display_name.begins_with("Wolf")), "wolf too early")
+			Run.room_type = "elite"
+			group = Run.enemies()
+			_check(group[0].display_name in elite_names and group.size() <= Run.MAX_ENEMIES - 1, "elite room wrong")
 	Run.room = Run.ROOMS + 1
-	_check(Run.is_boss() and Run.enemy().display_name == "Bandit Chief", "no boss after room 8")
+	var boss_group: Array = Run.enemies().map(func(c: Combatant) -> String: return c.display_name)
+	_check(Run.is_boss() and boss_group == ["Bandit Chief", "Bandit 1", "Bandit 2"], "boss group wrong: %s" % [boss_group])
 
-	# Rest heals 30% (not past max); Train gives 10% of the EXP bar.
+	# Defend: attacks against a defender roll with disadvantage (keep the low die).
+	var defender: Combatant = _hero({})
+	defender.defending = true
+	Dice.forced_rolls = [18, 3]
+	_check("keeps 3" in Combatant.new(DUMMY).strike(defender), "defend didn't give disadvantage")
+
+	# Rest heals 30% (not past max).
 	Run.hero.hp = Run.hero.max_hp - 2
 	_check(Run.rest_amount() == 2, "rest healed past max")
-	Run.level = 1
-	_check(Run.train_amount() == 1, "train amount wrong")
 
 	# Balance: auto-play whole runs (always attack, points spent at random), per class.
 	Dice.forced_rolls = []
@@ -123,25 +138,31 @@ func _auto_run() -> int:
 				if hero.hp < hero.max_hp * 0.7:
 					hero.hp += Run.rest_amount()
 				else:
-					Run.gain_exp(Run.train_amount())
-		var enemy: Combatant = Run.enemy()
+					Run.points += Run.TRAIN_POINTS
+		var group: Array[Combatant] = Run.enemies()
 		hero.start_fight()
 		var hero_init: int = Dice.roll_d20(hero.roll_mode()) + hero.speed
-		var enemy_init: int = Dice.roll_d20() + enemy.speed
-		if hero_init < enemy_init or (hero_init == enemy_init and not hero.wins_ties):
-			enemy.strike(hero)
-		while hero.is_alive() and enemy.is_alive():
-			hero.start_turn()
-			hero.strike(enemy)
-			if enemy.is_alive():
-				enemy.strike(hero)
+		var enemy_init: int = Dice.roll_d20() + group.map(func(c: Combatant) -> int: return c.speed).max()
+		var enemies_first: bool = hero_init < enemy_init or (hero_init == enemy_init and not hero.wins_ties)
+		while hero.is_alive() and group.any(func(c: Combatant) -> bool: return c.is_alive()):
+			if not enemies_first:
+				hero.start_turn()
+				# Always attack the weakest living monster.
+				var alive: Array = group.filter(func(c: Combatant) -> bool: return c.is_alive())
+				alive.sort_custom(func(a: Combatant, b: Combatant) -> bool: return a.hp < b.hp)
+				hero.strike(alive[0])
+			enemies_first = false
+			for foe in group:
+				if foe.is_alive() and hero.is_alive():
+					foe.strike(hero)
 		if not hero.is_alive():
 			return Run.room
 		hero.win_fight()
 		if Run.is_boss():
 			return Run.ROOMS + 2
-		Run.gain_exp(enemy.exp_reward)
-		Run.gold += enemy.gold_reward
+		for foe in group:
+			Run.gain_exp(foe.exp_reward)
+			Run.gold += foe.gold_reward
 		for point in Run.points:
 			var entry: Array = PANEL.STATS[Dice.roll(PANEL.STATS.size()) - 1]
 			hero.raise_stat(entry[0], entry[2])
