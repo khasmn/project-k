@@ -33,7 +33,7 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 
 ### 2026-11-05 – Gear upgrades (feature/gear-upgrades)
 - Blacksmith PR #40 merged. Upgrades +1 to +3 with d20 + Luck, fail / -1 on nat 1 / +2 on beating the DC by 10.
-- Torvik Emberbeard (dwarf NPC portrait, talk lines), Forge new / Upgrade tabs, anvil cutscene + Settings switch.
+- Ladis Washrum (dwarf NPC portrait, talk lines), Forge new / Upgrade tabs, anvil cutscene + Settings switch.
 - Next: the Peddler's Cart with its own random stock.
 
 ### 2026-11-04 – Blacksmith (feature/blacksmith)

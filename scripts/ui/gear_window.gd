@@ -1,7 +1,7 @@
 class_name GearWindow
 extends Control
 ## One window for the Shop (buy and sell), the GEAR screen (wear and take off) and the Blacksmith (forge and
-## upgrade, with Torvik the dwarf talking above the lists and a ForgeScene cutscene after each try),
+## upgrade, with Ladis the dwarf talking above the lists and a ForgeScene cutscene after each try),
 ## with the hero in the middle so you see the gear on them. Built in code; the town and path screens add one.
 ## It covers the whole screen with a dark backdrop, so nothing behind it can be clicked while it's open.
 
@@ -250,7 +250,7 @@ func _set_tab(upgrade_tab: bool) -> void:
 	refresh()
 
 
-## Forge or upgrade (Gear.forge / Gear.upgrade), then Torvik comments and the cutscene plays.
+## Forge or upgrade (Gear.forge / Gear.upgrade), then Ladis comments and the cutscene plays.
 func _try(action: Callable, what: Variant) -> void:
 	var result: Dictionary = action.call(what)
 	forge_text = result.text
@@ -260,7 +260,7 @@ func _try(action: Callable, what: Variant) -> void:
 		scene.play(result)
 
 
-## Torvik says a random line of this kind (data/npcs.json).
+## Ladis says a random line of this kind (data/npcs.json).
 func _say(kind: String) -> void:
 	var lines: Array = npc[kind]
 	talk.text = "\"%s\"" % lines[Dice.roll(lines.size(), false) - 1]  # his name is on the box tab

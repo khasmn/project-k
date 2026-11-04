@@ -1,6 +1,6 @@
 class_name ForgeScene
 extends Control
-## The Blacksmith cutscene: Torvik strikes the anvil 3 times (slow, no shaking), then the piece appears
+## The Blacksmith cutscene: Ladis strikes the anvil 3 times (slow, no shaking), then the piece appears
 ## with its name in its grade's color. Click anywhere to skip or close. Settings "Forge cutscene" turns it off.
 
 signal finished

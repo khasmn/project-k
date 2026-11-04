@@ -5,8 +5,9 @@ if a decision changes, add a new entry that says what it replaces.
 
 | Date | Decision | Why |
 | --- | --- | --- |
+| 2026-11-05 | The dwarf blacksmith is named Ladis Washrum | Kha |
 | 2026-11-05 | Upgrades: d20 + Luck vs DC 6/10/14, fail keeps the piece, nat 1 = -1 level, beat DC by 10 = +2 levels | Kha's choices |
-| 2026-11-05 | Blacksmith NPC Torvik (dwarf portrait + lines), anvil cutscene with a Settings switch | Kha; motion comfort |
+| 2026-11-05 | Blacksmith NPC Ladis (dwarf portrait + lines), anvil cutscene with a Settings switch | Kha; motion comfort |
 | 2026-11-04 | Crafting = materials + gold; grade by d20 + Luck (Crude..Legendary, nat 20 >= Epic); blueprints from monster loot rolls | Kha's choices |
 | 2026-11-04 | Blueprints and Starmetal Shards kept forever; BACK TO TOWN restarts the chapter, hero keeps all; boss win -> town or next chapter (replaces "Run complete -> New hero") | Kha: materials must reach the Blacksmith |
 | 2026-11-04 | Peddler's Cart sells its own random stock, not the town Shop's | Kha |
