@@ -28,6 +28,7 @@ func _ready() -> void:
 	%DefendButton.pressed.connect(_on_defend)
 	%FleeButton.pressed.connect(_on_flee)
 	%ItemButton.pressed.connect(_open_items)
+	%Log.get_v_scroll_bar().modulate.a = 0  # floating log: no visible scrollbar, the mouse wheel still scrolls
 	%InfoButton.pressed.connect(func() -> void: _show_info(not %InfoText.visible))
 	for button in %Buttons.get_children():
 		_add_cursor(button)
