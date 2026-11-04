@@ -13,7 +13,7 @@ var defense: int
 var speed: int
 var damage_die: int
 var weapon: String = "weapon"  # for the log: "sword (d8)"
-var exp_reward: int = 0  # EXP the hero gets for beating this enemy
+var exp_reward: int = 0
 var gold_reward: int = 0
 var defending: bool = false
 
@@ -49,12 +49,6 @@ func _init(data: Dictionary) -> void:
 		set(effect, int(effects[effect]) if effects[effect] is float else effects[effect])
 
 
-## Load one entry (e.g. "bandit") from a JSON file in data/.
-static func load_from(path: String, id: String) -> Combatant:
-	var all: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(path))
-	return Combatant.new(all[id])
-
-
 ## The number an attacker's roll must meet or beat to hit this fighter.
 func armor() -> int:
 	return 10 + defense + (DEFEND_BONUS if defending else 0)
@@ -88,7 +82,6 @@ func damage_from_attack() -> int:
 	return attack / 2
 
 
-## The race or talent name behind an effect, for the log.
 func passive(effect: String) -> String:
 	return passive_names.get(effect, effect.capitalize())
 
@@ -108,7 +101,6 @@ func start_turn() -> String:
 	return "%s: %s regenerates %d HP." % [passive("regen"), display_name, healed]
 
 
-## Called after winning a fight. Returns a log line or "".
 func win_fight() -> String:
 	if heal_on_win == 0 or hp == max_hp:
 		return ""
@@ -169,7 +161,7 @@ func strike(target: Combatant) -> String:
 	return line + "\n    Damage: " + damage_text + "." + target.take_damage(damage)
 
 
-## Raise a stat (stat points at level-up). More Max HP also heals the same amount.
+## More Max HP also heals the same amount.
 func raise_stat(stat: String, amount: int) -> void:
 	if stat == "max_hp":
 		max_hp += amount

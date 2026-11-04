@@ -2,6 +2,7 @@ extends Control
 ## Path screen between fights: pick 1 of 3 doors (every door ends in a battle), or spend stat points.
 
 const COMBAT_SCENE: String = "res://scenes/combat/combat.tscn"
+const CARD_STYLE: StyleBoxFlat = preload("res://scenes/ui/box_style.tres")
 const REST_CLICK_DELAY: float = 0.5  # Rest/Train appear where the door was: block a double click picking one
 ## Left stripe color and subtitle per door type.
 const TYPE_COLORS: Dictionary = {
@@ -93,7 +94,7 @@ func _add_card(title: String, type: String, text: String, on_pressed: Callable) 
 	card.custom_minimum_size = Vector2(640, 96)
 	card.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	for state in ["normal", "hover", "pressed", "focus"]:
-		var style: StyleBoxFlat = load("res://scenes/ui/box_style.tres").duplicate()
+		var style: StyleBoxFlat = CARD_STYLE.duplicate()
 		style.border_width_left = 8
 		style.border_color = TYPE_COLORS[type]
 		if state == "hover":

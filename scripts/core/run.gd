@@ -5,7 +5,6 @@ class_name Run
 const ROOMS: int = 8  # rooms before the boss
 const BOSS: String = "bandit_chief"
 const DOOR_TYPES: Array[String] = ["elite", "rest", "shop", "event"]
-const TYPE_NAMES: Dictionary = {"elite": "ELITE", "rest": "REST", "shop": "SHOP", "event": "EVENT", "boss": "BOSS"}
 const DOORS: int = 3
 const MAX_ENEMIES: int = 4
 const POINTS_PER_LEVEL: int = 3
@@ -34,7 +33,7 @@ static func start(draft: CharacterDraft) -> void:
 
 ## For running a scene on its own (F6 or the play tool without a run).
 static func start_test() -> void:
-	hero = Combatant.load_from("res://data/heroes.json", "test_hero")
+	hero = Combatant.new(data("heroes").test_hero)
 	hero_title = "Test hero"
 	_reset()
 
@@ -56,7 +55,7 @@ static func is_boss() -> bool:
 
 ## 3 doors of different types, each with a random name and description from data/rooms.json.
 static func door_choices() -> Array:
-	var texts: Dictionary = _load("res://data/rooms.json")
+	var texts: Dictionary = data("rooms")
 	var types: Array = DOOR_TYPES.duplicate()
 	var doors: Array = []
 	for i in DOORS:
@@ -71,7 +70,7 @@ static func door_choices() -> Array:
 ## This room's monsters: 1-4 random ones that live in this room (data "rooms": [first, last]).
 ## Elite room: that room's elite (data "elite") plus 0-2 helpers. Boss: the boss plus its "guards".
 static func enemies() -> Array[Combatant]:
-	var all: Dictionary = _load("res://data/enemies.json")
+	var all: Dictionary = data("enemies")
 	var ids: Array = []
 	if is_boss():
 		ids = [BOSS] + all[BOSS].guards
@@ -117,5 +116,6 @@ static func rest_amount() -> int:
 	return mini(ceili(hero.max_hp * REST_HEAL_PERCENT / 100.0), hero.max_hp - hero.hp)
 
 
-static func _load(path: String) -> Variant:
-	return JSON.parse_string(FileAccess.get_file_as_string(path))
+## One file from data/, e.g. data("enemies").
+static func data(file: String) -> Dictionary:
+	return JSON.parse_string(FileAccess.get_file_as_string("res://data/%s.json" % file))

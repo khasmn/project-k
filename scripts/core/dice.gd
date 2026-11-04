@@ -8,7 +8,6 @@ static var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 static var forced_rolls: Array[int] = []
 
 
-## Roll one die with the given number of sides (d6 = roll(6)).
 static func roll(sides: int) -> int:
 	if not forced_rolls.is_empty():
 		var forced: int = forced_rolls.pop_front()
@@ -31,7 +30,6 @@ static func roll_d20s(mode: Mode = Mode.NORMAL) -> Array[int]:
 	return rolls
 
 
-## The d20 that counts from roll_d20s().
 static func keep(rolls: Array[int], mode: Mode) -> int:
 	return rolls.max() if mode == Mode.ADVANTAGE else rolls.min()
 
@@ -47,9 +45,7 @@ static func check(modifier: int, dc: int, mode: Mode = Mode.NORMAL, crit_min: in
 	return {
 		"natural": natural,
 		"rolls": rolls,
-		"modifier": modifier,
 		"total": total,
-		"dc": dc,
 		"success": success,
 		"crit": natural >= crit_min,
 		"fumble": natural == 1,
