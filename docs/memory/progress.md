@@ -31,6 +31,13 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 
 ## Session log (newest first)
 
+### 2026-11-05 – Art pipeline, Giant Rat sprite, battle screen
+- Code-style rule in CLAUDE.md + cleanup; Continue-button fix; add-enemy skill.
+- Pixelorama chosen for art. Kha drew the Giant Rat (32x32) with a 5-frame idle at 6 FPS.
+- Monsters with a "sprite" show art only; hover tooltip and Info command show their info.
+- Battle log floats top-left in a frameless battle area (Kha's reference picture).
+- Next art: Bandit, Rat King, hero sprite. Export as a 1-row spritesheet to assets/sprites/enemies/<id>_idle.png.
+
 ### 2026-11-05 – Balance and monster groups (update/balance-and-groups)
 - Kha picked 5A, 6C (Flee), 7B, 8A, 9 (own elite entries + groups of 1-4), 10, 11B.
 - Combat screen: monster cards in a 2x2 grid, click to target, Flee button (not in boss fight).
