@@ -24,6 +24,7 @@ const EXP_COLOR: String = "#8fb4ff"
 var hero: Combatant
 var pet: Combatant  # the Farm companion fighting next to the hero, or null
 var pet_bar: ProgressBar = ProgressBar.new()
+var hearts: HBoxContainer = HBoxContainer.new()  # lives left, next to Level in the HERO box
 var enemies: Array[Combatant] = []
 var target: Combatant  # the monster the hero attacks; click a card to change it
 var fight_over: bool = false  # true after a win or a flee, so Continue only works once
@@ -61,6 +62,17 @@ func _ready() -> void:
 	add_child(fx)  # last child: effects draw above everything
 	%Log.get_v_scroll_bar().modulate.a = 0  # floating log: no visible scrollbar, the mouse wheel still scrolls
 	%MeditateButton.pressed.connect(_on_meditate)
+	var level_row: HBoxContainer = HBoxContainer.new()
+	%Level.add_sibling(level_row)
+	%Level.reparent(level_row)
+	level_row.add_child(hearts)
+	for i in Run.LIVES:
+		var heart: TextureRect = TextureRect.new()
+		heart.texture = preload("res://assets/sprites/ui/heart.png")
+		heart.custom_minimum_size = Vector2(18, 16)  # 9x8 art shown 2x
+		heart.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		heart.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		hearts.add_child(heart)
 	for button in %Buttons.get_children():
 		UI.add_cursor(button)
 	if Run.hero == null:
@@ -462,10 +474,21 @@ func _enemy_turn() -> void:
 		_hero_turn()
 
 
+## 3 lives: the 1st and 2nd death send you to town (half your gold lost, the chapter restarts); the 3rd ends the run.
 func _defeat() -> void:
-	_log("[color=%s][b]Defeated![/b][/color] Run over %s." % [ENEMY_COLOR,
-		"at the boss fight" if Run.is_boss() else "in room %d of %d" % [Run.room, Run.ROOMS]])
-	%TurnLabel.text = "Defeated! Your run is over."
+	var where: String = "at the boss fight" if Run.is_boss() else "in room %d of %d" % [Run.room, Run.ROOMS]
+	if Run.lives > 1:
+		var lost: int = Run.lose_life()
+		_log("[color=%s][b]Defeated %s![/b][/color] You lost a life: %d left. You lost %d gold and wake up in town, healed." % [
+			ENEMY_COLOR, where, Run.lives, lost])
+		%TurnLabel.text = "You lost a life! %d left." % Run.lives
+		_update_labels()
+		_add_choice("Back to town", get_tree().change_scene_to_file.bind(TOWN_SCENE))
+		return
+	Run.lives = 0
+	_log("[color=%s][b]Defeated %s![/b][/color] No lives left. Your run is over." % [ENEMY_COLOR, where])
+	%TurnLabel.text = "No lives left. Your run is over."
+	_update_labels()
 	_add_choice("New hero", _new_hero)
 
 
@@ -660,6 +683,9 @@ func _update_labels() -> void:
 		", ".join(passives) if passives else "none in combat"]
 	%Level.text = "Level %d   EXP %d / %d   Gold %d" % [Run.level, Run.experience, Run.exp_needed(), Run.gold]
 	%ExpBar.max_value = Run.exp_needed()
+	hearts.tooltip_text = "Lives left: %d of %d" % [Run.lives, Run.LIVES]
+	for i in hearts.get_child_count():
+		hearts.get_child(i).modulate = Color(1, 1, 1) if i < Run.lives else Color(0.25, 0.25, 0.25)  # lost lives go dark
 	%ExpBar.value = Run.experience
 
 	if pet:

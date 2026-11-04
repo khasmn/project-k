@@ -190,8 +190,9 @@ Chapter rooms (planned, Kha's design 2026-11-04):
 Create hero -> explore rooms -> chapter boss -> next chapter ... -> run ends
 -> earn currency -> unlock new races/talents/classes -> next run
 
-Lives: each character has 3 lives. On death: back to the main menu, restart from the
-beginning of that chapter, KEEP level and gear. The third death ends the run and resets
+Lives: each character has 3 lives. On death (Kha 2026-11-05): straight to town ("Back to town" on the
+defeat screen), restart from the beginning of that chapter at full HP, KEEP level, gear, items, materials
+and animals, LOSE half your gold. 3 hearts next to Level/EXP/Gold in the battle HERO box (lost = dark). The third death ends the run and resets
 the hero; currency earned still unlocks content for future runs.
 
 ## Loot and progression

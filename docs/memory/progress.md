@@ -31,6 +31,11 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 
 ## Session log (newest first)
 
+### 2026-11-05 – 3 lives (feature/three-lives)
+- Eggs PR #45 merged.
+- A death with lives left: lose a life and half your gold, heal, Back to town, chapter restarts. 3rd death ends the run.
+- Hearts in the battle HERO box; lives check in tests/test_run.gd.
+
 ### 2026-11-05 – Farm step 2: eggs (feature/farm-eggs)
 - Farm PR #44 merged.
 - Owl, Raven and Drake eggs drop from wolves/skeletons, bandits and the Bandit Chief; they hatch at the Farm.

@@ -60,10 +60,10 @@ func _init() -> void:
 	var raven: Dictionary = Farm.hatch()[0]
 	_check(Run.eggs.is_empty() and raven.kind == "raven" and Run.companion == 0, "the egg hatches and the chick comes along")
 	Run.gold = 0
-	Dice.forced_rolls = [20, 1, 3]  # hit, damage 1, steals 3 x power 1
 	pet = Farm.companion()
 	foe = Combatant.new(Run.data("enemies").giant_rat)
 	foe.hp = 99
+	Dice.forced_rolls = [20, 1, 1, 3]  # a crit (damage rolled twice), then steals 3 x power 1
 	pet.use_skill(pet.skills[0], [foe], [Run.hero])
 	_check(Run.gold == 3, "Snatch steals d3 x power gold on a hit")
 	Run.eggs = ["owl"]

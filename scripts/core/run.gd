@@ -14,6 +14,7 @@ const REST_HEAL_PERCENT: int = 30
 const TRAIN_POINTS: int = 1
 const START_ITEMS: Dictionary = {"healing_potion": 2}
 const START_GOLD: int = 30  # enough for a first piece of gear in the town Shop
+const LIVES: int = 3
 
 static var hero: Combatant
 static var hero_title: String = ""
@@ -25,6 +26,7 @@ static var level: int = 1
 static var experience: int = 0
 static var points: int = 0  # unspent stat points
 static var gold: int = 0
+static var lives: int = LIVES  # left; dying on the last one ends the run
 static var items: Dictionary = {}  # item id -> how many, see data/items.json
 static var bag: Array[Dictionary] = []  # gear pieces you carry but don't wear (see Gear.piece)
 static var gear: Dictionary = {}  # slot (helmet, armor, weapon, offhand, jewelry1, jewelry2) -> piece you wear
@@ -61,6 +63,7 @@ static func _reset() -> void:
 	experience = 0
 	points = 0
 	gold = START_GOLD
+	lives = LIVES
 	items = START_ITEMS.duplicate()
 	bag = []
 	gear = {}
@@ -77,6 +80,18 @@ static func restart_chapter() -> void:
 	room = 1
 	room_type = ""
 	room_note = ""
+
+
+## A death that isn't the last: lose a life and half your gold, heal to full, restart the chapter.
+## Level, gear, items, materials and animals are kept. Returns the gold lost.
+static func lose_life() -> int:
+	lives -= 1
+	var lost: int = gold / 2
+	gold -= lost
+	hero.hp = hero.max_hp
+	hero.statuses.clear()
+	restart_chapter()
+	return lost
 
 
 static func is_boss() -> bool:
