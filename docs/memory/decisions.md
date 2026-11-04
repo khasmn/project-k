@@ -5,6 +5,7 @@ if a decision changes, add a new entry that says what it replaces.
 
 | Date | Decision | Why |
 | --- | --- | --- |
+| 2026-11-04 | Boss art: elites on 48x48, the Bandit Chief on 64x64, shown at the same pixel scale and standing on the same floor; each boss is a very different design from its normal monster (Rat King = three of Kha's rats knotted by the tails) | Kha's choices; .pxo stays as the Pixelorama source, the game reads the exported PNG strip |
 | 2026-11-04 | Wolf and Skeleton sprites; wolves wear a collar when a Bandit or Bandit Captain is in the same fight (enemies.json "sprite_with": {monster id: sprite}) | Kha's idea: the bandits' tamed wolves |
 | 2026-11-04 | Dice animation: every roll (attacks, damage, initiative, flee) tumbles as a pixel die (~1.5 s) before the log line; same dice land together (advantage); your dice pale green, monster dice dark red; nat 20 gold, nat 1 red; Settings switch to turn it off. Display only: rolls are decided first (Dice.history) | Kha's choices |
 | 2026-11-04 | Bandit has two looks (hooded rogue, rough brigand); enemies.json "sprite" can be a list, one picked per monster via Dice. Target is marked by a bobbing gold arrow above it (2 FPS), replacing the yellow frame | Kha's choices |

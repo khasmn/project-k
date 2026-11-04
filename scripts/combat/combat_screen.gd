@@ -335,10 +335,15 @@ func _make_card(foe: Combatant) -> Button:
 		var picture: TextureRect = TextureRect.new()
 		picture.texture = _strip("res://assets/sprites/enemies/%s.png" % foe.sprite)
 		picture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		picture.set_anchors_and_offsets_preset(Control.PRESET_CENTER, Control.PRESET_MODE_KEEP_SIZE)
-		picture.custom_minimum_size = Vector2(SPRITE_SIZE, SPRITE_SIZE)
-		picture.grow_horizontal = Control.GROW_DIRECTION_BOTH
-		picture.grow_vertical = Control.GROW_DIRECTION_BOTH
+		# Bosses are drawn on bigger canvases (48 or 64 px); all art keeps the same pixel scale and stands on the card's floor.
+		var shown: float = picture.texture.region.size.y * SPRITE_SIZE / 32
+		picture.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM)
+		picture.offset_left = -shown / 2
+		picture.offset_right = shown / 2
+		picture.offset_top = -10 - shown
+		picture.offset_bottom = -10
+		arrow.offset_top = card.custom_minimum_size.y - shown - 22
+		arrow.offset_bottom = arrow.offset_top + 24
 		picture.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(picture)
 		lines.hide()  # art only: the info shows on hover or with the Info command
