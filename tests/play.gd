@@ -85,7 +85,7 @@ func _play(actions: Array[String]) -> void:
 		var button: Button = _button_for(action)
 		if button == null:
 			print(">> can't '%s' here (fight: t1-t4, attack, skill, defend, flee, 1; path: 1/2/3, character, +stat/-stat, confirm, close)" % action)
-		elif button.disabled:
+		elif button.disabled or not button.is_visible_in_tree():  # a player can't click a hidden button (e.g. Attack while Items is open)
 			print(">> can't %s right now" % action)
 		elif button.text == "New hero":
 			print(">> click New hero (goes back to character creation; the play tool stops here)")
