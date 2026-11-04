@@ -11,6 +11,7 @@ var max_hp: int
 var hp: int
 var attack: int
 var attack_name: String = "Attack"  # "Magic" for a Mage
+var energy_name: String = "Energy"  # "Mana" for a Mage: same rules, another name
 var defense: int
 var speed: int
 var damage_die: int
@@ -43,6 +44,7 @@ func _init(data: Dictionary) -> void:
 	hp = max_hp
 	attack = int(data.attack)
 	attack_name = data.get("attack_name", "Attack")
+	energy_name = data.get("energy_name", "Energy")
 	defense = int(data.defense)
 	speed = int(data.speed)
 	damage_die = int(data.damage_die)

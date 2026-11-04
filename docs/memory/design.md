@@ -115,7 +115,7 @@ Status effects: burn, poison, stun, shield.
 
 ### Skills and Energy (built 2026-11-04, data/skills.json)
 
-- Energy: max 3, full at the start of each fight, +1 at the start of your turn. Each class has 2 skills; the Skill button opens a list (name + cost), Back closes it.
+- Energy: max 3, full at the start of each fight, +1 at the start of your turn. A Mage calls it Mana (same rules, blue bar; others a gold Energy bar under HP). Each class has 2 skills; the Skill button opens a list (name + cost), Back closes it.
 - A save is d20 + a stat vs 10 + the user's Attack (Magic for a Mage). Nat 20 always passes, nat 1 always fails.
 - Poison and burn hurt at the start of the victim's turn and ignore shields. Stun = lose your next turn.
   Shield soaks attack damage, then breaks. A new fight clears everything.

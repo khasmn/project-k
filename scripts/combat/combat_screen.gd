@@ -73,6 +73,9 @@ func _start_fight() -> void:
 	hero.start_fight()
 	%FleeButton.visible = not Run.is_boss()
 	%SkillButton.visible = not hero.skills.is_empty()
+	var energy_fill: StyleBoxFlat = StyleBoxFlat.new()
+	energy_fill.bg_color = Color(0.3, 0.7, 1) if hero.energy_name == "Mana" else Color(1, 0.78, 0.3)
+	%HeroEnergyBar.add_theme_stylebox_override("fill", energy_fill)
 	for foe in enemies:
 		%EnemyList.add_child(_make_card(foe))
 		var row: Button = UI.menu_button("", _set_target.bind(foe))
@@ -171,8 +174,8 @@ func _on_attack() -> void:
 func _open_skills() -> void:
 	var buttons: Array[Button] = []
 	for skill in hero.skills:
-		var button: Button = UI.menu_button("%s (%d Energy)" % [skill.name, skill.cost], _on_skill.bind(skill))
-		button.tooltip_text = "%s You get 1 Energy back each turn." % skill.description
+		var button: Button = UI.menu_button("%s (%d %s)" % [skill.name, skill.cost, hero.energy_name], _on_skill.bind(skill))
+		button.tooltip_text = "%s You get 1 %s back each turn." % [skill.description, hero.energy_name]
 		button.disabled = hero.energy < int(skill.cost)
 		buttons.append(button)
 	_open_menu(buttons)
@@ -494,6 +497,16 @@ func _make_card(foe: Combatant) -> Button:
 		arrow.offset_bottom = arrow.offset_top + 24
 		picture.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(picture)
+		bar.reparent(card)  # art only: the HP bar floats over the monster's head
+		bar.custom_minimum_size.y = 8
+		var half: float = minf(shown * 0.3, 40)
+		bar.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM)
+		bar.offset_left = -half
+		bar.offset_right = half
+		bar.offset_top = -10 - shown - 10
+		bar.offset_bottom = -10 - shown - 2
+		arrow.offset_top -= 12
+		arrow.offset_bottom -= 12
 		card.custom_minimum_size.x = maxf(card.custom_minimum_size.x, shown)  # bosses are wider
 		pictures[foe] = picture
 		lines.hide()  # art only: the info shows on hover or with the Info command
@@ -512,7 +525,9 @@ func _update_labels() -> void:
 	%HeroName.text = Run.hero_title
 	%HeroHPBar.max_value = hero.max_hp
 	%HeroHPBar.value = hero.hp
-	%HeroHP.text = "HP %d / %d" % [hero.hp, hero.max_hp]
+	%HeroEnergyBar.max_value = Combatant.MAX_ENERGY
+	%HeroEnergyBar.value = hero.energy
+	%HeroHP.text = "HP %d / %d     %s %d / %d" % [hero.hp, hero.max_hp, hero.energy_name, hero.energy, Combatant.MAX_ENERGY]
 	var passives: Array = []
 	for name in hero.passive_names.values():
 		if not name in passives:
@@ -520,9 +535,9 @@ func _update_labels() -> void:
 	%HeroTokenName.text = hero.display_name
 	%HeroTokenBar.max_value = hero.max_hp
 	%HeroTokenBar.value = hero.hp
-	%HeroStats.text = "%s %d (d%d)   Armor %d%s   Speed %d   Energy %d/%d%s\nPassives: %s" % [
+	%HeroStats.text = "%s %d (d%d)   Armor %d%s   Speed %d%s\nPassives: %s" % [
 		hero.attack_name, hero.attack, hero.damage_die, hero.armor(), " (defending)" if hero.defending else "",
-		hero.speed, hero.energy, Combatant.MAX_ENERGY, "   " + hero.status_text() if hero.status_text() else "",
+		hero.speed, "   " + hero.status_text() if hero.status_text() else "",
 		", ".join(passives) if passives else "none in combat"]
 	%Level.text = "Level %d   EXP %d / %d   Gold %d" % [Run.level, Run.experience, Run.exp_needed(), Run.gold]
 	%ExpBar.max_value = Run.exp_needed()
@@ -533,8 +548,9 @@ func _update_labels() -> void:
 		var card: Button = %EnemyList.get_child(i)
 		var lines: Node = card.get_node("Lines")
 		lines.get_node("Name").text = foe.display_name
-		lines.get_node("HPBar").max_value = foe.max_hp
-		lines.get_node("HPBar").value = foe.hp
+		var bar: ProgressBar = card.find_child("HPBar", true, false)
+		bar.max_value = foe.max_hp
+		bar.value = foe.hp
 		lines.get_node("HP").text = "HP %d / %d" % [foe.hp, foe.max_hp] if foe.is_alive() else "Defeated"
 		lines.get_node("Stats").text = "Atk %d d%d Arm %d Spd %d" % [foe.attack, foe.damage_die, foe.armor(), foe.speed]
 		if foe.status_text():
