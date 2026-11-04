@@ -5,6 +5,7 @@ if a decision changes, add a new entry that says what it replaces.
 
 | Date | Decision | Why |
 | --- | --- | --- |
+| 2026-11-05 | Events: story + choice cards on the path screen; outcomes include rewards, HP/EXP, next-fight changes, skip the fight, and a one-battle helper | Kha's choices |
 | 2026-11-05 | Death with lives left: straight to town (not the main menu), lose half the gold, full HP; hearts in battle only. Replaces "back to the main menu" | Kha's choices |
 | 2026-11-05 | Eggs: drop rolls 20 / 17+ elite / 15+ boss, hatch at once at the Farm, lost if the barn is full, Release button | Kha's choices |
 | 2026-11-05 | Farm: buy babies + eggs from loot (step 2); companion has its own AI turn, grows with fights, barn of 4, 1 in battle, belongs to the hero | Kha's choices |

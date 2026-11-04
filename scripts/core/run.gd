@@ -22,6 +22,8 @@ static var hero_look: Dictionary = {}  # for HeroSprite; empty for the test hero
 static var room: int = 1  # 1..ROOMS, then ROOMS + 1 is the boss
 static var room_type: String = ""  # the door picked for this room
 static var room_note: String = ""  # shown at the start of the next battle log
+static var next_fight: Dictionary = {}  # set by an event for the next battle: "first", "stun_foes", "poison", "ally"
+static var events_seen: Array[String] = []  # event ids opened this run, so they don't repeat too soon
 static var level: int = 1
 static var experience: int = 0
 static var points: int = 0  # unspent stat points
@@ -59,6 +61,8 @@ static func _reset() -> void:
 	room = 1
 	room_type = ""
 	room_note = ""
+	next_fight = {}
+	events_seen = []
 	level = 1
 	experience = 0
 	points = 0
@@ -80,6 +84,7 @@ static func restart_chapter() -> void:
 	room = 1
 	room_type = ""
 	room_note = ""
+	next_fight = {}
 
 
 ## A death that isn't the last: lose a life and half your gold, heal to full, restart the chapter.
@@ -99,14 +104,20 @@ static func is_boss() -> bool:
 
 
 ## 3 doors of different types, each with a random name and description from data/rooms.json.
+## An event door is a random event from data/events.json ("event": its id).
 static func door_choices() -> Array:
 	var texts: Dictionary = data("rooms")
 	var types: Array = DOOR_TYPES.duplicate()
 	var doors: Array = []
 	for i in DOORS:
 		var type: String = types.pop_at(Dice.roll(types.size()) - 1)
-		var options: Array = texts[type]
-		var door: Dictionary = options[Dice.roll(options.size()) - 1].duplicate()
+		var door: Dictionary
+		if type == "event":
+			var id: String = RoomEvent.pick()
+			door = {"name": data("events")[id].name, "description": data("events")[id].door, "event": id}
+		else:
+			var options: Array = texts[type]
+			door = options[Dice.roll(options.size()) - 1].duplicate()
 		door.type = type
 		doors.append(door)
 	return doors

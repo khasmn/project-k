@@ -3,6 +3,7 @@ extends Control
 
 const COMBAT_SCENE: String = "res://scenes/combat/combat.tscn"
 const TOWN_SCENE: String = "res://scenes/city/town.tscn"
+const PATH_SCENE: String = "res://scenes/path/path.tscn"
 const CARD_STYLE: StyleBoxFlat = preload("res://scenes/ui/box_style.tres")
 const REST_CLICK_DELAY: float = 0.5  # Rest/Train appear where the door was: block a double click picking one
 ## Left stripe color and subtitle per door type.
@@ -19,6 +20,7 @@ const SUBTITLES: Dictionary = {
 
 var hero: Combatant
 var gear_window: GearWindow = GearWindow.new()
+var dice: DiceTray = DiceTray.new()
 
 
 func _ready() -> void:
@@ -37,6 +39,8 @@ func _ready() -> void:
 	town_button.pressed.connect(_back_to_town)
 	gear_button.add_sibling(town_button)
 	add_child(gear_window)
+	dice.alignment = BoxContainer.ALIGNMENT_CENTER
+	Dice.recording = Settings.animate_dice
 	gear_window.closed.connect(_on_window_closed)
 	_update_sidebar()
 	_show_doors()
@@ -51,11 +55,11 @@ func _show_doors() -> void:
 		return
 	%HeadingText.text = "Pick a path to continue"
 	for door in Run.door_choices():
-		_add_card(door.name, door.type, door.description, _enter.bind(door.type))
+		_add_card(door.name, door.type, door.description, _enter.bind(door.type, door.get("event", "")))
 
 
-## Clicked a door. Rest asks Rest or Train first, Shop opens the Peddler's Cart; Event isn't built yet. All end in a battle.
-func _enter(type: String) -> void:
+## Clicked a door. Rest asks Rest or Train first, Shop opens the Peddler's Cart, Event shows its scene. All end in a battle.
+func _enter(type: String, event: String = "") -> void:
 	Run.room_type = type
 	match type:
 		"rest":
@@ -67,10 +71,61 @@ func _enter(type: String) -> void:
 			gear_window.open(GearWindow.Mode.PEDDLER)  # closing it ("Leave the cart") starts the battle
 			return
 		"event":
-			Run.room_note = "Nobody's there anymore, but something is waiting for you..."
+			_show_event(event)
+			return
 		"elite":
 			Run.room_note = "A tough foe and its pack block the way!"
 	_to_battle()
+
+
+## The event's story and one card per choice, each saying its check. Choices you can't pay for are greyed out.
+func _show_event(id: String) -> void:
+	var event: Dictionary = Run.data("events")[id]
+	Run.events_seen.append(id)
+	_clear_doors()
+	%HeadingTitle.text = event.name.to_upper()
+	%HeadingText.text = event.text
+	for choice: Dictionary in event.choices:
+		_add_card(choice.label, "event", "", _choose.bind(choice), RoomEvent.check_text(choice))
+		if not RoomEvent.can_choose(choice):
+			%Doors.get_child(-1).set_meta("locked", true)  # not enough gold: stays greyed out
+	await _block_double_click()
+
+
+## Roll (the dice tumble where the cards were), then show what happened and one card to go on.
+func _choose(choice: Dictionary) -> void:
+	_clear_doors()
+	Dice.history.clear()  # only this check's dice
+	var result: Dictionary = RoomEvent.choose(choice)
+	%Doors.add_child(dice)
+	await dice.show_rolls(true)
+	%Doors.remove_child(dice)
+	%HeadingTitle.text = choice.label.to_upper() + ("" if not choice.has("stat") else (": SUCCESS!" if result.success else ": FAILURE"))
+	%HeadingText.text = result.text
+	_update_sidebar()
+	if result.skip:
+		_add_card("Walk on", "event", "You get past without a fight.", _skip_fight, "NO BATTLE")
+	else:
+		Run.room_note = "After the %s, the road goes on. An enemy jumps out!" % Run.data("events")[Run.events_seen.back()].name
+		_add_card("On to the battle", "elite" if Run.room_type == "elite" else "event", "", _to_battle,
+			"ELITE BATTLE" if Run.room_type == "elite" else "BATTLE")
+	await _block_double_click()
+
+
+## No fight this room: straight to the next room's doors.
+func _skip_fight() -> void:
+	Run.room += 1
+	Run.room_type = ""
+	get_tree().change_scene_to_file(PATH_SCENE)
+
+
+## New cards appear where the last click was: block a double click picking one by accident.
+func _block_double_click() -> void:
+	for card in %Doors.get_children():
+		card.disabled = true
+	await get_tree().create_timer(REST_CLICK_DELAY).timeout
+	for card in %Doors.get_children():
+		card.disabled = card.has_meta("locked")
 
 
 func _show_rest() -> void:
@@ -79,11 +134,7 @@ func _show_rest() -> void:
 	%HeadingText.text = "Pick one, then the battle starts"
 	_add_card("Rest", "heal", "Heal %d%% of your Max HP (+%d HP)." % [Run.REST_HEAL_PERCENT, Run.rest_amount()], _rest)
 	_add_card("Train", "train", "Gain %d stat point to spend with CHARACTER." % Run.TRAIN_POINTS, _train)
-	for card in %Doors.get_children():
-		card.disabled = true
-	await get_tree().create_timer(REST_CLICK_DELAY).timeout
-	for card in %Doors.get_children():
-		card.disabled = false
+	await _block_double_click()
 
 
 func _rest() -> void:
@@ -103,8 +154,8 @@ func _to_battle() -> void:
 	get_tree().change_scene_to_file(COMBAT_SCENE)
 
 
-## A clickable card: colored stripe on the left, name, type line and a short story line.
-func _add_card(title: String, type: String, text: String, on_pressed: Callable) -> void:
+## A clickable card: colored stripe on the left, name, type line (or `subtitle`) and a short story line.
+func _add_card(title: String, type: String, text: String, on_pressed: Callable, subtitle: String = "") -> void:
 	var card: Button = Button.new()
 	card.name = "Card%d" % (%Doors.get_child_count() + 1)
 	card.custom_minimum_size = Vector2(640, 96)
@@ -123,7 +174,7 @@ func _add_card(title: String, type: String, text: String, on_pressed: Callable) 
 	lines.offset_left = 24
 	lines.alignment = BoxContainer.ALIGNMENT_CENTER
 	lines.mouse_filter = Control.MOUSE_FILTER_IGNORE  # clicks go through to the card button
-	for part in [[title.to_upper(), 20, TYPE_COLORS[type]], [SUBTITLES[type], 13, Color(1, 0.83, 0.3)], [text, 15, Color(1, 1, 1, 0.85)]]:
+	for part in [[title.to_upper(), 20, TYPE_COLORS[type]], [subtitle if subtitle else SUBTITLES[type], 13, Color(1, 0.83, 0.3)], [text, 15, Color(1, 1, 1, 0.85)]]:
 		var label: Label = Label.new()
 		label.text = part[0]
 		label.add_theme_font_size_override("font_size", part[1])

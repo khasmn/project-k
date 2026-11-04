@@ -1,0 +1,4 @@
+{
+	"sellsword": {"name": "Bram the Sellsword", "hp": 18, "attack": 3, "defense": 1, "speed": 2, "damage_die": 8,
+		"weapon": "sword", "skill": "cleave", "sprite": "bram_idle"}
+}
