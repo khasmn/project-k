@@ -31,6 +31,11 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 
 ## Session log (newest first)
 
+### 2026-11-04 – HP and Energy bars (update/hp-energy-bars)
+- Red HP bar over each monster on the battlefield; gold Energy bar (blue Mana for the Mage) in the HERO box.
+- Mage's Energy is named Mana ("energy_name" in classes.json); skill costs show in Energy or Mana.
+- Energy max 7 in boxes, start 1 (Mage 3, "start_energy"); Meditate/Concentrate (+1, skips attack) and Flee moved into the skill list.
+
 ### 2026-11-04 – Skill list and second class skills (feature/skill-menu)
 - Skill button opens a list in the COMMAND box (shared with Item); unaffordable skills are greyed out.
 - New skills with own poses and effects: Iron Guard, Aimed Shot, Frost Bolt, Uppercut. Classes list "skills" in classes.json.
