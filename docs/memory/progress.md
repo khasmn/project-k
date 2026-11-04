@@ -34,7 +34,7 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 ### 2026-11-05 – Events (feature/events)
 - Lives PR #46 and the design-class-evolution skill PR #47 merged.
 - Event door works: 4 events with check choices, dice roll, outcomes, next-fight effects.
-- Allies in battle: the Farm companion plus an event helper (Bram the Sellsword, borrowed bandit art for now).
+- Allies in battle: the Farm companion plus an event helper (Bram the Sellsword, own art in assets/sprites/allies/). Ally HP bars sit just above their heads.
 - Next: run design-class-evolution (Warrior -> Knight -> Holy Knight, Mage -> Dark Mage -> Necromancer);
   their special events will be event-door scenes.
 

@@ -77,8 +77,8 @@ func hurt(target: Control, text: String, color: Color) -> void:
 
 
 ## A monster's attack: its attack strip (if drawn) while it lunges toward the hero; on_hit runs on the hit frame.
-func monster_attack(picture: TextureRect, sprite: String, toward: float, on_hit: Callable) -> void:
-	var path: String = "res://assets/sprites/enemies/%s_attack.png" % sprite.trim_suffix("_idle")
+func monster_attack(picture: TextureRect, sprite: String, toward: float, on_hit: Callable, folder: String = "enemies") -> void:
+	var path: String = "res://assets/sprites/%s/%s_attack.png" % [folder, sprite.trim_suffix("_idle")]
 	if not Settings.animate_attacks or picture == null or not ResourceLoader.exists(path):
 		on_hit.call()
 		return

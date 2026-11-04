@@ -282,7 +282,8 @@ func _animate(user: Combatant, move: Dictionary, targets: Array, before: Diction
 		if move.is_empty():
 			move = {"impact": "bite" if user.weapon == "bite" else "slash"}
 		for blow in blows:
-			await fx.monster_attack(pictures.get(user), user.sprite, -1.0 if user in allies else 1.0, land.bind(blow))
+			await fx.monster_attack(pictures.get(user), user.sprite, -1.0 if user in allies else 1.0, land.bind(blow),
+				"allies" if user in allies else "enemies")
 	while landing > 0:
 		await get_tree().process_frame
 
@@ -589,31 +590,38 @@ func _fastest_speed() -> int:
 	return _alive().map(func(foe: Combatant) -> int: return foe.speed).max()
 
 
-## An ally stands left of the hero, facing the monsters: its picture with a small HP bar above it.
-## A helper uses a monster's art, mirrored to face the monsters.
+## An ally stands left of the hero, facing the monsters, with a small HP bar just above its head.
+## Art: the Farm animal's stage, or a helper's strip in assets/sprites/allies/ (drawn facing left).
 func _make_ally_token(ally: Combatant) -> void:
-	var token: VBoxContainer = VBoxContainer.new()
+	var token: Control = Control.new()  # the bar sits at a fixed spot over the picture, not in a list
+	token.custom_minimum_size = Vector2(SPRITE_SIZE, SPRITE_SIZE)
 	token.size_flags_vertical = Control.SIZE_SHRINK_END
-	var bar: ProgressBar = ProgressBar.new()
-	bar.custom_minimum_size = Vector2(60, 8)
-	bar.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	bar.show_percentage = false
-	bar.max_value = ally.max_hp
-	bar.add_theme_stylebox_override("fill", %HeroTokenBar.get_theme_stylebox("fill"))
-	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	token.add_child(bar)
-	ally_bars[ally] = bar
 	var picture: TextureRect = TextureRect.new()
 	if ally == pet:
 		picture.texture = _strip(Farm.picture(Run.animals[Run.companion]), 0, ARROW_FPS)  # a slow 2-frame idle
 	else:
-		picture.texture = _strip("res://assets/sprites/enemies/%s.png" % ally.sprite)
-		picture.flip_h = true
-	picture.custom_minimum_size = Vector2(SPRITE_SIZE, SPRITE_SIZE)
+		picture.texture = _strip("res://assets/sprites/allies/%s.png" % ally.sprite)
+	picture.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	picture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	picture.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	token.add_child(picture)
 	pictures[ally] = picture
+	var bar: ProgressBar = ProgressBar.new()
+	bar.show_percentage = false
+	bar.max_value = ally.max_hp
+	bar.add_theme_stylebox_override("fill", %HeroTokenBar.get_theme_stylebox("fill"))
+	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	# The highest painted pixel of the first frame is the top of its head; the bar floats 4 px above it.
+	var frame: AtlasTexture = picture.texture
+	var head: int = frame.atlas.get_image().get_region(frame.region).get_used_rect().position.y
+	var top: float = head * SPRITE_SIZE / frame.region.size.y - 12
+	bar.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
+	bar.offset_left = -30
+	bar.offset_right = 30
+	bar.offset_top = top
+	bar.offset_bottom = top + 8
+	token.add_child(bar)
+	ally_bars[ally] = bar
 	var field: Control = %HeroToken.get_parent()
 	field.add_child(token)
 	field.move_child(token, %HeroToken.get_index())
