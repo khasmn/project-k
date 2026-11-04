@@ -10,6 +10,8 @@ signal closed
 enum Mode { SHOP, GEAR, FORGE }
 
 const BOX: StyleBox = preload("res://scenes/ui/gold_box.tres")
+const TAB: StyleBox = preload("res://scenes/ui/gold_tab.tres")
+const TAB_TEXT: Color = Color(0.12, 0.09, 0.04)  # dark text on the gold tab, like the battle screen
 const POTION: String = "healing_potion"
 const POTION_PRICE: int = 10
 const PREVIEW_SIZE: int = 160
@@ -39,6 +41,12 @@ var left: VBoxContainer = VBoxContainer.new()
 var right: VBoxContainer = VBoxContainer.new()
 var slots_left: VBoxContainer = VBoxContainer.new()
 var slots_right: VBoxContainer = VBoxContainer.new()
+## Blacksmith only: each area sits in its own framed box with a gold name tab (other modes hide the frames).
+var sections: Array = []  # [tab, panel] pairs
+var no_box: StyleBoxEmpty = StyleBoxEmpty.new()
+var npc_box: VBoxContainer
+var list_box: VBoxContainer
+var list_tab: Label
 
 
 func _ready() -> void:
@@ -70,7 +78,8 @@ func _ready() -> void:
 	talk.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	talk.add_theme_font_size_override("font_size", 17)
 	npc_row.add_child(talk)
-	rows.add_child(npc_row)
+	npc_box = _section(npc_row, npc.name.to_upper())
+	rows.add_child(npc_box)
 	var columns: HBoxContainer = HBoxContainer.new()
 	columns.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	columns.add_theme_constant_override("separation", 24)
@@ -85,7 +94,9 @@ func _ready() -> void:
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	left.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.add_child(left)
-	for column in [scroll, slots_left, middle, slots_right, right]:
+	list_box = _section(scroll, "FORGE")
+	list_tab = list_box.get_child(0).get_child(0)
+	for column in [list_box, slots_left, _section(middle, "HERO"), slots_right, _section(right, "MATERIALS")]:
 		columns.add_child(column)
 	right.custom_minimum_size.x = 280
 	middle.custom_minimum_size.x = 220
@@ -107,8 +118,11 @@ func refresh() -> void:
 	for column in [left, right, slots_left, slots_right]:
 		for old in column.get_children():
 			old.queue_free()
-	scroll.visible = mode != Mode.GEAR
-	npc_row.visible = mode == Mode.FORGE
+	list_box.visible = mode != Mode.GEAR
+	npc_box.visible = mode == Mode.FORGE
+	for section: Array in sections:
+		section[0].visible = mode == Mode.FORGE
+		section[1].add_theme_stylebox_override("panel", BOX if mode == Mode.FORGE else no_box)
 	slots_left.visible = mode == Mode.GEAR
 	slots_right.visible = mode == Mode.GEAR
 	title.text = "%s      Gold %d" % [TITLES[mode], Run.gold]
@@ -161,6 +175,7 @@ func _show_forge() -> void:
 			button.add_theme_color_override("font_color", UI.GOLD)
 		tabs.add_child(button)
 	left.add_child(tabs)
+	list_tab.text = "UPGRADE" if upgrading else "FORGE"
 	if upgrading:
 		_show_upgrades()
 	else:
@@ -168,7 +183,6 @@ func _show_forge() -> void:
 	var materials: Dictionary = Run.data("materials")
 	if forge_text:
 		_header(right, forge_text)
-	_header(right, "MATERIALS")
 	for material: String in materials:
 		_line(right, "%s  x%d" % [materials[material].name, Run.materials.get(material, 0)], material)
 	if upgrading:
@@ -249,7 +263,7 @@ func _try(action: Callable, what: Variant) -> void:
 ## Torvik says a random line of this kind (data/npcs.json).
 func _say(kind: String) -> void:
 	var lines: Array = npc[kind]
-	talk.text = "%s:  \"%s\"" % [npc.name, lines[Dice.roll(lines.size(), false) - 1]]
+	talk.text = "\"%s\"" % lines[Dice.roll(lines.size(), false) - 1]  # his name is on the box tab
 
 
 ## Run a Gear action (buy, sell, wear, take_off) on one id, piece or slot, then redraw.
@@ -262,6 +276,27 @@ func _buy_potion() -> void:
 	Run.gold -= POTION_PRICE
 	Run.items[POTION] = Run.items.get(POTION, 0) + 1
 	refresh()
+
+
+## A gold name tab over a framed box holding content (the battle screen's ENEMIES / COMMAND / HERO look).
+func _section(content: Control, tab_text: String) -> VBoxContainer:
+	var box: VBoxContainer = VBoxContainer.new()
+	box.add_theme_constant_override("separation", 0)
+	var tab: PanelContainer = PanelContainer.new()
+	tab.add_theme_stylebox_override("panel", TAB)
+	tab.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	var label: Label = Label.new()
+	label.text = tab_text
+	label.add_theme_color_override("font_color", TAB_TEXT)
+	label.add_theme_font_size_override("font_size", 13)
+	tab.add_child(label)
+	var panel: PanelContainer = PanelContainer.new()
+	panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	panel.add_child(content)
+	box.add_child(tab)
+	box.add_child(panel)
+	sections.append([tab, panel])
+	return box
 
 
 func _header(column: VBoxContainer, text: String) -> void:

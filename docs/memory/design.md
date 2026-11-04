@@ -255,6 +255,8 @@ the hero; currency earned still unlocks content for future runs.
 - The Blacksmith is Torvik Emberbeard, a dwarf (portrait + talk lines in data/npcs.json). After each forge or
   upgrade an anvil cutscene plays (3 slow hammer strikes, then the piece in its grade color; click to skip).
   Settings switch "Forge cutscene".
+- Blacksmith window layout: framed boxes with gold name tabs (TORVIK EMBERBEARD, FORGE/UPGRADE, HERO, MATERIALS),
+  like the battle screen. Shop and GEAR windows keep the plain layout.
 
 ## Attack animations (Kha 2026-11-04)
 
