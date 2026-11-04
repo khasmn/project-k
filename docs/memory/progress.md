@@ -31,6 +31,13 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 
 ## Session log (newest first)
 
+### 2026-11-05 – Events (feature/events)
+- Lives PR #46 and the design-class-evolution skill PR #47 merged.
+- Event door works: 4 events with check choices, dice roll, outcomes, next-fight effects.
+- Allies in battle: the Farm companion plus an event helper (Bram the Sellsword, borrowed bandit art for now).
+- Next: run design-class-evolution (Warrior -> Knight -> Holy Knight, Mage -> Dark Mage -> Necromancer);
+  their special events will be event-door scenes.
+
 ### 2026-11-05 – 3 lives (feature/three-lives)
 - Eggs PR #45 merged.
 - A death with lives left: lose a life and half your gold, heal, Back to town, chapter restarts. 3rd death ends the run.

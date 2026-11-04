@@ -1,0 +1,57 @@
+{
+	"toll_bridge": {"name": "Toll Bridge", "door": "A bandit leans on the rail of a narrow bridge.",
+		"text": "\"Toll's 20 gold, friend. Or you can swim.\" He grins and taps his club.",
+		"choices": [
+			{"label": "Pay the toll", "gold_cost": 20,
+				"success": {"text": "He counts the coins twice and waves you over."}},
+			{"label": "Persuade", "stat": "charisma", "dc": 14,
+				"success": {"text": "He laughs and lets you pass. He even warns you: his friends wait ahead, half asleep.", "stun_foes": true},
+				"fail": {"text": "\"Nice try.\" He takes a few coins for his trouble.", "gold": -10}},
+			{"label": "Intimidate", "stat": "attack", "dc": 12,
+				"success": {"text": "He runs, dropping his purse on the planks.", "gold": 15},
+				"fail": {"text": "He whistles. Bigger friends step out of the reeds!", "elite": true}},
+			{"label": "Sneak under the bridge", "stat": "speed", "dc": 15,
+				"success": {"text": "You climb along the beams and slip past everyone ahead. No fight this time!", "skip": true},
+				"fail": {"text": "A beam snaps and you fall into the cold river.", "damage": 4}}
+		]},
+	"hooded_stranger": {"name": "Stranger on the Road", "door": "A hooded figure sits by a small fire and wants a word.",
+		"text": "\"Rough road ahead,\" says the stranger, a scarred sellsword. \"I could use the work. Or the company.\"",
+		"choices": [
+			{"label": "Hire him", "gold_cost": 25,
+				"success": {"text": "\"Coin first, then we fight.\" Bram the Sellsword joins you for the next battle.", "ally": "sellsword"}},
+			{"label": "Ask him to join you", "stat": "charisma", "dc": 13,
+				"success": {"text": "\"Ha! I like you. This one's free.\" Bram joins you for the next battle.", "ally": "sellsword"},
+				"fail": {"text": "\"Free? Get lost.\" He pulls his hood down and ignores you."}},
+			{"label": "Share his fire", "stat": "luck", "dc": 10,
+				"success": {"text": "He shares his stew and a tip about the road ahead.", "heal_percent": 20, "exp": 3},
+				"fail": {"text": "The stew was not fresh. You start the next fight sick.", "poison": true}},
+			{"label": "Walk on",
+				"success": {"text": "You nod and keep walking."}}
+		]},
+	"old_shrine": {"name": "Mossy Shrine", "door": "An old stone shrine glows faintly between the trees.",
+		"text": "Candles still burn at the shrine, though no one has been here for years. A bowl holds old coins.",
+		"choices": [
+			{"label": "Pray", "stat": "luck", "dc": 12,
+				"success": {"text": "Warm light washes over you. Your wounds close.", "heal_percent": 50},
+				"fail": {"text": "Only silence answers."}},
+			{"label": "Study the carvings", "stat": "charisma", "dc": 13,
+				"success": {"text": "The carvings tell of old battles. You learn from them.", "exp": 6},
+				"fail": {"text": "The words are too old to read."}},
+			{"label": "Take the coins", "stat": "speed", "dc": 14,
+				"success": {"text": "You grab the coins before the candles flicker out.", "gold": 20},
+				"fail": {"text": "The candles flare! Angry spirits burn your hands and wake the woods.", "damage": 5, "elite": true}}
+		]},
+	"trapped_chest": {"name": "Abandoned Cart", "door": "A broken cart lies on its side. A chest is still tied to it.",
+		"text": "The chest has a rusty lock. You spot a thin wire running from the lid to a hidden needle.",
+		"choices": [
+			{"label": "Disarm the trap", "stat": "speed", "dc": 13,
+				"success": {"text": "Click. Inside: a potion and some scrap.", "items": {"healing_potion": 1}, "materials": {"iron_scrap": 2}},
+				"fail": {"text": "The needle pricks you. Poison! You start the next fight poisoned.", "poison": true}},
+			{"label": "Smash it open", "stat": "attack", "dc": 11,
+				"success": {"text": "The lid splits. Gold spills out.", "gold": 12},
+				"fail": {"text": "CRASH. Every monster nearby heard that.", "elite": true}},
+			{"label": "Search the cart", "stat": "luck", "dc": 12,
+				"success": {"text": "Under the seat: a map of the road. You will strike first in the next fight.", "first": true},
+				"fail": {"text": "Just old straw and a cranky mouse."}}
+		]}
+}

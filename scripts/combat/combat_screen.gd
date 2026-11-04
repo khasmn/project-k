@@ -22,8 +22,9 @@ const PASSIVE_COLOR: String = "#6fd3ff"
 const EXP_COLOR: String = "#8fb4ff"
 
 var hero: Combatant
-var pet: Combatant  # the Farm companion fighting next to the hero, or null
-var pet_bar: ProgressBar = ProgressBar.new()
+var pet: Combatant  # the Farm companion (also in allies), or null; it gets EXP after a win
+var allies: Array[Combatant] = []  # fight on the hero's side on their own: the Farm companion and an event helper
+var ally_bars: Dictionary = {}  # ally -> its small HP bar
 var hearts: HBoxContainer = HBoxContainer.new()  # lives left, next to Level in the HERO box
 var enemies: Array[Combatant] = []
 var target: Combatant  # the monster the hero attacks; click a card to change it
@@ -86,10 +87,16 @@ func _start_fight() -> void:
 	enemies = Run.enemies()
 	target = enemies[0]
 	hero.start_fight()
+	var next: Dictionary = Run.next_fight  # an event's effects on this fight
+	Run.next_fight = {}
 	pet = Farm.companion()
 	if pet:
-		pet.start_fight()
-		_make_pet_token()
+		allies.append(pet)
+	if next.has("ally"):
+		allies.append(Combatant.new(Run.data("allies")[next.ally]))
+	for ally in allies:
+		ally.start_fight()
+		_make_ally_token(ally)
 	%SkillButton.visible = not hero.skills.is_empty()
 	%MeditateButton.text = "   " + ("Meditate" if hero.energy_name == "Mana" else "Concentrate")
 	%MeditateButton.tooltip_text = "Skip your attack to gain 1 extra %s." % hero.energy_name
@@ -109,7 +116,20 @@ func _start_fight() -> void:
 	if Run.room_note != "":
 		_log(Run.room_note)
 		Run.room_note = ""
+	if next.has("ally"):
+		_log("%s fights at your side this battle." % allies.back().display_name)
+	if next.has("poison"):
+		hero.statuses.poison = RoomEvent.POISON.duplicate()
+		_log("%s starts the fight poisoned." % hero.display_name)
+	if next.has("stun_foes"):
+		for foe in enemies:
+			foe.statuses.stun = true
+		_log("The monsters are caught off guard: they lose their first turn!")
 	_update_labels()
+	if next.has("first"):
+		_log("You know the road: %s strikes first!" % hero.display_name)
+		_hero_turn()
+		return
 	if Settings.animate_dice:  # a moment to see the fight before the first dice (the play tool skips it)
 		await get_tree().create_timer(START_DELAY).timeout
 
@@ -262,7 +282,7 @@ func _animate(user: Combatant, move: Dictionary, targets: Array, before: Diction
 		if move.is_empty():
 			move = {"impact": "bite" if user.weapon == "bite" else "slash"}
 		for blow in blows:
-			await fx.monster_attack(pictures.get(user), user.sprite, 1.0, land.bind(blow))
+			await fx.monster_attack(pictures.get(user), user.sprite, -1.0 if user in allies else 1.0, land.bind(blow))
 	while landing > 0:
 		await get_tree().process_frame
 
@@ -277,7 +297,7 @@ func _land(target_hit: Combatant, from: Control, move: Dictionary, before: Dicti
 	if damage > 0 or not last:
 		fx.play(move.get("impact", ""), node)
 	if last:
-		var color: Color = Color(1, 0.45, 0.4) if target_hit in [hero, pet] else Color(1, 1, 1)
+		var color: Color = Color(1, 0.45, 0.4) if target_hit == hero or target_hit in allies else Color(1, 1, 1)
 		await fx.hurt(node, str(damage) if damage > 0 else ("Blocked" if blocked > 0 else "Miss"), color)
 		for status in target_hit.statuses:
 			if not status in before[target_hit][2]:
@@ -287,8 +307,7 @@ func _land(target_hit: Combatant, from: Control, move: Dictionary, before: Dicti
 
 func _everyone() -> Array[Combatant]:
 	var everyone: Array[Combatant] = [hero]
-	if pet:
-		everyone.append(pet)
+	everyone.append_array(allies)
 	everyone.append_array(enemies)
 	return everyone
 
@@ -390,7 +409,8 @@ func _on_flee() -> void:
 func _after_action() -> void:
 	if _all_down():
 		return
-	await _pet_turn()
+	for ally in allies:
+		await _ally_turn(ally)
 	if not _all_down():
 		_enemy_turn()
 
@@ -407,36 +427,40 @@ func _all_down() -> bool:
 	return false
 
 
-## The companion acts on its own after the hero: its skill when ready (Warm Egg only if the hero is hurt
-## that much), otherwise it attacks the hero's target.
-func _pet_turn() -> void:
-	if pet == null or not pet.is_alive():
+## An ally acts on its own after the hero: its skill when ready (Warm Egg only if the hero is hurt that much,
+## Keen Sight only if the hero has no advantage waiting), otherwise it attacks the hero's target.
+func _ally_turn(ally: Combatant) -> void:
+	if not ally.is_alive() or _alive().is_empty():
 		return
-	%TurnLabel.text = "%s's turn..." % pet.display_name
+	%TurnLabel.text = "%s's turn..." % ally.display_name
 	await get_tree().create_timer(ENEMY_TURN_DELAY).timeout
-	var turn_text: String = pet.start_turn()
+	var turn_text: String = ally.start_turn()
 	if turn_text != "":
 		_log(turn_text)
-	if not pet.is_alive():
-		_pet_ran_off()
+	if not ally.is_alive():
+		_ally_down(ally)
 		return
-	if pet.shake_off_stun():
-		_log("%s is stunned and loses this turn!" % pet.display_name)
+	if ally.shake_off_stun():
+		_log("%s is stunned and loses this turn!" % ally.display_name)
 		return
-	var skill: Dictionary = pet.skills[0]
-	var uses_skill: bool = pet.skill_wait(skill) == 0 and (not skill.has("heal") or hero.max_hp - hero.hp >= pet.power) and (
-		not skill.has("charm") or not hero.charmed)
+	if not target.is_alive():
+		target = _alive()[0]
+	var skill: Dictionary = {} if ally.skills.is_empty() else ally.skills[0]
+	var uses_skill: bool = not skill.is_empty() and ally.skill_wait(skill) == 0 and (
+		not skill.has("heal") or hero.max_hp - hero.hp >= ally.power) and (not skill.has("charm") or not hero.charmed)
 	var foes: Array[Combatant] = [target]
 	foes.append_array(_alive().filter(func(foe: Combatant) -> bool: return foe != target))
 	var before: Dictionary = _snapshot()
-	var line: String = pet.use_skill(skill, foes, [hero]) if uses_skill else pet.strike(target)
+	var line: String = ally.use_skill(skill, foes, [hero]) if uses_skill else ally.strike(target)
 	await dice.show_rolls(true)
-	await _animate(pet, skill if uses_skill else {}, foes if uses_skill and skill.get("area", "") == "all" else [target], before)
+	await _animate(ally, skill if uses_skill else {}, foes if uses_skill and skill.get("area", "") == "all" else [target], before)
 	_log(line)
+	_update_labels()
 
 
-func _pet_ran_off() -> void:
-	_log("%s is hurt too badly and runs back to the farm. It will be fine next fight." % pet.display_name)
+func _ally_down(ally: Combatant) -> void:
+	_log("%s is hurt too badly and %s" % [ally.display_name,
+		"runs back to the farm. It will be fine next fight." if ally == pet else "falls back from the fight."])
 	_update_labels()
 
 
@@ -457,16 +481,18 @@ func _enemy_turn() -> void:
 			continue
 		# The skill-chance d6 isn't animated: it would add a throw to every monster turn.
 		var uses_skill: bool = not foe.skills.is_empty() and foe.skill_wait(foe.skills[0]) == 0 and Dice.roll(6, false) >= Combatant.SKILL_CHANCE
-		# With a companion, each monster attacks the hero or the companion (d2, not animated).
-		var victim: Combatant = pet if pet and pet.is_alive() and Dice.roll(2, false) == 1 else hero
+		# With allies, each monster picks the hero or an ally standing (one die, not animated).
+		var sides: Array[Combatant] = [hero]
+		sides.append_array(allies.filter(func(ally: Combatant) -> bool: return ally.is_alive()))
+		var victim: Combatant = sides[Dice.roll(sides.size(), false) - 1]
 		var before: Dictionary = _snapshot()
 		var line: String = foe.use_skill(foe.skills[0], [victim], _alive()) if uses_skill else foe.strike(victim)
 		await dice.show_rolls(false)
 		await _animate(foe, foe.skills[0] if uses_skill else {}, [victim], before)
 		_log(line)
 		_update_labels()
-		if victim == pet and not pet.is_alive():
-			_pet_ran_off()
+		if victim != hero and not victim.is_alive():
+			_ally_down(victim)
 		if not hero.is_alive():
 			_defeat()
 			return
@@ -563,24 +589,31 @@ func _fastest_speed() -> int:
 	return _alive().map(func(foe: Combatant) -> int: return foe.speed).max()
 
 
-## The companion stands left of the hero, facing the monsters: its picture with a small HP bar above it.
-func _make_pet_token() -> void:
+## An ally stands left of the hero, facing the monsters: its picture with a small HP bar above it.
+## A helper uses a monster's art, mirrored to face the monsters.
+func _make_ally_token(ally: Combatant) -> void:
 	var token: VBoxContainer = VBoxContainer.new()
 	token.size_flags_vertical = Control.SIZE_SHRINK_END
-	pet_bar.custom_minimum_size = Vector2(60, 8)
-	pet_bar.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	pet_bar.show_percentage = false
-	pet_bar.max_value = pet.max_hp
-	pet_bar.add_theme_stylebox_override("fill", %HeroTokenBar.get_theme_stylebox("fill"))
-	pet_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	token.add_child(pet_bar)
+	var bar: ProgressBar = ProgressBar.new()
+	bar.custom_minimum_size = Vector2(60, 8)
+	bar.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	bar.show_percentage = false
+	bar.max_value = ally.max_hp
+	bar.add_theme_stylebox_override("fill", %HeroTokenBar.get_theme_stylebox("fill"))
+	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	token.add_child(bar)
+	ally_bars[ally] = bar
 	var picture: TextureRect = TextureRect.new()
-	picture.texture = _strip(Farm.picture(Run.animals[Run.companion]), 0, ARROW_FPS)  # a slow 2-frame idle
+	if ally == pet:
+		picture.texture = _strip(Farm.picture(Run.animals[Run.companion]), 0, ARROW_FPS)  # a slow 2-frame idle
+	else:
+		picture.texture = _strip("res://assets/sprites/enemies/%s.png" % ally.sprite)
+		picture.flip_h = true
 	picture.custom_minimum_size = Vector2(SPRITE_SIZE, SPRITE_SIZE)
 	picture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	picture.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	token.add_child(picture)
-	pictures[pet] = picture
+	pictures[ally] = picture
 	var field: Control = %HeroToken.get_parent()
 	field.add_child(token)
 	field.move_child(token, %HeroToken.get_index())
@@ -688,12 +721,12 @@ func _update_labels() -> void:
 		hearts.get_child(i).modulate = Color(1, 1, 1) if i < Run.lives else Color(0.25, 0.25, 0.25)  # lost lives go dark
 	%ExpBar.value = Run.experience
 
-	if pet:
-		pet_bar.value = pet.hp
-		var token: Control = pet_bar.get_parent()
-		token.modulate.a = 1.0 if pet.is_alive() else 0.3  # ran back to the farm
-		token.tooltip_text = "%s\nHP %d / %d\n%s" % [Farm.title(Run.animals[Run.companion]), pet.hp, pet.max_hp,
-			Farm.skill_text(Run.animals[Run.companion])] + ("\n" + pet.status_text() if pet.status_text() else "")
+	for ally: Combatant in ally_bars:
+		ally_bars[ally].value = ally.hp
+		var token: Control = ally_bars[ally].get_parent()
+		token.modulate.a = 1.0 if ally.is_alive() else 0.3  # out of the fight
+		token.tooltip_text = _info(ally) if ally != pet else "%s\nHP %d / %d\n%s" % [Farm.title(Run.animals[Run.companion]),
+			pet.hp, pet.max_hp, Farm.skill_text(Run.animals[Run.companion])] + ("\n" + pet.status_text() if pet.status_text() else "")
 	for i in enemies.size():
 		var foe: Combatant = enemies[i]
 		var card: Button = %EnemyList.get_child(i)
@@ -743,8 +776,8 @@ func _highlight(text: String) -> String:
 	for passive in hero.passive_names.values():
 		text = text.replace(passive, "[color=%s]%s[/color]" % [PASSIVE_COLOR, passive])
 	var attackers: Array = [[hero, HERO_COLOR]]
-	if pet:
-		attackers.append([pet, HERO_COLOR])
+	for ally in allies:
+		attackers.append([ally, HERO_COLOR])
 	for foe in enemies:
 		attackers.append([foe, ENEMY_COLOR])
 	for fighter in attackers:

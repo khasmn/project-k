@@ -184,6 +184,12 @@ Chapter rooms (planned, Kha's design 2026-11-04):
   - Elite: a harder fight, about double gold and EXP.
   - Shop: buy potions with gold, then fight.
   - NPC event: a short scene with d20 check choices (reward or trouble), then fight.
+    Built (Kha 2026-11-05): data/events.json, 4 events (Toll Bridge, Stranger on the Road, Mossy Shrine,
+    Abandoned Cart). The story shows on the path screen with one card per choice ("Charisma +1 vs DC 14",
+    "20 gold"); the d20 tumbles, then the result and "On to the battle". Outcomes: gold, heal, damage (never
+    lethal), EXP, items, materials, and for the next fight: strike first, monsters stunned, start poisoned,
+    an elite fight, a helper who fights with you for one battle (data/allies.json, e.g. Bram the Sellsword),
+    or skip the fight. Events don't repeat in a run until all were seen.
   - Rest: choose Rest (+30% HP) or Train (+10% of the current EXP bar), then fight.
 - Potions are used in combat with an Item button.
 

@@ -10,9 +10,5 @@
 	"shop": [
 		{"name": "Peddler's Cart", "description": "A cheerful peddler waves you over. Odd wares, odd prices."},
 		{"name": "Wandering Trader", "description": "A cart piled high with gear, potions and trinkets."}
-	],
-	"event": [
-		{"name": "Stranger on the Road", "description": "A hooded figure wants a word. (Events arrive in a later update.)"},
-		{"name": "Broken Bridge", "description": "Someone is stuck on the other side. (Events arrive in a later update.)"}
 	]
 }
