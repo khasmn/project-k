@@ -57,6 +57,7 @@ func _initialize() -> void:
 			picks[arg.trim_prefix("--")] = value.to_lower()
 		i += 2
 	Dice.rng.seed = seed_value
+	Settings.animate_dice = false  # the play tool wants results at once
 
 	var draft: CharacterDraft = CharacterDraft.new()
 	draft.class_id = "warrior"

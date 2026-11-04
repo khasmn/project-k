@@ -19,7 +19,9 @@ func _ready() -> void:
 
 	%AnimateCheck.button_pressed = Settings.animate_background
 	%FullscreenCheck.button_pressed = Settings.fullscreen
+	%DiceCheck.button_pressed = Settings.animate_dice
 	%AnimateCheck.toggled.connect(func(on: bool) -> void: Settings.animate_background = on; Settings.save_file())
+	%DiceCheck.toggled.connect(func(on: bool) -> void: Settings.animate_dice = on; Settings.save_file())
 	%FullscreenCheck.toggled.connect(func(on: bool) -> void: Settings.fullscreen = on; Settings.save_file())
 	%Options.add_child(UI.menu_button("Back", _show_settings.bind(false)))
 
