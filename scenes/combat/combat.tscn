@@ -270,6 +270,20 @@ theme_override_styles/focus = SubResource("flat")
 text = "   Item"
 alignment = 0
 
+[node name="InfoButton" type="Button" parent="Margin/VBox/Bottom/Command/Panel/ActionPanel/Buttons"]
+layout_mode = 2
+unique_name_in_owner = true
+theme_override_colors/font_hover_color = Color(1, 0.83, 0.3, 1)
+theme_override_colors/font_disabled_color = Color(1, 1, 1, 0.3)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("flat")
+theme_override_styles/hover = SubResource("flat")
+theme_override_styles/pressed = SubResource("flat")
+theme_override_styles/disabled = SubResource("flat")
+theme_override_styles/focus = SubResource("flat")
+text = "   Info"
+alignment = 0
+
 [node name="FleeButton" type="Button" parent="Margin/VBox/Bottom/Command/Panel/ActionPanel/Buttons"]
 layout_mode = 2
 unique_name_in_owner = true
@@ -305,8 +319,9 @@ layout_mode = 2
 size_flags_horizontal = 0
 theme_override_styles/panel = SubResource("tab")
 
-[node name="Label" type="Label" parent="Margin/VBox/Bottom/Hero/Tab"]
+[node name="HeroTab" type="Label" parent="Margin/VBox/Bottom/Hero/Tab"]
 layout_mode = 2
+unique_name_in_owner = true
 theme_override_colors/font_color = Color(0.12, 0.09, 0.04, 1)
 theme_override_font_sizes/font_size = 13
 text = "HERO"
@@ -316,35 +331,42 @@ layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("box")
 
-[node name="VBox" type="VBoxContainer" parent="Margin/VBox/Bottom/Hero/Panel"]
+[node name="InfoText" type="Label" parent="Margin/VBox/Bottom/Hero/Panel"]
 layout_mode = 2
+unique_name_in_owner = true
+visible = false
+theme_override_font_sizes/font_size = 18
+
+[node name="HeroInfo" type="VBoxContainer" parent="Margin/VBox/Bottom/Hero/Panel"]
+layout_mode = 2
+unique_name_in_owner = true
 theme_override_constants/separation = 2
 
-[node name="HeroName" type="Label" parent="Margin/VBox/Bottom/Hero/Panel/VBox"]
+[node name="HeroName" type="Label" parent="Margin/VBox/Bottom/Hero/Panel/HeroInfo"]
 layout_mode = 2
 unique_name_in_owner = true
 theme_override_font_sizes/font_size = 18
 
-[node name="HeroHPBar" type="ProgressBar" parent="Margin/VBox/Bottom/Hero/Panel/VBox"]
+[node name="HeroHPBar" type="ProgressBar" parent="Margin/VBox/Bottom/Hero/Panel/HeroInfo"]
 layout_mode = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 14)
 theme_override_styles/fill = SubResource("hero_fill")
 show_percentage = false
 
-[node name="HeroHP" type="Label" parent="Margin/VBox/Bottom/Hero/Panel/VBox"]
+[node name="HeroHP" type="Label" parent="Margin/VBox/Bottom/Hero/Panel/HeroInfo"]
 layout_mode = 2
 unique_name_in_owner = true
 
-[node name="HeroStats" type="Label" parent="Margin/VBox/Bottom/Hero/Panel/VBox"]
+[node name="HeroStats" type="Label" parent="Margin/VBox/Bottom/Hero/Panel/HeroInfo"]
 layout_mode = 2
 unique_name_in_owner = true
 
-[node name="Level" type="Label" parent="Margin/VBox/Bottom/Hero/Panel/VBox"]
+[node name="Level" type="Label" parent="Margin/VBox/Bottom/Hero/Panel/HeroInfo"]
 layout_mode = 2
 unique_name_in_owner = true
 
-[node name="ExpBar" type="ProgressBar" parent="Margin/VBox/Bottom/Hero/Panel/VBox"]
+[node name="ExpBar" type="ProgressBar" parent="Margin/VBox/Bottom/Hero/Panel/HeroInfo"]
 layout_mode = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 8)
