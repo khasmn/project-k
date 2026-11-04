@@ -110,17 +110,18 @@ func _print_fight() -> void:
 	var cards: Array = _node("%EnemyList").get_children()
 	for n in cards.size():
 		var lines: Node = cards[n].get_node("Lines")
-		print("  t%d) %s  |  %s  |  %s" % [n + 1, lines.get_node("Name").text, lines.get_node("HP").text, lines.get_node("Stats").text])
+		var targeted: String = "  (target)" if _node("%TargetList").get_child(n).text.begins_with("▶") else ""
+		print("  t%d) %s%s  |  %s  |  %s" % [n + 1, lines.get_node("Name").text, targeted, lines.get_node("HP").text, lines.get_node("Stats").text])
 	var choices: Array = _node("%Choices").get_children()
 	if _node("%ItemMenu").visible:
 		var items: Array = _node("%ItemMenu").get_children()
 		for n in items.size() - 1:
-			print("  %d) %s%s" % [n + 1, items[n].text, " (can't use now)" if items[n].disabled else ""])
+			print("  %d) %s%s" % [n + 1, items[n].text.strip_edges(), " (can't use now)" if items[n].disabled else ""])
 		print("Items open. Possible: 1-%d, back" % (items.size() - 1))
 	elif choices.is_empty():
 		print(_node("%TurnLabel").text + ". Possible: t1-t%d, attack, defend%s, item" % [cards.size(), ", flee" if _node("%FleeButton").visible else ""])
 	else:
-		print("Choices: 1) " + choices[0].text)
+		print("Choices: 1) " + choices[0].text.strip_edges())
 
 
 func _print_path() -> void:
@@ -172,7 +173,7 @@ func _button_name(action: String, button: Button) -> String:
 		return "target " + button.get_node("Lines/Name").text
 	if button.get_child_count() > 0:
 		return button.get_child(0).get_child(0).text  # a door card: its title line
-	return button.text
+	return button.text.trim_prefix("▶").strip_edges()
 
 
 func _node(path: String) -> Node:

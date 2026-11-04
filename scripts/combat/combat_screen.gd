@@ -24,6 +24,8 @@ func _ready() -> void:
 	%DefendButton.pressed.connect(_on_defend)
 	%FleeButton.pressed.connect(_on_flee)
 	%ItemButton.pressed.connect(_open_items)
+	for button in %Buttons.get_children():
+		_add_cursor(button)
 	if Run.hero == null:
 		Run.start_test()  # this scene was started on its own, not from character creation
 	_start_fight()
@@ -37,6 +39,8 @@ func _start_fight() -> void:
 	%FleeButton.visible = not Run.is_boss()
 	for foe in enemies:
 		%EnemyList.add_child(_make_card(foe))
+		var row: Button = _command_button("", _set_target.bind(foe))
+		%TargetList.add_child(row)
 	var where: String = "Boss fight" if Run.is_boss() else "Room %d of %d" % [Run.room, Run.ROOMS]
 	var names: String = ", ".join(enemies.map(func(foe: Combatant) -> String: return foe.display_name))
 	%Title.text = "%s:  %s" % [where, names]
@@ -94,15 +98,11 @@ func _open_items() -> void:
 		button.queue_free()
 	for id in Run.items:
 		var item: Dictionary = all[id]
-		var button: Button = Button.new()
-		button.text = "%s x%d  (heal %d%% HP)" % [item.name, Run.items[id], item.heal_percent]
+		var button: Button = _command_button("%s x%d" % [item.name, Run.items[id]], _use_item.bind(id, item))
+		button.tooltip_text = "Heal %d%% of your Max HP" % item.heal_percent
 		button.disabled = Run.items[id] == 0 or hero.hp == hero.max_hp
-		button.pressed.connect(_use_item.bind(id, item))
 		%ItemMenu.add_child(button)
-	var back: Button = Button.new()
-	back.text = "Back"
-	back.pressed.connect(_close_items)
-	%ItemMenu.add_child(back)
+	%ItemMenu.add_child(_command_button("Back", _close_items))
 	%Buttons.hide()
 	%ItemMenu.show()
 
@@ -214,12 +214,24 @@ func _new_hero() -> void:
 
 
 func _add_choice(text: String, on_pressed: Callable) -> void:
-	var button: Button = Button.new()
-	button.text = text
-	button.custom_minimum_size = Vector2(160, 40)
-	button.pressed.connect(on_pressed)
-	%Choices.add_child(button)
+	%Choices.add_child(_command_button(text, on_pressed))
 	%Buttons.hide()  # the fight is over: only the choice buttons make sense now
+
+
+## A menu line in the COMMAND style (same look as Attack/Defend), with the hover cursor.
+func _command_button(text: String, on_pressed: Callable) -> Button:
+	var button: Button = %AttackButton.duplicate(0)  # copy the look only, not the Attack signal
+	button.unique_name_in_owner = false
+	button.text = "   " + text
+	button.pressed.connect(on_pressed)
+	_add_cursor(button)
+	return button
+
+
+## Show a ▶ in front of a command while the mouse is over it.
+func _add_cursor(button: Button) -> void:
+	button.mouse_entered.connect(func() -> void: button.text = "▶" + button.text.substr(1))
+	button.mouse_exited.connect(func() -> void: button.text = " " + button.text.substr(1))
 
 
 func _alive() -> Array[Combatant]:
@@ -235,7 +247,7 @@ func _fastest_speed() -> int:
 ## A clickable monster card: name, HP bar, HP and stats. Clicking it makes that monster the target.
 func _make_card(foe: Combatant) -> Button:
 	var card: Button = Button.new()
-	card.custom_minimum_size = Vector2(0, 104)
+	card.custom_minimum_size = Vector2(0, 116)
 	card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	card.pressed.connect(_set_target.bind(foe))
 	var lines: VBoxContainer = VBoxContainer.new()
@@ -278,6 +290,9 @@ func _update_labels() -> void:
 	for name in hero.passive_names.values():
 		if not name in passives:
 			passives.append(name)
+	%HeroTokenName.text = hero.display_name
+	%HeroTokenBar.max_value = hero.max_hp
+	%HeroTokenBar.value = hero.hp
 	%HeroStats.text = "%s %d (d%d)   Armor %d%s   Speed %d\nPassives: %s" % [
 		hero.attack_name, hero.attack, hero.damage_die, hero.armor(), " (defending)" if hero.defending else "",
 		hero.speed, ", ".join(passives) if passives else "none in combat"]
@@ -289,11 +304,11 @@ func _update_labels() -> void:
 		var foe: Combatant = enemies[i]
 		var card: Button = %EnemyList.get_child(i)
 		var lines: Node = card.get_node("Lines")
-		lines.get_node("Name").text = foe.display_name + ("   < TARGET" if foe == target and foe.is_alive() else "")
+		lines.get_node("Name").text = foe.display_name
 		lines.get_node("HPBar").max_value = foe.max_hp
 		lines.get_node("HPBar").value = foe.hp
 		lines.get_node("HP").text = "HP %d / %d" % [foe.hp, foe.max_hp] if foe.is_alive() else "Defeated"
-		lines.get_node("Stats").text = "Atk %d (d%d)  Armor %d  Spd %d" % [foe.attack, foe.damage_die, foe.armor(), foe.speed]
+		lines.get_node("Stats").text = "Atk %d d%d  Arm %d  Spd %d" % [foe.attack, foe.damage_die, foe.armor(), foe.speed]
 		card.disabled = not foe.is_alive()
 		card.modulate = Color(1, 1, 1, 1 if foe.is_alive() else 0.4)
 		var style: StyleBoxFlat = load("res://scenes/ui/box_style.tres").duplicate()
@@ -301,6 +316,11 @@ func _update_labels() -> void:
 			style.border_color = Color(1, 0.83, 0.3)
 		for state in ["normal", "hover", "pressed", "focus", "disabled"]:
 			card.add_theme_stylebox_override(state, style)
+		var row: Button = %TargetList.get_child(i)
+		var is_target: bool = foe == target and foe.is_alive()
+		row.text = "%s %s  %s" % ["▶" if is_target else " ", foe.display_name, "%d/%d" % [foe.hp, foe.max_hp] if foe.is_alive() else "down"]
+		row.disabled = not foe.is_alive()
+		row.add_theme_color_override("font_color", Color(1, 0.83, 0.3) if is_target else Color(1, 1, 1))
 
 
 func _set_buttons_enabled(enabled: bool) -> void:
