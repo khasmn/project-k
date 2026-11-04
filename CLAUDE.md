@@ -41,6 +41,11 @@ Inspired by Pixel Lineage (Roblox). Solo hobby project, built to play myself fir
 - snake_case for files, functions, variables. PascalCase for class_name and node names.
 - Use static typing in GDScript (`var hp: int = 10`, `func roll(sides: int) -> int`).
 - Keep scripts small: one job per script.
+- Shortest code that works: reuse existing helpers, no duplicate code.
+- Delete unused code (functions, variables, constants, data fields, files) instead of keeping it "for later".
+- Comments only where they add something the code doesn't say (a game rule, a Godot concept, a why).
+  No comments that just repeat the code.
+- No emoji in code, comments, data or commit messages.
 - Pixel art: nearest-neighbor filtering, sprites 16x16 or 32x32.
 
 ## How I want to work

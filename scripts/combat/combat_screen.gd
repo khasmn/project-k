@@ -4,6 +4,7 @@ extends Control
 const ENEMY_TURN_DELAY: float = 0.6
 const CREATION_SCENE: String = "res://scenes/character/character_creation.tscn"
 const PATH_SCENE: String = "res://scenes/path/path.tscn"
+const CARD_STYLE: StyleBoxFlat = preload("res://scenes/ui/box_style.tres")
 const FLEE_DC_BASE: int = 10  # flee: d20 + Speed vs 10 + fastest monster's Speed
 ## Battle log colors (BBCode: the log understands tags like [b]bold[/b] and [color=#hex]text[/color]).
 const HERO_COLOR: String = "#7fd17f"
@@ -93,7 +94,7 @@ func _on_defend() -> void:
 
 ## Item: swap the action buttons for a list of your items (and Back).
 func _open_items() -> void:
-	var all: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/items.json"))
+	var all: Dictionary = Run.data("items")
 	for button in %ItemMenu.get_children():
 		button.queue_free()
 	for id in Run.items:
@@ -153,7 +154,6 @@ func _after_action() -> void:
 	_enemy_turn()
 
 
-## Every living monster attacks once, with a short pause before each.
 func _enemy_turn() -> void:
 	_set_buttons_enabled(false)
 	for foe in _alive():
@@ -311,7 +311,7 @@ func _update_labels() -> void:
 		lines.get_node("Stats").text = "Atk %d d%d  Arm %d  Spd %d" % [foe.attack, foe.damage_die, foe.armor(), foe.speed]
 		card.disabled = not foe.is_alive()
 		card.modulate = Color(1, 1, 1, 1 if foe.is_alive() else 0.4)
-		var style: StyleBoxFlat = load("res://scenes/ui/box_style.tres").duplicate()
+		var style: StyleBoxFlat = CARD_STYLE.duplicate()
 		if foe == target and foe.is_alive():
 			style.border_color = Color(1, 0.83, 0.3)
 		for state in ["normal", "hover", "pressed", "focus", "disabled"]:

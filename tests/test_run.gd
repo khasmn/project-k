@@ -72,7 +72,7 @@ func _init() -> void:
 		var types: Array = Run.door_choices().map(func(door: Dictionary) -> String: return door.type)
 		_check(types.size() == 3 and types.size() == _unique(types).size(), "doors wrong: %s" % [types])
 	# Groups: 1-4 monsters that live in this room; elite rooms lead with an elite; the boss has guards.
-	var all: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/enemies.json"))
+	var all: Dictionary = Run.data("enemies")
 	var elite_names: Array = all.values().filter(func(e: Dictionary) -> bool: return not e.has("rooms")).map(
 		func(e: Dictionary) -> String: return e.name)
 	for room in range(1, Run.ROOMS + 1):

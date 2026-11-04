@@ -11,8 +11,8 @@ var class_group: ButtonGroup = ButtonGroup.new()
 
 
 func _ready() -> void:
-	%RerollRaceButton.pressed.connect(func() -> void: draft.reroll_race(); _refresh())
-	%RerollTalentButton.pressed.connect(func() -> void: draft.reroll_talent(); _refresh())
+	%RerollRaceButton.pressed.connect(func() -> void: draft.reroll("race"); _refresh())
+	%RerollTalentButton.pressed.connect(func() -> void: draft.reroll("talent"); _refresh())
 	%NewHeroButton.pressed.connect(_new_hero)
 	%StartButton.pressed.connect(_start_run)
 	# One toggle button per class in classes.json. A ButtonGroup keeps only one pressed at a time.

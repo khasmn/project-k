@@ -25,12 +25,12 @@ func _init() -> void:
 
 	# 5 rerolls each for race and talent; using race rerolls doesn't touch talent rerolls.
 	for i in 5:
-		_check(draft.reroll_race(), "race reroll refused early")
-	_check(not draft.reroll_race(), "6th race reroll allowed")
+		_check(draft.reroll("race"), "race reroll refused early")
+	_check(not draft.reroll("race"), "6th race reroll allowed")
 	_check(draft.talent_rerolls_left == 5, "race rerolls used talent rerolls")
 	for i in 5:
-		_check(draft.reroll_talent(), "talent reroll refused early")
-	_check(not draft.reroll_talent(), "6th talent reroll allowed")
+		_check(draft.reroll("talent"), "talent reroll refused early")
+	_check(not draft.reroll("talent"), "6th talent reroll allowed")
 
 	# Stats = class base + race change.
 	draft.race_id = "glimmerfae"

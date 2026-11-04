@@ -5,9 +5,9 @@ extends RefCounted
 const RARITY_CHANCES: Dictionary = {"common": 50, "uncommon": 25, "rare": 15, "epic": 8, "legendary": 2}
 const REROLLS: int = 5
 
-var races: Dictionary = _load("res://data/races.json")
-var talents: Dictionary = _load("res://data/talents.json")
-var classes: Dictionary = _load("res://data/classes.json")
+var races: Dictionary = Run.data("races")
+var talents: Dictionary = Run.data("talents")
+var classes: Dictionary = Run.data("classes")
 
 var race_id: String = roll_by_rarity(races)
 var talent_id: String = roll_by_rarity(talents)
@@ -16,21 +16,13 @@ var race_rerolls_left: int = REROLLS
 var talent_rerolls_left: int = REROLLS
 
 
-## Spend one race reroll. Returns false if none are left.
-func reroll_race() -> bool:
-	if race_rerolls_left == 0:
+## Spend one "race" or "talent" reroll. Returns false if none are left.
+func reroll(kind: String) -> bool:
+	var left: String = kind + "_rerolls_left"
+	if get(left) == 0:
 		return false
-	race_rerolls_left -= 1
-	race_id = roll_by_rarity(races)
-	return true
-
-
-## Spend one talent reroll. Returns false if none are left.
-func reroll_talent() -> bool:
-	if talent_rerolls_left == 0:
-		return false
-	talent_rerolls_left -= 1
-	talent_id = roll_by_rarity(talents)
+	set(left, get(left) - 1)
+	set(kind + "_id", roll_by_rarity(get(kind + "s")))
 	return true
 
 
@@ -90,6 +82,3 @@ static func roll_by_rarity(entries: Dictionary) -> String:
 			return ids[Dice.roll(ids.size()) - 1]
 	return ""
 
-
-static func _load(path: String) -> Dictionary:
-	return JSON.parse_string(FileAccess.get_file_as_string(path))

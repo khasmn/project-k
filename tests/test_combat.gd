@@ -12,8 +12,8 @@ func _init() -> void:
 	var hero_wins: int = 0
 	var total_rounds: int = 0
 	for i in FIGHTS:
-		var hero: Combatant = Combatant.load_from("res://data/heroes.json", "test_hero")
-		var enemy: Combatant = Combatant.load_from("res://data/enemies.json", "bandit")
+		var hero: Combatant = Combatant.new(Run.data("heroes").test_hero)
+		var enemy: Combatant = Combatant.new(Run.data("enemies").bandit)
 		var rounds: int = 0
 		while hero.is_alive() and enemy.is_alive() and rounds < MAX_ROUNDS:
 			hero.strike(enemy)
