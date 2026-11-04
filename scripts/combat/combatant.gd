@@ -4,6 +4,7 @@ extends RefCounted
 
 const DEFEND_BONUS: int = 4
 const MAX_ENERGY: int = 7
+const COOLDOWN_EXTRA: int = 2  # a used skill waits its cost + 2 turns (monster skills cost 0: 2 turns)
 const SKILL_CHANCE: int = 5  # a monster uses its skill on a d6 roll of 5 or 6
 
 var display_name: String
@@ -22,6 +23,8 @@ var gold_reward: int = 0
 var defending: bool = false
 var skills: Array[Dictionary] = []  # from data/skills.json: heroes list "skills", monsters have one "skill"
 var start_energy: int = 1  # Energy at your first turn of a fight (Mage: 3 Mana)
+var turn: int = 0  # this fighter's turns so far in this fight
+var ready_on: Dictionary = {}  # skill name -> the turn it can be used again
 var energy: int = 0  # heroes pay a skill's "cost" in Energy; monsters use theirs by chance
 var shield: int = 0  # absorbs this much damage, then breaks
 var statuses: Dictionary = {}  # "poison"/"burn" -> {"power", "turns"}, "stun" -> true
@@ -105,6 +108,8 @@ func start_fight() -> void:
 	defending = false
 	lucky_used = false
 	energy = start_energy - 1  # your first turn adds the 1 back
+	turn = 0
+	ready_on.clear()
 	shield = 0
 	statuses.clear()
 
@@ -113,6 +118,7 @@ func start_fight() -> void:
 func start_turn() -> String:
 	defending = false
 	energy = mini(energy + 1, MAX_ENERGY)
+	turn += 1
 	var lines: PackedStringArray = []
 	if regen > 0 and hp < max_hp:
 		var healed: int = mini(regen, max_hp - hp)
@@ -248,9 +254,19 @@ func _set_status(target: Combatant, effect: Dictionary, name: String) -> String:
 	return "%s: %d damage a turn for %d turns!" % [name, effect.power, effect.turns]
 
 
+static func cooldown(skill: Dictionary) -> int:
+	return int(skill.get("cost", 0)) + COOLDOWN_EXTRA
+
+
+## How many more turns before this skill can be used again (0 = ready).
+func skill_wait(skill: Dictionary) -> int:
+	return maxi(int(ready_on.get(skill.name, 0)) - turn, 0)
+
+
 ## Use one of this fighter's skills. foes: who it can hit (the target first); allies: its own side (itself included).
 func use_skill(skill: Dictionary, foes: Array[Combatant], allies: Array[Combatant]) -> String:
 	energy -= int(skill.get("cost", 0))
+	ready_on[skill.name] = turn + cooldown(skill) + 1
 	var lines: PackedStringArray = ["%s uses %s!" % [display_name, skill.name]]
 	if skill.has("shield"):
 		var shielded: Array = allies if skill.get("shield_all", false) else [self]

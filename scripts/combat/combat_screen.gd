@@ -56,7 +56,7 @@ func _ready() -> void:
 		hero_sprite = sprite
 	add_child(fx)  # last child: effects draw above everything
 	%Log.get_v_scroll_bar().modulate.a = 0  # floating log: no visible scrollbar, the mouse wheel still scrolls
-	%InfoButton.pressed.connect(func() -> void: _show_info(not %InfoText.visible))
+	%MeditateButton.pressed.connect(_on_meditate)
 	for button in %Buttons.get_children():
 		UI.add_cursor(button)
 	if Run.hero == null:
@@ -71,6 +71,8 @@ func _start_fight() -> void:
 	target = enemies[0]
 	hero.start_fight()
 	%SkillButton.visible = not hero.skills.is_empty()
+	%MeditateButton.text = "   " + ("Meditate" if hero.energy_name == "Mana" else "Concentrate")
+	%MeditateButton.tooltip_text = "Skip your attack to gain 1 extra %s." % hero.energy_name
 	for i in Combatant.MAX_ENERGY:  # one box per point of Energy
 		var box: ColorRect = ColorRect.new()
 		box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -124,15 +126,6 @@ func _strip(path: String, frame_width: int = 0, fps: int = SPRITE_FPS) -> AtlasT
 	return frames
 
 
-## Info: the HERO box shows the target's info instead, and its tab shows the target's name. Free action.
-func _show_info(on: bool) -> void:
-	%InfoText.visible = on
-	%HeroInfo.visible = not on
-	%HeroTab.text = target.display_name.to_upper() if on else "HERO"
-	if on:
-		%InfoText.text = _info(target)
-
-
 func _info(foe: Combatant) -> String:
 	var text: String = "%s\nHP %d / %d\nAttack %d, %s (d%d)\nArmor %d   Speed %d" % [
 		foe.display_name, foe.hp, foe.max_hp, foe.attack, foe.weapon, foe.damage_die, foe.armor(), foe.speed]
@@ -173,14 +166,13 @@ func _on_attack() -> void:
 func _open_skills() -> void:
 	var buttons: Array[Button] = []
 	for skill in hero.skills:
-		var button: Button = UI.menu_button("%s (%d %s)" % [skill.name, skill.cost, hero.energy_name], _on_skill.bind(skill))
-		button.tooltip_text = "%s You get 1 %s back each turn." % [skill.description, hero.energy_name]
-		button.disabled = hero.energy < int(skill.cost)
+		var wait: int = hero.skill_wait(skill)
+		var cost: String = "wait %d" % wait if wait else "%d %s" % [skill.cost, hero.energy_name]
+		var button: Button = UI.menu_button("%s (%s)" % [skill.name, cost], _on_skill.bind(skill))
+		button.tooltip_text = "%s You get 1 %s back each turn. After use, wait %d turns." % [
+			skill.description, hero.energy_name, Combatant.cooldown(skill)]
+		button.disabled = wait > 0 or hero.energy < int(skill.cost)
 		buttons.append(button)
-	var rest: Button = UI.menu_button("%s (+1)" % ("Meditate" if hero.energy_name == "Mana" else "Concentrate"), _on_meditate)
-	rest.tooltip_text = "Skip your attack to gain 1 extra %s." % hero.energy_name
-	rest.disabled = hero.energy >= Combatant.MAX_ENERGY
-	buttons.append(rest)
 	if not Run.is_boss():
 		var flee: Button = UI.menu_button("Flee", _on_flee)
 		flee.tooltip_text = "d20 + Speed vs 10 + the fastest monster's Speed. Escape = no gold or EXP; fail = you lose your turn."
@@ -190,7 +182,6 @@ func _open_skills() -> void:
 
 ## Meditate (Concentrate without Mana): the whole turn goes into 1 more Energy.
 func _on_meditate() -> void:
-	_close_menu()
 	_set_buttons_enabled(false)
 	hero.energy = mini(hero.energy + 1, Combatant.MAX_ENERGY)
 	_log("%s focuses: +1 %s." % [hero.display_name, hero.energy_name])
@@ -378,7 +369,7 @@ func _enemy_turn() -> void:
 			_log("%s is stunned and loses this turn!" % foe.display_name)
 			continue
 		# The skill-chance d6 isn't animated: it would add a throw to every monster turn.
-		var uses_skill: bool = not foe.skills.is_empty() and Dice.roll(6, false) >= Combatant.SKILL_CHANCE
+		var uses_skill: bool = not foe.skills.is_empty() and foe.skill_wait(foe.skills[0]) == 0 and Dice.roll(6, false) >= Combatant.SKILL_CHANCE
 		var before: Dictionary = _snapshot()
 		var line: String = foe.use_skill(foe.skills[0], [hero], _alive()) if uses_skill else foe.strike(hero)
 		await dice.show_rolls(false)
@@ -526,7 +517,7 @@ func _make_card(foe: Combatant) -> Button:
 		arrow.offset_bottom -= 12
 		card.custom_minimum_size.x = maxf(card.custom_minimum_size.x, shown)  # bosses are wider
 		pictures[foe] = picture
-		lines.hide()  # art only: the info shows on hover or with the Info command
+		lines.hide()  # art only: the info shows when the mouse is over the monster
 	return card
 
 
@@ -534,8 +525,6 @@ func _set_target(foe: Combatant) -> void:
 	if foe.is_alive():
 		target = foe
 		_update_labels()
-		if %InfoText.visible:
-			_show_info(true)
 
 
 func _update_labels() -> void:
@@ -589,13 +578,12 @@ func _update_labels() -> void:
 		if foe.is_alive() and foe.status_text():
 			row.text += "  (%s)" % foe.status_text()
 		row.disabled = not foe.is_alive()
+		row.tooltip_text = _info(foe) if foe.is_alive() else ""
 		row.add_theme_color_override("font_color", Color(1, 0.83, 0.3) if is_target else Color(1, 1, 1))
 
 
 func _set_buttons_enabled(enabled: bool) -> void:
-	%InfoButton.disabled = not enabled
-	if not enabled:
-		_show_info(false)
+	%MeditateButton.disabled = not enabled or hero.energy >= Combatant.MAX_ENERGY
 	%AttackButton.disabled = not enabled
 	%SkillButton.disabled = not enabled
 	%DefendButton.disabled = not enabled

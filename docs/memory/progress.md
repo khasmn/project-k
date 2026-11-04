@@ -31,6 +31,10 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 
 ## Session log (newest first)
 
+### 2026-11-04 – Commands and cooldowns (update/commands-cooldowns)
+- Info button removed (hover shows monster info); Meditate/Concentrate is a COMMAND button; Flee stays in the skill list.
+- Skill cooldowns: cost + 2 turns for heroes, 2 for monsters; the list shows "wait N".
+
 ### 2026-11-04 – HP and Energy bars (update/hp-energy-bars)
 - Red HP bar over each monster on the battlefield; gold Energy bar (blue Mana for the Mage) in the HERO box.
 - Mage's Energy is named Mana ("energy_name" in classes.json); skill costs show in Energy or Mana.

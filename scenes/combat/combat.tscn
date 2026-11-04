@@ -218,6 +218,20 @@ theme_override_styles/focus = ExtResource("flat")
 text = "   Skill"
 alignment = 0
 
+[node name="MeditateButton" type="Button" parent="Margin/VBox/Bottom/Command/Panel/ActionPanel/Buttons"]
+layout_mode = 2
+unique_name_in_owner = true
+theme_override_colors/font_hover_color = Color(1, 0.83, 0.3, 1)
+theme_override_colors/font_disabled_color = Color(1, 1, 1, 0.3)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = ExtResource("flat")
+theme_override_styles/hover = ExtResource("flat")
+theme_override_styles/pressed = ExtResource("flat")
+theme_override_styles/disabled = ExtResource("flat")
+theme_override_styles/focus = ExtResource("flat")
+text = "   Meditate"
+alignment = 0
+
 [node name="DefendButton" type="Button" parent="Margin/VBox/Bottom/Command/Panel/ActionPanel/Buttons"]
 layout_mode = 2
 unique_name_in_owner = true
@@ -246,19 +260,6 @@ theme_override_styles/focus = ExtResource("flat")
 text = "   Item"
 alignment = 0
 
-[node name="InfoButton" type="Button" parent="Margin/VBox/Bottom/Command/Panel/ActionPanel/Buttons"]
-layout_mode = 2
-unique_name_in_owner = true
-theme_override_colors/font_hover_color = Color(1, 0.83, 0.3, 1)
-theme_override_colors/font_disabled_color = Color(1, 1, 1, 0.3)
-theme_override_font_sizes/font_size = 18
-theme_override_styles/normal = ExtResource("flat")
-theme_override_styles/hover = ExtResource("flat")
-theme_override_styles/pressed = ExtResource("flat")
-theme_override_styles/disabled = ExtResource("flat")
-theme_override_styles/focus = ExtResource("flat")
-text = "   Info"
-alignment = 0
 
 [node name="ItemMenu" type="VBoxContainer" parent="Margin/VBox/Bottom/Command/Panel/ActionPanel"]
 layout_mode = 2
@@ -292,12 +293,6 @@ text = "HERO"
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = ExtResource("box")
-
-[node name="InfoText" type="Label" parent="Margin/VBox/Bottom/Hero/Panel"]
-layout_mode = 2
-unique_name_in_owner = true
-visible = false
-theme_override_font_sizes/font_size = 18
 
 [node name="HeroInfo" type="VBoxContainer" parent="Margin/VBox/Bottom/Hero/Panel"]
 layout_mode = 2
