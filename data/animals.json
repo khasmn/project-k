@@ -1,5 +1,5 @@
 {
-	"dog": {"price": 40, "skill": "howl", "weapon": "bite", "names": ["Fang", "Biscuit", "Scout", "Rusty", "Pepper", "Bandit"],
+	"dog": {"price": 40, "skill": "howl", "weapon": "bite", "names": ["Fang", "Biscuit", "Scout", "Rusty", "Pepper", "Patch"],
 		"stages": [
 			{"name": "Puppy", "hp": 8, "attack": 1, "damage_die": 4, "defense": 0, "speed": 3, "power": 1},
 			{"name": "Young Dog", "hp": 14, "attack": 2, "damage_die": 6, "defense": 1, "speed": 4, "power": 1},

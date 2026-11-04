@@ -5,6 +5,7 @@ if a decision changes, add a new entry that says what it replaces.
 
 | Date | Decision | Why |
 | --- | --- | --- |
+| 2026-11-05 | The boss gives EXP and gold like every fight (the run goes on after it now) | Tester bug, Kha OK |
 | 2026-11-05 | Events: story + choice cards on the path screen; outcomes include rewards, HP/EXP, next-fight changes, skip the fight, and a one-battle helper | Kha's choices |
 | 2026-11-05 | Death with lives left: straight to town (not the main menu), lose half the gold, full HP; hearts in battle only. Replaces "back to the main menu" | Kha's choices |
 | 2026-11-05 | Eggs: drop rolls 20 / 17+ elite / 15+ boss, hatch at once at the Farm, lost if the barn is full, Release button | Kha's choices |

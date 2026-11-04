@@ -57,6 +57,12 @@ func _init() -> void:
 	Dice.forced_rolls = [20]
 	RoomEvent.choose(events.trapped_chest.choices[0])
 	_check(Run.items.healing_potion == 1 and Run.materials.iron_scrap >= 2, "the disarmed chest gives a potion and scrap")
+	Run.hero.advantage = true  # Chosen One: advantage on every check, events included
+	Dice.forced_rolls = [2, 18]
+	_check(RoomEvent.choose(events.old_shrine.choices[0]).success, "Chosen One keeps the higher of two d20s")
+	Run.hero.advantage = false
+	Run.events_seen.assign(events.keys().slice(1))
+	_check(RoomEvent.pick() == events.keys()[0], "the last unseen event is picked without a die")
 	Run.start(draft)
 	_check(Run.next_fight.is_empty() and Run.events_seen.is_empty(), "a new hero starts clean")
 	for i in 20:

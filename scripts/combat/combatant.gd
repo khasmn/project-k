@@ -295,7 +295,7 @@ func use_skill(skill: Dictionary, foes: Array[Combatant], allies: Array[Combatan
 		var shielded: Array = allies if skill.get("shield_all", false) else [self]
 		for ally: Combatant in shielded:
 			ally.shield += int(skill.shield)
-			lines.append("    %s gains Shield %d." % [ally.display_name, ally.shield])
+			lines.append("    %s gains Shield %d (now %d)." % [ally.display_name, int(skill.shield), ally.shield])
 	elif skill.has("heal"):
 		var healed: int = mini(power, allies[0].max_hp - allies[0].hp)
 		allies[0].hp += healed
