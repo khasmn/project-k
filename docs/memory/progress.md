@@ -31,6 +31,11 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 
 ## Session log (newest first)
 
+### 2026-11-04 – Hero sprite and customization
+- LOOK box in character creation with live preview, name + Random, skin/hair/color/outfit arrows.
+- Layered hero sprite (HeroSprite) shown in battle; the log uses the hero's name.
+- Art is a first draft for Kha to polish in Pixelorama.
+
 ### 2026-11-04 – Main menu and character creation restyle
 - Title art (assets/backgrounds/title.png, 384x216, grim dawn, cloaked hero on a cliff).
 - Main menu: New Game, Continue (greyed out until saving), Settings (background animation, fullscreen; saved in user://settings.cfg), Quit.

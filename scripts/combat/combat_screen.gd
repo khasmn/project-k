@@ -35,6 +35,14 @@ func _ready() -> void:
 		BACKGROUND_FPS if Settings.animate_background else 0)  # 0 FPS = stays on frame 1
 	back.set_content_margin_all(12)
 	%Arena.add_theme_stylebox_override("panel", back)
+	if Run.hero_look:  # a created hero has a sprite; the test hero keeps its name label
+		var sprite: HeroSprite = HeroSprite.new()
+		sprite.custom_minimum_size = Vector2(SPRITE_SIZE, SPRITE_SIZE)
+		sprite.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		sprite.show_look(Run.hero_look)
+		%HeroToken.add_child(sprite)
+		%HeroToken.move_child(sprite, 0)
+		%HeroTokenName.hide()
 	%Log.get_v_scroll_bar().modulate.a = 0  # floating log: no visible scrollbar, the mouse wheel still scrolls
 	%InfoButton.pressed.connect(func() -> void: _show_info(not %InfoText.visible))
 	for button in %Buttons.get_children():
@@ -84,19 +92,13 @@ func _start_fight() -> void:
 ## Play every strip: show frame N of the strip, moving on its own frames per second.
 func _process(_delta: float) -> void:
 	for frames: AtlasTexture in animations:
-		var tick: int = Time.get_ticks_msec() * animations[frames] / 1000
-		var width: int = int(frames.region.size.x)
-		frames.region.position.x = tick % (frames.atlas.get_width() / width) * width
+		UI.animate(frames, animations[frames])
 	%Arena.queue_redraw()  # a box style doesn't repaint by itself when its texture changes; the sprites do
 
 
-## An animated strip of frames side by side (frame_width 0 = square frames, like 32x32 sprites).
-## AtlasTexture is a texture that shows one rectangle ("region") of a bigger picture.
+## A strip from UI.strip that this screen keeps animating.
 func _strip(path: String, frame_width: int = 0, fps: int = SPRITE_FPS) -> AtlasTexture:
-	var frames: AtlasTexture = AtlasTexture.new()
-	frames.atlas = load(path)
-	var height: int = frames.atlas.get_height()
-	frames.region = Rect2(0, 0, frame_width if frame_width else height, height)
+	var frames: AtlasTexture = UI.strip(path, frame_width)
 	animations[frames] = fps
 	return frames
 

@@ -7,12 +7,16 @@ const RARITY_COLORS: Dictionary = {
 	"epic": Color(0.75, 0.45, 1.0), "legendary": Color(1.0, 0.65, 0.2),
 }
 const SPIN_STEPS: int = 14
+const LOOK_OPTIONS: Dictionary = {"skin": "Skin", "hair_style": "Hair", "hair_color": "Hair color", "outfit": "Outfit"}
 
 var draft: CharacterDraft
 var spinning: int = 0  # how many names are still spinning; buttons wait until they land
 var race_button: Button
 var talent_button: Button
 var start_button: Button
+var preview: HeroSprite = HeroSprite.new()
+var name_edit: LineEdit = LineEdit.new()
+var look_values: Dictionary = {}  # look option -> the Label showing its current choice
 
 
 func _ready() -> void:
@@ -22,6 +26,7 @@ func _ready() -> void:
 	%TalentActions.add_child(talent_button)
 	for id in CharacterDraft.new().classes:
 		%ClassButtons.add_child(UI.menu_button("", func() -> void: draft.class_id = id; _refresh(), 20))
+	_build_look_box()
 	start_button = UI.menu_button("Start run", _start_run, 22)
 	for button: Button in [UI.menu_button("Back", get_tree().change_scene_to_file.bind(MENU_SCENE), 22),
 			UI.menu_button("New hero", _new_hero, 22), start_button]:
@@ -29,8 +34,63 @@ func _ready() -> void:
 	_new_hero()
 
 
+## LOOK box: live preview, name (typed, or Random for mouse-only), and < > arrows for each look option.
+func _build_look_box() -> void:
+	preview.custom_minimum_size = Vector2(128, 128)
+	preview.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	%LookColumn.add_child(preview)
+	var name_row: HBoxContainer = HBoxContainer.new()
+	name_edit.placeholder_text = "Name"
+	name_edit.max_length = 16
+	name_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	name_edit.text_changed.connect(func(text: String) -> void: draft.look.name = text.strip_edges(); _refresh())
+	name_row.add_child(name_edit)
+	name_row.add_child(UI.menu_button("Random", _random_name))
+	%LookColumn.add_child(name_row)
+	for key in LOOK_OPTIONS:
+		var row: HBoxContainer = HBoxContainer.new()
+		var title: Label = Label.new()
+		title.text = LOOK_OPTIONS[key]
+		title.custom_minimum_size = Vector2(84, 0)
+		look_values[key] = Label.new()
+		look_values[key].size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		look_values[key].horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		for node: Control in [title, _arrow("<", key, -1), look_values[key], _arrow(">", key, 1)]:
+			row.add_child(node)
+		%LookColumn.add_child(row)
+
+
+func _arrow(text: String, key: String, step: int) -> Button:
+	var button: Button = Button.new()
+	button.text = text
+	button.add_theme_color_override("font_hover_color", UI.GOLD)
+	for state in ["normal", "hover", "pressed", "focus"]:
+		button.add_theme_stylebox_override(state, UI.FLAT)
+	button.pressed.connect(_cycle.bind(key, step))
+	return button
+
+
+## Next or previous choice for one look option, wrapping around.
+func _cycle(key: String, step: int) -> void:
+	var options: Array = _options(key)
+	draft.look[key] = options[posmod(options.find(draft.look[key]) + step, options.size())]
+	_refresh()
+
+
+func _options(key: String) -> Array:
+	return range(draft.races[draft.race_id].skins.size()) if key == "skin" else draft.looks[key + "s"].keys()
+
+
+func _random_name() -> void:
+	var names: Array = draft.looks.names
+	name_edit.text = names[Dice.roll(names.size()) - 1]
+	draft.look.name = name_edit.text
+	_refresh()
+
+
 func _new_hero() -> void:
 	draft = CharacterDraft.new()
+	_random_name()
 	_spin(%RaceName, draft.races, "race")
 	_spin(%TalentName, draft.talents, "talent")
 
@@ -81,8 +141,14 @@ func _refresh() -> void:
 	talent_button.text = talent_button.text.left(3) + "Reroll talent (%d left)" % draft.talent_rerolls_left
 	race_button.disabled = spinning > 0 or draft.race_rerolls_left == 0
 	talent_button.disabled = spinning > 0 or draft.talent_rerolls_left == 0
+	preview.visible = spinning == 0  # don't spoil the roll
+	preview.show_look(draft.sprite_look())
+	for key in look_values:
+		var value: Variant = draft.look[key]
+		look_values[key].text = ("Tone %d" % (value + 1) if key == "skin" else value.capitalize() if key == "hair_color"
+			else draft.looks[key + "s"][value])
 	%HeroSummary.text = "Rolling..." if spinning else _summary()
-	start_button.disabled = spinning > 0 or draft.class_id == ""
+	start_button.disabled = spinning > 0 or draft.class_id == "" or draft.look.name == ""
 
 
 func _start_run() -> void:
@@ -105,9 +171,13 @@ func _stat_changes(changes: Dictionary) -> String:
 
 func _summary() -> String:
 	if draft.class_id == "":
-		return "%s with %s. Pick a class to see the final stats." % [
+		return "%s the %s with %s. Pick a class to see the final stats." % [_name(),
 			draft.races[draft.race_id].name, draft.talents[draft.talent_id].name]
 	var s: Dictionary = draft.stats()
-	return "%s %s with %s\nHP %d   Attack %d   Magic %d   Defense %d   Speed %d   Charisma %d   Luck %d" % [
-		draft.races[draft.race_id].name, draft.classes[draft.class_id].name, draft.talents[draft.talent_id].name,
+	return "%s the %s %s with %s\nHP %d   Attack %d   Magic %d   Defense %d   Speed %d   Charisma %d   Luck %d" % [
+		_name(), draft.races[draft.race_id].name, draft.classes[draft.class_id].name, draft.talents[draft.talent_id].name,
 		s.hp, s.attack, s.magic, s.defense, s.speed, s.charisma, s.luck]
+
+
+func _name() -> String:
+	return draft.look.name if draft.look.name else "Your hero"

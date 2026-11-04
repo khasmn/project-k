@@ -5,6 +5,7 @@ if a decision changes, add a new entry that says what it replaces.
 
 | Date | Decision | Why |
 | --- | --- | --- |
+| 2026-11-04 | Hero customization on the creation screen (LOOK box): name, skin tone per race, hair style and color, 3 outfits; class changes only the weapon; layered tinted sprites | Kha's choices |
 | 2026-11-04 | Main menu (New Game, Continue greyed out, Settings, Quit) over grim title art; Settings = background animation + fullscreen | Kha's choices; animation toggle for motion sickness |
 | 2026-11-04 | Character creation: battle-screen style, Back button, cosmetic slot-machine spin (real roll still from the dice module) | Kha's choice |
 | 2026-11-04 | Chapter 1 is a deep jungle-like forest: bright with a little grim, day, a giant old tree, pointed leaves (no cloud-like blobs), many trunks, vines, ferns; 5-frame breeze loop stored as a strip of 384x128 frames, played at 2 FPS (6 FPS gave Kha motion sickness); backgrounds are 384x128 PNGs in assets/backgrounds/ shown 3x | Kha's choice; make-background skill (JRPG style inspiration only, never copied) |

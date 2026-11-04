@@ -8,12 +8,15 @@ const REROLLS: int = 5
 var races: Dictionary = Run.data("races")
 var talents: Dictionary = Run.data("talents")
 var classes: Dictionary = Run.data("classes")
+var looks: Dictionary = Run.data("looks")
 
 var race_id: String = roll_by_rarity(races)
 var talent_id: String = roll_by_rarity(talents)
 var class_id: String = ""
 var race_rerolls_left: int = REROLLS
 var talent_rerolls_left: int = REROLLS
+## Name and appearance: skin is an index into the race's "skins", the others are ids from looks.json.
+var look: Dictionary = {"name": "", "skin": 0, "hair_style": "short", "hair_color": "brown", "outfit": "adventurer"}
 
 
 ## Spend one "race" or "talent" reroll. Returns false if none are left.
@@ -40,7 +43,7 @@ func hero_data() -> Dictionary:
 	var hero_class: Dictionary = classes[class_id]
 	var s: Dictionary = stats()
 	return {
-		"name": hero_class.name,
+		"name": look.name if look.name != "" else hero_class.name,
 		"hp": s.hp,
 		"attack": s[hero_class.attack_stat],
 		"attack_name": hero_class.attack_stat.capitalize(),
@@ -50,6 +53,14 @@ func hero_data() -> Dictionary:
 		"weapon": hero_class.weapon.to_lower(),
 		"effects": races[race_id].get("effects", {}).merged(talents[talent_id].get("effects", {})),
 		"passive_names": _passive_names(),
+	}
+
+
+## What HeroSprite needs to draw this hero (no class yet = no weapon).
+func sprite_look() -> Dictionary:
+	return {
+		"race": race_id, "class": class_id, "outfit": look.outfit, "hair_style": look.hair_style,
+		"skin": Color(races[race_id].skins[look.skin]), "hair_color": Color(looks.hair_colors[look.hair_color]),
 	}
 
 
