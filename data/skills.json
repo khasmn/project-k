@@ -16,6 +16,11 @@
 	"uppercut": {"name": "Uppercut", "pose": "brawler_uppercut", "impact": "uppercut", "cost": 2, "description": "Attack at -2 to hit, +1d8 damage on a hit.",
 		"to_hit": -2, "extra_die": 8},
 
+	"howl": {"name": "Howl", "aura": "howl", "buff": "inspired", "turns": 2, "description": "Inspires its hero: +{power} to hit and damage on the next 2 attacks."},
+	"warm_egg": {"name": "Warm Egg", "aura": "rally", "heal": true, "description": "Gives its hero a warm egg: heals {power} HP (only when the hero is hurt that much)."},
+	"charge": {"name": "Charge", "aura": "dust", "impact": "punch", "extra_die": 4, "effect": {"status": "stun", "crit_only": true},
+		"description": "Attack with +1d4 damage. A critical hit also stuns."},
+
 	"diseased_bite": {"name": "Diseased Bite", "impact": "bite", "effect": {"status": "poison", "power": 1, "turns": 3, "save": "defense"}},
 	"cheap_shot": {"name": "Cheap Shot", "aura": "dust", "impact": "slash", "advantage": true},
 	"pack_howl": {"name": "Pack Howl", "aura": "howl", "shield": 2, "shield_all": true},

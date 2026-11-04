@@ -32,6 +32,8 @@ static var materials: Dictionary = {}  # material id -> how many, see data/mater
 ## Kept for every future hero (not reset): blueprints found and "kept" materials (Starmetal Shards).
 ## ponytail: lost when the game closes until saving exists (build step 5).
 static var blueprints: Array[String] = []
+static var animals: Array[Dictionary] = []  # the Farm: {"kind", "name", "exp"}, see Farm
+static var companion: int = -1  # index in animals of the one that comes along, -1 = none
 
 
 static func start(draft: CharacterDraft) -> void:
@@ -61,6 +63,8 @@ static func _reset() -> void:
 	items = START_ITEMS.duplicate()
 	bag = []
 	gear = {}
+	animals = []
+	companion = -1
 	for material: String in materials.keys():
 		if not data("materials")[material].get("kept", false):
 			materials.erase(material)

@@ -6,13 +6,13 @@ const COMBAT_SCENE: String = "res://scenes/combat/combat.tscn"
 const ART_SIZE: Vector2 = Vector2(384, 216)
 ## Each building: its clickable rectangle in art pixels (x, y, width, height) and what its window says.
 const BUILDINGS: Array = [
-	{"name": "Farm", "rect": [4, 92, 92, 74], "text": "Raise animals here. Some can follow you into battle as companions. (Coming soon)"},
+	{"name": "Farm", "rect": [4, 92, 92, 74]},
 	{"name": "Blacksmith", "rect": [100, 92, 70, 74]},
 	{"name": "Inn", "rect": [178, 84, 94, 82], "text": "A warm bed and a hot meal."},
 	{"name": "Shop", "rect": [282, 100, 92, 66]},
 ]
 ## Buildings that open the GearWindow instead of the plain window.
-const GEAR_WINDOW_MODES: Dictionary = {"Blacksmith": GearWindow.Mode.FORGE, "Shop": GearWindow.Mode.SHOP}
+const GEAR_WINDOW_MODES: Dictionary = {"Blacksmith": GearWindow.Mode.FORGE, "Shop": GearWindow.Mode.SHOP, "Farm": GearWindow.Mode.FARM}
 
 
 var gear_window: GearWindow = GearWindow.new()

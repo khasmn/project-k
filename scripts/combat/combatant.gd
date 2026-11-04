@@ -23,6 +23,7 @@ var gold_reward: int = 0
 var luck: int = 0  # forging grade (Gear.forge)
 var charisma: int = 0  # haggling (Peddler.haggle)
 var charmed: bool = false  # Luck Charm: the next attack rolls with advantage
+var power: int = 0  # a companion's skill strength (Howl bonus, Warm Egg heal)
 var loot: Dictionary = {}  # what a monster drops when beaten (Gear.loot)
 var defending: bool = false
 var skills: Array[Dictionary] = []  # from data/skills.json: heroes list "skills", monsters have one "skill"
@@ -65,6 +66,7 @@ func _init(data: Dictionary) -> void:
 	exp_reward = int(data.get("exp", 0))
 	luck = int(data.get("luck", 0))
 	charisma = int(data.get("charisma", 0))
+	power = int(data.get("power", 0))
 	loot = data.get("loot", {})
 	gold_reward = int(data.get("gold", 0))
 	passive_names = data.get("passive_names", {})
@@ -191,7 +193,13 @@ func strike(target: Combatant, move: Dictionary = {}) -> String:
 	var line: String = "%s attacks %s: " % [display_name, target.display_name]
 	var mode: Dice.Mode = attack_mode(target, advantage or charmed or move.get("advantage", false))
 	charmed = false
-	var to_hit: int = attack + int(move.get("to_hit", 0))
+	var inspired: int = 0  # a companion's Howl: +power to hit and damage for a few attacks
+	if statuses.has("inspired"):
+		inspired = statuses.inspired.power
+		statuses.inspired.turns -= 1
+		if statuses.inspired.turns == 0:
+			statuses.erase("inspired")
+	var to_hit: int = attack + int(move.get("to_hit", 0)) + inspired
 	var result: Dictionary = Dice.check(to_hit, target.armor(), mode, crit_min)
 	if result.fumble and lucky and not lucky_used:
 		lucky_used = true
@@ -205,7 +213,7 @@ func strike(target: Combatant, move: Dictionary = {}) -> String:
 		if result.natural < 20:
 			line += " (%s: crits on %d or more)" % [passive("crit_min"), crit_min]
 	else:
-		line += "rolled %s, %+d %s = %d vs Armor %d: %s" % [rolled, to_hit, attack_name,
+		line += "rolled %s, %+d %s = %d vs Armor %d: %s" % [rolled, to_hit, attack_name + (" + Inspired" if inspired else ""),
 			result.total, target.armor(), "hit!" if result.success else "miss."]
 		if not result.success:
 			return line
@@ -222,8 +230,10 @@ func strike(target: Combatant, move: Dictionary = {}) -> String:
 		"twice: %d + %d" % [rolls[0], rolls[1]] if result.crit else str(rolls[0])]
 	if move.has("extra_die"):
 		damage_text += ", +d%d rolled %d" % [move.extra_die, rolls[-1]]
-	var bonus: int = damage_from_attack() + damage_bonus
+	var bonus: int = damage_from_attack() + damage_bonus + inspired
 	damage_text += ", %+d (half %s)" % [damage_from_attack(), attack_name]
+	if inspired:
+		damage_text += ", %+d Inspired" % inspired
 	if damage_bonus != 0:
 		damage_text += ", %+d %s" % [damage_bonus, passive("damage_bonus")]
 	var damage: int = maxi(dice_total + bonus, 1)
@@ -231,7 +241,7 @@ func strike(target: Combatant, move: Dictionary = {}) -> String:
 	if dice_total + bonus < 1:
 		damage_text += " (minimum 1)"
 	line += "\n    Damage: " + damage_text + "." + target.take_damage(damage)
-	if move.has("effect") and target.is_alive():
+	if move.has("effect") and target.is_alive() and (result.crit or not move.effect.get("crit_only", false)):
 		line += "\n    " + afflict(target, move.effect)
 	return line
 
@@ -282,6 +292,13 @@ func use_skill(skill: Dictionary, foes: Array[Combatant], allies: Array[Combatan
 		for ally: Combatant in shielded:
 			ally.shield += int(skill.shield)
 			lines.append("    %s gains Shield %d." % [ally.display_name, ally.shield])
+	elif skill.has("heal"):
+		var healed: int = mini(power, allies[0].max_hp - allies[0].hp)
+		allies[0].hp += healed
+		lines.append("    %s heals %d HP." % [allies[0].display_name, healed])
+	elif skill.has("buff"):
+		allies[0].statuses[skill.buff] = {"power": power, "turns": int(skill.turns)}
+		lines.append("    %s is %s: %+d to hit and damage on the next %d attacks." % [allies[0].display_name, skill.buff, power, skill.turns])
 	elif skill.has("save"):
 		for foe in (foes if skill.get("area", "") == "all" else foes.slice(0, 1)):
 			lines.append(_blast(foe, skill))
