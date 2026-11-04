@@ -150,9 +150,32 @@ def rage(d, f):
     d.arc([2, 2, 30, 30], 0, 360, fill=(240, 70, 50, (60, 150, 90, 40)[f]), width=1)
 strip("rage", 32, 4, rage)
 
+# ---- second class skills ----
+def frost_bolt(d, f):
+    for i in range(3): d.point((9 + i * 2, 7 + (i + f) % 3), fill=(200, 240, 255, 200 - i * 50))  # frost trail
+    d.polygon([(1, 8), (6, 5), (12, 8), (6, 11)], fill=(120, 200, 240, 255)); d.line([(3, 8), (9, 8)], fill=(220, 248, 255, 255))
+strip("frost_bolt", 16, 2, frost_bolt, True)
+def ice(d, f):
+    alpha = (255, 230, 160, 70)[f]
+    for k in range(6):
+        ang = k * math.pi / 3 + math.pi / 6; r = 5 + f * 3
+        tip = (16 + (r + 4) * math.cos(ang), 16 + (r + 4) * math.sin(ang))
+        side = (16 + r * math.cos(ang + 0.3), 16 + r * math.sin(ang + 0.3)); side2 = (16 + r * math.cos(ang - 0.3), 16 + r * math.sin(ang - 0.3))
+        d.polygon([(16, 16), side, tip, side2], fill=(150, 215, 245, alpha))
+    if f < 2: d.ellipse([13, 13, 19, 19], fill=(230, 250, 255, 255))
+strip("ice", 32, 4, ice)
+strip("gold_shield", 32, 4, lambda d, f: shield(d, f, (255, 210, 90)))
+def uppercut(d, f):
+    r = 6 + f * 4
+    pts = [(16 + (r if k % 2 == 0 else r / 2) * math.cos(k * math.pi / 5 - math.pi / 2), 16 + (r if k % 2 == 0 else r / 2) * math.sin(k * math.pi / 5 - math.pi / 2)) for k in range(10)]
+    d.polygon(pts, fill=(255, 220, 120, (255, 230, 150, 60)[f]))
+    for x in (11, 16, 21): d.line([(x, 30 - f * 3), (x, 22 - f * 4)], fill=(255, 255, 255, (200, 150, 90, 30)[f]))  # upward streaks
+    if f < 2: d.ellipse([11, 11, 21, 21], fill=WHITE)
+strip("uppercut", 32, 4, uppercut)
+
 # review sheet
 names = ["arrow", "poison_arrow", "bolt", "fireball", "flask", "slash", "punch", "spark", "bite", "explosion",
-         "stun", "poison", "burn", "shield", "dark_shield", "bones", "howl", "rally", "dust", "rage"]
+         "stun", "poison", "burn", "shield", "dark_shield", "bones", "howl", "rally", "dust", "rage", "frost_bolt", "ice", "gold_shield", "uppercut"]
 sheet = Image.new("RGBA", (5 * 34, len(names) * 34), (60, 72, 64, 255))
 for r, n in enumerate(names):
     im = Image.open(f"{OUT}/{n}.png"); s = im.height

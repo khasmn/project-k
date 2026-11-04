@@ -31,6 +31,11 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 
 ## Session log (newest first)
 
+### 2026-11-04 – Skill list and second class skills (feature/skill-menu)
+- Skill button opens a list in the COMMAND box (shared with Item); unaffordable skills are greyed out.
+- New skills with own poses and effects: Iron Guard, Aimed Shot, Frost Bolt, Uppercut. Classes list "skills" in classes.json.
+- Merged: attack animations (#32), enemies stand closer (#33).
+
 ### 2026-11-04 – Attack animations (feature/attack-animations)
 - Hero attack and skill strips for all 4 classes, attack strips for all 13 monsters, 20 effect strips in assets/sprites/fx/.
 - scripts/combat/fight_fx.gd plays effects, projectiles, hit flash and damage numbers; combat_screen._animate wires every attack and all 15 skills.

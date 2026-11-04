@@ -115,7 +115,7 @@ Status effects: burn, poison, stun, shield.
 
 ### Skills and Energy (built 2026-11-04, data/skills.json)
 
-- Energy: max 3, full at the start of each fight, +1 at the start of your turn. Each class has 1 skill (more later).
+- Energy: max 3, full at the start of each fight, +1 at the start of your turn. Each class has 2 skills; the Skill button opens a list (name + cost), Back closes it.
 - A save is d20 + a stat vs 10 + the user's Attack (Magic for a Mage). Nat 20 always passes, nat 1 always fails.
 - Poison and burn hurt at the start of the victim's turn and ignore shields. Stun = lose your next turn.
   Shield soaks attack damage, then breaks. A new fight clears everything.
@@ -127,6 +127,10 @@ Status effects: burn, poison, stun, shield.
 | Archer | Poison Arrow (2) | Attack; hit = Defense save or poison 1 x 3 turns |
 | Mage | Fireball (3) | Every monster makes a Speed save: fail = full damage + burn 2 x 2 turns, pass = half |
 | Brawler | Flurry (2) | Two attacks at -2 to hit |
+| Warrior | Iron Guard (1) | No attack; gain Shield 6 |
+| Archer | Aimed Shot (2) | Attack with advantage, +1d6 damage |
+| Mage | Frost Bolt (2) | Attack; hit = Speed save or frozen (stunned) |
+| Brawler | Uppercut (2) | Attack at -2 to hit, +1d8 damage |
 | Giant Rat | Diseased Bite | Attack; hit = save or poison 1 x 3 |
 | Bandit | Cheap Shot | Attack with advantage |
 | Wolf | Pack Howl | All monsters get Shield 2 |

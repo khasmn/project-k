@@ -4,7 +4,7 @@ extends SceneTree
 ## /Applications/Godot.app/Contents/MacOS/Godot --headless --script res://tests/play.gd -- [options] actions...
 ## Options: --seed N, --force 20,1,..., --race elf, --talent lucky, --class mage (ids from data/*.json;
 ## race and talent are rolled and class is warrior if not given).
-## Actions in a fight: t1-t4 to target a monster card, attack, skill, defend, flee, info, item (then 1 = first item, or back),
+## Actions in a fight: t1-t4 to target a monster card, attack, skill, defend, flee, info, item or skill (then 1 = first in the list, or back),
 ## 1 to click a choice ("Continue", "New hero").
 ## On the path screen: 1/2/3 to pick a door (or Rest/Train), character to open the stat panel,
 ## then +hp, +attack, +defense, +speed to add a point (-hp etc. to take it back), confirm or close.
@@ -121,7 +121,7 @@ func _print_fight() -> void:
 		var items: Array = _node("%ItemMenu").get_children()
 		for n in items.size() - 1:
 			print("  %d) %s%s" % [n + 1, items[n].text.strip_edges(), " (can't use now)" if items[n].disabled else ""])
-		print("Items open. Possible: 1-%d, back" % (items.size() - 1))
+		print("List open. Possible: 1-%d, back" % (items.size() - 1))
 	elif choices.is_empty():
 		print(_node("%TurnLabel").text + ". Possible: t1-t%d, attack, %sdefend%s, item" % [cards.size(),
 			"" if _node("%SkillButton").disabled else "skill, ", ", flee" if _node("%FleeButton").visible else ""])

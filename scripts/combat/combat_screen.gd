@@ -33,7 +33,7 @@ var animations: Dictionary = {}  # AtlasTexture -> frames per second
 
 func _ready() -> void:
 	%AttackButton.pressed.connect(_on_attack)
-	%SkillButton.pressed.connect(_on_skill)
+	%SkillButton.pressed.connect(_open_skills)
 	%DefendButton.pressed.connect(_on_defend)
 	%FleeButton.pressed.connect(_on_flee)
 	%ItemButton.pressed.connect(_open_items)
@@ -72,10 +72,7 @@ func _start_fight() -> void:
 	target = enemies[0]
 	hero.start_fight()
 	%FleeButton.visible = not Run.is_boss()
-	%SkillButton.visible = not hero.skill.is_empty()
-	if not hero.skill.is_empty():
-		%SkillButton.text = "   %s (%d)" % [hero.skill.name, hero.skill.cost]
-		%SkillButton.tooltip_text = "%s Costs %d Energy; you get 1 back each turn." % [hero.skill.description, hero.skill.cost]
+	%SkillButton.visible = not hero.skills.is_empty()
 	for foe in enemies:
 		%EnemyList.add_child(_make_card(foe))
 		var row: Button = UI.menu_button("", _set_target.bind(foe))
@@ -137,8 +134,8 @@ func _show_info(on: bool) -> void:
 func _info(foe: Combatant) -> String:
 	var text: String = "%s\nHP %d / %d\nAttack %d, %s (d%d)\nArmor %d   Speed %d" % [
 		foe.display_name, foe.hp, foe.max_hp, foe.attack, foe.weapon, foe.damage_die, foe.armor(), foe.speed]
-	if not foe.skill.is_empty():
-		text += "\nSkill: %s" % foe.skill.name
+	if not foe.skills.is_empty():
+		text += "\nSkill: %s" % foe.skills[0].name
 	if foe.status_text():
 		text += "\n" + foe.status_text()
 	return text
@@ -170,14 +167,26 @@ func _on_attack() -> void:
 	_after_action()
 
 
-func _on_skill() -> void:
+## The skill list: name and Energy cost; a skill you can't pay for is greyed out.
+func _open_skills() -> void:
+	var buttons: Array[Button] = []
+	for skill in hero.skills:
+		var button: Button = UI.menu_button("%s (%d Energy)" % [skill.name, skill.cost], _on_skill.bind(skill))
+		button.tooltip_text = "%s You get 1 Energy back each turn." % skill.description
+		button.disabled = hero.energy < int(skill.cost)
+		buttons.append(button)
+	_open_menu(buttons)
+
+
+func _on_skill(skill: Dictionary) -> void:
+	_close_menu()
 	_set_buttons_enabled(false)
 	var foes: Array[Combatant] = [target]
 	foes.append_array(_alive().filter(func(foe: Combatant) -> bool: return foe != target))
 	var before: Dictionary = _snapshot()
-	var line: String = hero.use_skill(foes, [hero])
+	var line: String = hero.use_skill(skill, foes, [hero])
 	await dice.show_rolls(true)
-	await _animate(hero, hero.skill, foes if hero.skill.get("area", "") == "all" else [target], before)
+	await _animate(hero, skill, foes if skill.get("area", "") == "all" else [target], before)
 	_log(line)
 	_after_action()
 
@@ -202,6 +211,8 @@ func _animate(user: Combatant, move: Dictionary, targets: Array, before: Diction
 	if move.has("shield"):  # a shield skill: no attack, the shields light up
 		if user != hero:
 			await fx.monster_cast(node)
+		elif hero_sprite:
+			await hero_sprite.play_attack(move.get("pose", ""), func(_blow: int) -> void: pass)
 		for ally: Combatant in _everyone():
 			if ally.shield > before[ally][1]:
 				fx.play(move.get("shield_fx", "shield"), _node_of(ally))
@@ -263,20 +274,28 @@ func _on_defend() -> void:
 ## Item: swap the action buttons for a list of your items (and Back).
 func _open_items() -> void:
 	var all: Dictionary = Run.data("items")
-	for button in %ItemMenu.get_children():
-		button.queue_free()
+	var buttons: Array[Button] = []
 	for id in Run.items:
 		var item: Dictionary = all[id]
 		var button: Button = UI.menu_button("%s x%d" % [item.name, Run.items[id]], _use_item.bind(id, item))
 		button.tooltip_text = "Heal %d%% of your Max HP" % item.heal_percent
 		button.disabled = Run.items[id] == 0 or hero.hp == hero.max_hp
+		buttons.append(button)
+	_open_menu(buttons)
+
+
+## Item and Skill lists share one box in place of the COMMAND buttons, with Back at the bottom.
+func _open_menu(buttons: Array[Button]) -> void:
+	for old in %ItemMenu.get_children():
+		old.queue_free()
+	for button in buttons:
 		%ItemMenu.add_child(button)
-	%ItemMenu.add_child(UI.menu_button("Back", _close_items))
+	%ItemMenu.add_child(UI.menu_button("Back", _close_menu))
 	%Buttons.hide()
 	%ItemMenu.show()
 
 
-func _close_items() -> void:
+func _close_menu() -> void:
 	%ItemMenu.hide()
 	%Buttons.show()
 
@@ -285,7 +304,7 @@ func _close_items() -> void:
 func _use_item(id: String, item: Dictionary) -> void:
 	if Run.items[id] == 0:
 		return
-	_close_items()
+	_close_menu()
 	_set_buttons_enabled(false)
 	Run.items[id] -= 1
 	var healed: int = mini(ceili(hero.max_hp * item.heal_percent / 100.0), hero.max_hp - hero.hp)
@@ -339,11 +358,11 @@ func _enemy_turn() -> void:
 			_log("%s is stunned and loses this turn!" % foe.display_name)
 			continue
 		# The skill-chance d6 isn't animated: it would add a throw to every monster turn.
-		var uses_skill: bool = not foe.skill.is_empty() and Dice.roll(6, false) >= Combatant.SKILL_CHANCE
+		var uses_skill: bool = not foe.skills.is_empty() and Dice.roll(6, false) >= Combatant.SKILL_CHANCE
 		var before: Dictionary = _snapshot()
-		var line: String = foe.use_skill([hero], _alive()) if uses_skill else foe.strike(hero)
+		var line: String = foe.use_skill(foe.skills[0], [hero], _alive()) if uses_skill else foe.strike(hero)
 		await dice.show_rolls(false)
-		await _animate(foe, foe.skill if uses_skill else {}, [hero], before)
+		await _animate(foe, foe.skills[0] if uses_skill else {}, [hero], before)
 		_log(line)
 		_update_labels()
 		if not hero.is_alive():
@@ -544,7 +563,7 @@ func _set_buttons_enabled(enabled: bool) -> void:
 	if not enabled:
 		_show_info(false)
 	%AttackButton.disabled = not enabled
-	%SkillButton.disabled = not enabled or hero.energy < int(hero.skill.get("cost", 0))
+	%SkillButton.disabled = not enabled or hero.skills.all(func(skill: Dictionary) -> bool: return hero.energy < int(skill.cost))
 	%DefendButton.disabled = not enabled
 	%FleeButton.disabled = not enabled
 	%ItemButton.disabled = not enabled or Run.items.values().all(func(count: int) -> bool: return count == 0)
