@@ -8,6 +8,7 @@ const CARD_STYLE: StyleBoxFlat = preload("res://scenes/ui/box_style.tres")
 const SPRITE_FPS: int = 6
 const SPRITE_SIZE: int = 96  # 32x32 art shown 3x
 const BACKGROUND_FRAME: int = 384  # backgrounds are strips of 384x128 frames
+const BACKGROUND_FPS: int = 2  # slow on purpose: a fast-moving background can cause motion sickness
 const FLEE_DC_BASE: int = 10  # flee: d20 + Speed vs 10 + fastest monster's Speed
 ## Battle log colors (BBCode: the log understands tags like [b]bold[/b] and [color=#hex]text[/color]).
 const HERO_COLOR: String = "#7fd17f"
@@ -21,7 +22,7 @@ var hero: Combatant
 var enemies: Array[Combatant] = []
 var target: Combatant  # the monster the hero attacks; click a card to change it
 var fight_over: bool = false  # true after a win or a flee, so Continue only works once
-var animations: Array[AtlasTexture] = []
+var animations: Dictionary = {}  # AtlasTexture -> frames per second
 
 
 func _ready() -> void:
@@ -30,7 +31,7 @@ func _ready() -> void:
 	%FleeButton.pressed.connect(_on_flee)
 	%ItemButton.pressed.connect(_open_items)
 	var back: StyleBoxTexture = StyleBoxTexture.new()
-	back.texture = _strip("res://assets/backgrounds/%s.png" % Run.BACKGROUND, BACKGROUND_FRAME)
+	back.texture = _strip("res://assets/backgrounds/%s.png" % Run.BACKGROUND, BACKGROUND_FRAME, BACKGROUND_FPS)
 	back.set_content_margin_all(12)
 	%Arena.add_theme_stylebox_override("panel", back)
 	%Log.get_v_scroll_bar().modulate.a = 0  # floating log: no visible scrollbar, the mouse wheel still scrolls
@@ -79,10 +80,10 @@ func _start_fight() -> void:
 		_enemy_turn()
 
 
-## Play every strip: show frame N of the strip, moving on SPRITE_FPS times a second.
+## Play every strip: show frame N of the strip, moving on its own frames per second.
 func _process(_delta: float) -> void:
-	var tick: int = Time.get_ticks_msec() * SPRITE_FPS / 1000
-	for frames in animations:
+	for frames: AtlasTexture in animations:
+		var tick: int = Time.get_ticks_msec() * animations[frames] / 1000
 		var width: int = int(frames.region.size.x)
 		frames.region.position.x = tick % (frames.atlas.get_width() / width) * width
 	%Arena.queue_redraw()  # a box style doesn't repaint by itself when its texture changes; the sprites do
@@ -90,12 +91,12 @@ func _process(_delta: float) -> void:
 
 ## An animated strip of frames side by side (frame_width 0 = square frames, like 32x32 sprites).
 ## AtlasTexture is a texture that shows one rectangle ("region") of a bigger picture.
-func _strip(path: String, frame_width: int = 0) -> AtlasTexture:
+func _strip(path: String, frame_width: int = 0, fps: int = SPRITE_FPS) -> AtlasTexture:
 	var frames: AtlasTexture = AtlasTexture.new()
 	frames.atlas = load(path)
 	var height: int = frames.atlas.get_height()
 	frames.region = Rect2(0, 0, frame_width if frame_width else height, height)
-	animations.append(frames)
+	animations[frames] = fps
 	return frames
 
 
