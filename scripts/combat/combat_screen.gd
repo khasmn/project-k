@@ -8,6 +8,7 @@ const CARD_STYLE: StyleBoxFlat = preload("res://scenes/ui/box_style.tres")
 const SPRITE_FPS: int = 6
 const SPRITE_SIZE: int = 96  # 32x32 art shown 3x
 const BACKGROUND_FRAME: int = 384  # backgrounds are strips of 384x128 frames
+const ARROW_FPS: int = 2  # the target arrow bobs slowly
 const BACKGROUND_FPS: int = 2  # slow on purpose: a fast-moving background can cause motion sickness
 const FLEE_DC_BASE: int = 10  # flee: d20 + Speed vs 10 + fastest monster's Speed
 ## Battle log colors (BBCode: the log understands tags like [b]bold[/b] and [color=#hex]text[/color]).
@@ -305,6 +306,17 @@ func _make_card(foe: Combatant) -> Button:
 	lines.get_node("Name").add_theme_font_size_override("font_size", 18)
 	lines.get_node("Stats").add_theme_font_size_override("font_size", 13)
 	card.add_child(lines)
+	var arrow: TextureRect = TextureRect.new()  # marks the target, above its head
+	arrow.name = "Arrow"
+	arrow.texture = _strip("res://assets/sprites/ui/target_arrow.png", 9, ARROW_FPS)
+	arrow.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	arrow.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
+	arrow.offset_left = -13
+	arrow.offset_right = 14
+	arrow.offset_top = -12
+	arrow.offset_bottom = 12
+	arrow.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(arrow)
 	if foe.sprite != "":
 		var picture: TextureRect = TextureRect.new()
 		picture.texture = _strip("res://assets/sprites/enemies/%s.png" % foe.sprite)
@@ -359,11 +371,10 @@ func _update_labels() -> void:
 		card.disabled = not foe.is_alive()
 		card.modulate = Color(1, 1, 1, 1 if foe.is_alive() else 0.4)
 		var style: StyleBoxFlat = CARD_STYLE.duplicate()
-		if foe.sprite != "":  # art stands on the background: no box, only the gold frame on the target
+		if foe.sprite != "":  # art stands on the background: no box
 			style.draw_center = false
 			style.border_color.a = 0
-		if foe == target and foe.is_alive():
-			style.border_color = Color(1, 0.83, 0.3)
+		card.get_node("Arrow").visible = foe == target and foe.is_alive()
 		for state in ["normal", "hover", "pressed", "focus", "disabled"]:
 			card.add_theme_stylebox_override(state, style)
 		var row: Button = %TargetList.get_child(i)
