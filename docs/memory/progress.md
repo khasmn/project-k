@@ -31,6 +31,10 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 
 ## Session log (newest first)
 
+### 2026-11-04 – Wolf and Skeleton sprites
+- Wolf (plus collared version with bandits) and Skeleton drawn; test_run checks the collar rule.
+- Still text cards: Orc Raider, the elites and the boss.
+
 ### 2026-11-04 – Dice roll animation
 - DiceTray shows recorded rolls as tumbling dice in the battle area; Settings > Dice animation.
 - Buttons stay locked until the first turn is decided.
