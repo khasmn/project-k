@@ -205,3 +205,22 @@ the hero; currency earned still unlocks content for future runs.
 4. Chapter map: shop, rest, events, boss
 5. Saving, 3 lives, meta-progression unlocks
 6. Pixel art, sound, polish
+
+## City and gear (Kha 2026-11-04, planned after attack animations)
+
+- A pixel town you click, shown after character creation and after the 1st and 2nd death (3 lives).
+- Buildings in the first version: Shop (buy items), Blacksmith (craft and upgrade gear),
+  Farm (plant before a run, harvest food when you're back), Inn/Temple (heal, see lives left).
+- Gear slots: helmet, armor, weapon 1, weapon 2 (a shield, or taken by a two-handed weapon 1),
+  and 2 jewelry/artifact slots. Gear is crafted at the Blacksmith or dropped by monsters.
+- Details still to decide with Kha when this is built.
+
+## Attack animations (Kha 2026-11-04)
+
+- Full character frames: every class and monster gets its own attack frames, skills get their own effects.
+- Hero: 6-frame weapon strips `hero/weapon/<class>_attack.png` and `<class>_skill.png`; body and head shift per frame (POSES in hero_sprite.gd).
+- Monsters: `enemies/<sprite>_attack.png` (squash/stretch of idle frame 0) plus a lunge toward the hero.
+- Effects: `assets/sprites/fx/` strips. Classes and skills name them in data: "pose", "aura", "projectile", "impact", "shield_fx".
+  Status effects (poison, burn, stun) play the strip with the same name when they land.
+- Order stays: rules decide, dice show, animation plays, then the log line. Damage numbers rise from the target.
+- Settings "Attack animation" switch turns all of it off (motion comfort).

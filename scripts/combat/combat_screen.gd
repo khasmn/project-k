@@ -24,6 +24,10 @@ var enemies: Array[Combatant] = []
 var target: Combatant  # the monster the hero attacks; click a card to change it
 var fight_over: bool = false  # true after a win or a flee, so Continue only works once
 var dice: DiceTray = DiceTray.new()
+var fx: FightFx = FightFx.new()
+var hero_sprite: HeroSprite
+var pictures: Dictionary = {}  # Combatant -> its TextureRect on the battlefield
+var landing: int = 0  # hits still flying or flashing; the log waits for them
 var animations: Dictionary = {}  # AtlasTexture -> frames per second
 
 
@@ -50,6 +54,8 @@ func _ready() -> void:
 		%HeroToken.add_child(sprite)
 		%HeroToken.move_child(sprite, 0)
 		%HeroTokenName.hide()
+		hero_sprite = sprite
+	add_child(fx)  # last child: effects draw above everything
 	%Log.get_v_scroll_bar().modulate.a = 0  # floating log: no visible scrollbar, the mouse wheel still scrolls
 	%InfoButton.pressed.connect(func() -> void: _show_info(not %InfoText.visible))
 	for button in %Buttons.get_children():
@@ -156,8 +162,10 @@ func _hero_turn() -> void:
 
 func _on_attack() -> void:
 	_set_buttons_enabled(false)
+	var before: Dictionary = _snapshot()
 	var line: String = hero.strike(target)
 	await dice.show_rolls(true)  # the strike is already decided; show its dice, then the result
+	await _animate(hero, Run.data("classes").get(Run.hero_look.get("class", ""), {}), [target], before)
 	_log(line)
 	_after_action()
 
@@ -166,10 +174,82 @@ func _on_skill() -> void:
 	_set_buttons_enabled(false)
 	var foes: Array[Combatant] = [target]
 	foes.append_array(_alive().filter(func(foe: Combatant) -> bool: return foe != target))
+	var before: Dictionary = _snapshot()
 	var line: String = hero.use_skill(foes, [hero])
 	await dice.show_rolls(true)
+	await _animate(hero, hero.skill, foes if hero.skill.get("area", "") == "all" else [target], before)
 	_log(line)
 	_after_action()
+
+
+## Everyone's HP, shield and statuses before an action, so the animation can show what changed.
+func _snapshot() -> Dictionary:
+	var state: Dictionary = {}
+	for fighter: Combatant in _everyone():
+		state[fighter] = [fighter.hp, fighter.shield, fighter.statuses.keys()]
+	return state
+
+
+## Show an action that already happened: user's attack (or skill) pose, then for each target its projectile,
+## impact, damage number and new status effects. move: a class or skill entry with "pose", "aura",
+## "projectile", "impact", "shield_fx" (all optional). The rules are done before this; it only shows them.
+func _animate(user: Combatant, move: Dictionary, targets: Array, before: Dictionary) -> void:
+	if not Settings.animate_attacks:
+		return
+	var node: Control = _node_of(user)
+	if move.has("aura"):
+		await fx.play(move.aura, node)
+	if move.has("shield"):  # a shield skill: no attack, the shields light up
+		if user != hero:
+			await fx.monster_cast(node)
+		for ally: Combatant in _everyone():
+			if ally.shield > before[ally][1]:
+				fx.play(move.get("shield_fx", "shield"), _node_of(ally))
+		await get_tree().create_timer(0.35).timeout
+		return
+	var blows: int = int(move.get("attacks", 1))
+	var land: Callable = func(blow: int) -> void:
+		for target_hit: Combatant in targets:
+			_land(target_hit, node, move, before, blow == blows - 1)
+	if user == hero and hero_sprite:
+		await hero_sprite.play_attack(move.get("pose", Run.hero_look.get("class", "") + "_attack"), land)
+	else:
+		if move.is_empty():
+			move = {"impact": "bite" if user.weapon == "bite" else "slash"}
+		for blow in blows:
+			await fx.monster_attack(pictures.get(user), user.sprite, 1.0, land.bind(blow))
+	while landing > 0:
+		await get_tree().process_frame
+
+
+## One blow reaching a target: projectile, impact effect, then a number, "Blocked" or "Miss" (only after the last blow).
+func _land(target_hit: Combatant, from: Control, move: Dictionary, before: Dictionary, last: bool) -> void:
+	landing += 1
+	var node: Control = _node_of(target_hit)
+	await fx.fly(move.get("projectile", ""), from, node)
+	var damage: int = before[target_hit][0] - target_hit.hp
+	var blocked: int = before[target_hit][1] - target_hit.shield
+	if damage > 0 or not last:
+		fx.play(move.get("impact", ""), node)
+	if last:
+		var color: Color = Color(1, 0.45, 0.4) if target_hit == hero else Color(1, 1, 1)
+		await fx.hurt(node, str(damage) if damage > 0 else ("Blocked" if blocked > 0 else "Miss"), color)
+		for status in target_hit.statuses:
+			if not status in before[target_hit][2]:
+				fx.play(status, node)
+	landing -= 1
+
+
+func _everyone() -> Array[Combatant]:
+	var everyone: Array[Combatant] = [hero]
+	everyone.append_array(enemies)
+	return everyone
+
+
+func _node_of(fighter: Combatant) -> Control:
+	if fighter == hero:
+		return hero_sprite if hero_sprite else %HeroToken
+	return pictures.get(fighter)
 
 
 func _on_defend() -> void:
@@ -259,8 +339,11 @@ func _enemy_turn() -> void:
 			_log("%s is stunned and loses this turn!" % foe.display_name)
 			continue
 		# The skill-chance d6 isn't animated: it would add a throw to every monster turn.
-		var line: String = foe.use_skill([hero], _alive()) if not foe.skill.is_empty() and Dice.roll(6, false) >= Combatant.SKILL_CHANCE else foe.strike(hero)
+		var uses_skill: bool = not foe.skill.is_empty() and Dice.roll(6, false) >= Combatant.SKILL_CHANCE
+		var before: Dictionary = _snapshot()
+		var line: String = foe.use_skill([hero], _alive()) if uses_skill else foe.strike(hero)
 		await dice.show_rolls(false)
+		await _animate(foe, foe.skill if uses_skill else {}, [hero], before)
 		_log(line)
 		_update_labels()
 		if not hero.is_alive():
@@ -393,6 +476,7 @@ func _make_card(foe: Combatant) -> Button:
 		arrow.offset_bottom = arrow.offset_top + 24
 		picture.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(picture)
+		pictures[foe] = picture
 		lines.hide()  # art only: the info shows on hover or with the Info command
 	return card
 
