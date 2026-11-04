@@ -39,7 +39,7 @@ func _ready() -> void:
 	%DefendButton.pressed.connect(_on_defend)
 	%ItemButton.pressed.connect(_open_items)
 	var back: StyleBoxTexture = StyleBoxTexture.new()
-	back.texture = _strip("res://assets/backgrounds/%s.png" % Run.BACKGROUND, BACKGROUND_FRAME,
+	back.texture = _strip("res://assets/backgrounds/%s.png" % (Run.BOSS_BACKGROUND if Run.is_boss() else Run.BACKGROUND), BACKGROUND_FRAME,
 		BACKGROUND_FPS if Settings.animate_background else 0)  # 0 FPS = stays on frame 1
 	back.set_content_margin_all(12)
 	%Arena.add_theme_stylebox_override("panel", back)

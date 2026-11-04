@@ -31,6 +31,10 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 
 ## Session log (newest first)
 
+### 2026-11-05 – Boss background (feature/background-bandit-fortress)
+- Peddler's Cart PR #42 merged.
+- Bandit fortress at night with a blood moon for the boss fight (darker, more epic).
+
 ### 2026-11-05 – Peddler's Cart (feature/peddler-cart)
 - Gear upgrades PR #41 merged (blacksmith named Ladis Washrum).
 - Peddler's Cart: Pip Wanderwick, 4 random offers, haggling with Charisma, 3 new potions usable in fights.

@@ -262,6 +262,12 @@ the hero; currency earned still unlocks content for future runs.
 - Blacksmith window layout: framed boxes with gold name tabs (LADIS WASHRUM, FORGE/UPGRADE, HERO, MATERIALS),
   like the battle screen. Shop and GEAR windows keep the plain layout.
 
+### Boss background (Kha 2026-11-05)
+
+- The boss fight uses `assets/backgrounds/bandit_fortress.png` (Run.BOSS_BACKGROUND): the bandits' fortress at night
+  under a blood moon, spiked log wall, watchtower, red banners, torches and a bonfire; epic + grim mix.
+  5 frames at 2 FPS: clouds drift, fire and torches flicker, banners sway. Rooms 1-8 keep the woods.
+
 ## Attack animations (Kha 2026-11-04)
 
 - Full character frames: every class and monster gets its own attack frames, skills get their own effects.
