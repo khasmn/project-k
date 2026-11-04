@@ -1,6 +1,7 @@
 class_name Gear
 ## Gear rules: buying, selling, wearing, taking off and forging (data/gear.json, data/recipes.json).
-## A piece is {"id": gear id, "grade": index in GRADES}. Shop gear is Common; forged gear rolls its grade.
+## A piece is {"id": gear id, "grade": index in GRADES, "plus": upgrade level 0-3}. Shop gear is Common;
+## forged gear rolls its grade. Upgrades add to the main stat too.
 ## The state lives in Run: Run.bag (pieces you carry) and Run.gear (slot -> piece you wear). Worn gear adds
 ## its stats to the hero and shows on the hero sprite (helmet, armor, shield; a weapon gets a "tint").
 
@@ -13,6 +14,11 @@ const GRADES: Array = [
 ]
 const COMMON: int = 1
 const EPIC: int = 4
+## Upgrading +0 -> +1 -> +2 -> +3: d20 + Luck vs these DCs. Costs 2/3/4 of the piece's "upgrade" material
+## and 10/20/30 gold. Fail: the cost is gone. Natural 1: also -1 level. Beat the DC by 10+: +2 levels.
+const UPGRADE_DCS: Array[int] = [6, 10, 14]
+const MAX_PLUS: int = 3
+const BIG_SUCCESS: int = 10
 
 
 static func entry(id: String) -> Dictionary:
@@ -25,23 +31,23 @@ static func icon(id: String) -> Texture2D:
 
 
 static func piece(id: String, grade: int = COMMON) -> Dictionary:
-	return {"id": id, "grade": grade}
+	return {"id": id, "grade": grade, "plus": 0}
 
 
-## "Rare Steel Helm"; Common pieces just use the name.
+## "Rare Steel Helm +2"; Common pieces just use the name.
 static func title(item: Dictionary) -> String:
-	var name: String = entry(item.id).name
-	return name if item.grade == COMMON else "%s %s" % [GRADES[item.grade][0], name]
+	var name: String = entry(item.id).name if item.grade == COMMON else "%s %s" % [GRADES[item.grade][0], entry(item.id).name]
+	return name + (" +%d" % item.plus if item.plus else "")
 
 
 static func color(item: Dictionary) -> Color:
 	return GRADES[item.grade][3]
 
 
-## The piece's stats with its grade bonus added to the main (first) stat.
+## The piece's stats with its grade bonus and upgrade level added to the main (first) stat.
 static func stats(item: Dictionary) -> Dictionary:
 	var result: Dictionary = entry(item.id).stats.duplicate()
-	result[result.keys()[0]] += GRADES[item.grade][2]
+	result[result.keys()[0]] += GRADES[item.grade][2] + item.plus
 	return result
 
 
@@ -107,8 +113,9 @@ static func can_forge(id: String) -> bool:
 	return known(id) and Run.gold >= recipe.gold
 
 
-## Pay the materials and gold, roll d20 + Luck for the grade, put the piece in the bag. Returns the log line.
-static func forge(id: String) -> String:
+## Pay the materials and gold, roll d20 + Luck for the grade, put the piece in the bag.
+## Returns {"item", "text", "outcome"} for the Blacksmith window ("forge", or "great" for Epic and better).
+static func forge(id: String) -> Dictionary:
 	var recipe: Dictionary = Run.data("recipes")[id]
 	for material in recipe.materials:
 		Run.materials[material] -= recipe.materials[material]
@@ -122,7 +129,50 @@ static func forge(id: String) -> String:
 		grade = maxi(grade, EPIC)
 	var item: Dictionary = piece(id, grade)
 	Run.bag.append(item)
-	return "Forged %s! Rolled %d %+d Luck = %d: %s." % [title(item), rolled, Run.hero.luck, total, GRADES[grade][0].to_upper()]
+	return {"item": item, "outcome": "great" if grade >= EPIC else "forge",
+		"text": "Forged %s! Rolled %d %+d Luck = %d: %s." % [title(item), rolled, Run.hero.luck, total, GRADES[grade][0].to_upper()]}
+
+
+## {"material", "count", "gold"} to take this piece one level up.
+static func upgrade_cost(item: Dictionary) -> Dictionary:
+	return {"material": entry(item.id).upgrade, "count": 2 + item.plus, "gold": 10 * (item.plus + 1)}
+
+
+static func can_upgrade(item: Dictionary) -> bool:
+	var cost: Dictionary = upgrade_cost(item)
+	return item.plus < MAX_PLUS and Run.materials.get(cost.material, 0) >= cost.count and Run.gold >= cost.gold
+
+
+## Pay, roll d20 + Luck vs the DC, change the level (also when worn). Returns like forge;
+## outcome is "upgrade", "upgrade2" (beat the DC by 10+), "fail" or "down" (natural 1).
+static func upgrade(item: Dictionary) -> Dictionary:
+	var cost: Dictionary = upgrade_cost(item)
+	Run.materials[cost.material] -= cost.count
+	Run.gold -= cost.gold
+	var dc: int = UPGRADE_DCS[item.plus]
+	var rolled: int = Dice.roll(20)
+	var total: int = rolled + Run.hero.luck
+	var outcome: String = "fail"
+	var change: int = 0
+	if rolled == 1:
+		outcome = "down" if item.plus > 0 else "fail"
+		change = -1 if item.plus > 0 else 0
+	elif rolled == 20 or total >= dc:
+		change = 2 if total >= dc + BIG_SUCCESS and item.plus + 2 <= MAX_PLUS else 1
+		outcome = "upgrade2" if change == 2 else "upgrade"
+	var worn: String = ""
+	for slot: String in Run.gear:
+		if is_same(Run.gear[slot], item):  # the very piece you wear, not an equal copy in the bag
+			worn = slot
+	if worn:
+		_apply(item, -1)
+	item.plus += change
+	if worn:
+		_apply(item, 1)
+	var line: String = "Rolled %d %+d Luck = %d vs DC %d: " % [rolled, Run.hero.luck, total, dc]
+	line += {"upgrade": "success! Now %s.", "upgrade2": "great success, two levels! Now %s.", "fail": "failed. %s is unchanged.",
+		"down": "natural 1! It cracked: now %s."}[outcome] % title(item)
+	return {"item": item, "outcome": outcome, "text": line}
 
 
 ## After a won fight: the monster's material, and a d20 for its blueprint (data "loot"). Returns the log line.

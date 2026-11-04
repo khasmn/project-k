@@ -31,6 +31,11 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 
 ## Session log (newest first)
 
+### 2026-11-05 – Gear upgrades (feature/gear-upgrades)
+- Blacksmith PR #40 merged. Upgrades +1 to +3 with d20 + Luck, fail / -1 on nat 1 / +2 on beating the DC by 10.
+- Ladis Washrum (dwarf NPC portrait, talk lines), Forge new / Upgrade tabs, anvil cutscene + Settings switch.
+- Next: the Peddler's Cart with its own random stock.
+
 ### 2026-11-04 – Blacksmith (feature/blacksmith)
 - Materials and blueprint drops from monsters; Starmetal Shard from the boss; Blacksmith forging with Luck grades.
 - BACK TO TOWN button (chapter restarts, hero keeps everything); after the boss: Back to town / Next chapter (soon).
