@@ -204,6 +204,20 @@ theme_override_styles/focus = ExtResource("flat")
 text = "   Attack"
 alignment = 0
 
+[node name="SkillButton" type="Button" parent="Margin/VBox/Bottom/Command/Panel/ActionPanel/Buttons"]
+layout_mode = 2
+unique_name_in_owner = true
+theme_override_colors/font_hover_color = Color(1, 0.83, 0.3, 1)
+theme_override_colors/font_disabled_color = Color(1, 1, 1, 0.3)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = ExtResource("flat")
+theme_override_styles/hover = ExtResource("flat")
+theme_override_styles/pressed = ExtResource("flat")
+theme_override_styles/disabled = ExtResource("flat")
+theme_override_styles/focus = ExtResource("flat")
+text = "   Skill"
+alignment = 0
+
 [node name="DefendButton" type="Button" parent="Margin/VBox/Bottom/Command/Panel/ActionPanel/Buttons"]
 layout_mode = 2
 unique_name_in_owner = true

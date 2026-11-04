@@ -112,6 +112,32 @@ Mechanics are free to use; the D&D name and its unique monsters/settings are off
 6. Repeat until one side is defeated.
 
 Status effects: burn, poison, stun, shield.
+
+### Skills and Energy (built 2026-11-04, data/skills.json)
+
+- Energy: max 3, full at the start of each fight, +1 at the start of your turn. Each class has 1 skill (more later).
+- A save is d20 + a stat vs 10 + the user's Attack (Magic for a Mage). Nat 20 always passes, nat 1 always fails.
+- Poison and burn hurt at the start of the victim's turn and ignore shields. Stun = lose your next turn.
+  Shield soaks attack damage, then breaks. A new fight clears everything.
+- Monsters: each turn a d6 (not animated); on 5-6 they use their skill instead of a normal attack.
+
+| Who | Skill | Effect |
+| --- | --- | --- |
+| Warrior | Shield Bash (2) | Attack; hit = Defense save or stunned |
+| Archer | Poison Arrow (2) | Attack; hit = Defense save or poison 1 x 3 turns |
+| Mage | Fireball (3) | Every monster makes a Speed save: fail = full damage + burn 2 x 2 turns, pass = half |
+| Brawler | Flurry (2) | Two attacks at -2 to hit |
+| Giant Rat | Diseased Bite | Attack; hit = save or poison 1 x 3 |
+| Bandit | Cheap Shot | Attack with advantage |
+| Wolf | Pack Howl | All monsters get Shield 2 |
+| Skeleton | Bone Wall | Itself Shield 4 |
+| Orc Raider | Cleave | Attack, +1d4 damage |
+| Rat King | Plague Bite | Attack; hit = save or poison 2 x 3 |
+| Bandit Captain | Rally | All monsters get Shield 3 |
+| Dire Wolf | Pounce | Attack with advantage; hit = save or stunned |
+| Bone Knight | Dark Aegis | Itself Shield 8 |
+| Orc Warlord | Rampage | Two attacks |
+| Bandit Chief | Firebomb | You make a Speed save: fail = d6 + burn 2 x 2, pass = half |
 Later idea: a timing click on attacks for bonus damage.
 
 ### Battle screen with art (Kha 2026-11-05, built for monsters that have a sprite)

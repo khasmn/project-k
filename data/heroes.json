@@ -6,6 +6,7 @@
 		"defense": 2,
 		"speed": 2,
 		"damage_die": 8,
-		"weapon": "sword"
+		"weapon": "sword",
+		"skill": "shield_bash"
 	}
 }

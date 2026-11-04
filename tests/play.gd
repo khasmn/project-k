@@ -4,17 +4,17 @@ extends SceneTree
 ## /Applications/Godot.app/Contents/MacOS/Godot --headless --script res://tests/play.gd -- [options] actions...
 ## Options: --seed N, --force 20,1,..., --race elf, --talent lucky, --class mage (ids from data/*.json;
 ## race and talent are rolled and class is warrior if not given).
-## Actions in a fight: t1-t4 to target a monster card, attack, defend, flee, info, item (then 1 = first item, or back),
+## Actions in a fight: t1-t4 to target a monster card, attack, skill, defend, flee, info, item (then 1 = first item, or back),
 ## 1 to click a choice ("Continue", "New hero").
 ## On the path screen: 1/2/3 to pick a door (or Rest/Train), character to open the stat panel,
 ## then +hp, +attack, +defense, +speed to add a point (-hp etc. to take it back), confirm or close.
 ## Same seed + same options + same actions = same run, so you can replay and add one action at a time.
 ## --force makes the next dice (any die, in roll order, after the hero is rolled) come out as those numbers.
 ## In rooms 1-8 the first dice pick the monsters (a d4 for how many, then one die per monster), then initiative;
-## the boss room starts with initiative.
+## the boss room starts with initiative. Each monster turn first rolls a d6 (5-6 = it uses its skill).
 
 const BUTTONS: Dictionary = {
-	"attack": "%AttackButton", "defend": "%DefendButton", "flee": "%FleeButton", "item": "%ItemButton", "info": "%InfoButton", "character": "%CharacterButton",
+	"attack": "%AttackButton", "skill": "%SkillButton", "defend": "%DefendButton", "flee": "%FleeButton", "item": "%ItemButton", "info": "%InfoButton", "character": "%CharacterButton",
 	"confirm": "%CharacterPanel/%ConfirmButton", "close": "%CharacterPanel/%CloseButton",
 }
 const STAT_IDS: Dictionary = {"hp": "max_hp", "attack": "attack", "defense": "defense", "speed": "speed"}
@@ -84,7 +84,7 @@ func _play(actions: Array[String]) -> void:
 		await _wait_for_input()
 		var button: Button = _button_for(action)
 		if button == null:
-			print(">> can't '%s' here (fight: t1-t4, attack, defend, flee, 1; path: 1/2/3, character, +stat/-stat, confirm, close)" % action)
+			print(">> can't '%s' here (fight: t1-t4, attack, skill, defend, flee, 1; path: 1/2/3, character, +stat/-stat, confirm, close)" % action)
 		elif button.disabled or not button.is_visible_in_tree():  # a player can't click a hidden button (e.g. Attack while Items is open)
 			print(">> can't %s right now" % action)
 		elif button.text == "New hero":
@@ -122,7 +122,8 @@ func _print_fight() -> void:
 			print("  %d) %s%s" % [n + 1, items[n].text.strip_edges(), " (can't use now)" if items[n].disabled else ""])
 		print("Items open. Possible: 1-%d, back" % (items.size() - 1))
 	elif choices.is_empty():
-		print(_node("%TurnLabel").text + ". Possible: t1-t%d, attack, defend%s, item" % [cards.size(), ", flee" if _node("%FleeButton").visible else ""])
+		print(_node("%TurnLabel").text + ". Possible: t1-t%d, attack, %sdefend%s, item" % [cards.size(),
+			"" if _node("%SkillButton").disabled else "skill, ", ", flee" if _node("%FleeButton").visible else ""])
 	else:
 		print("Choices: 1) " + choices[0].text.strip_edges())
 
