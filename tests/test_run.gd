@@ -119,6 +119,20 @@ func _init() -> void:
 				wins += 1
 		report.append("%s %d%% (died in room 1-8, boss: %s)" % [class_id, 100 * wins / RUNS, reached.slice(0, Run.ROOMS + 1)])
 
+	# 3 lives: a death costs a life and half the gold, heals, restarts the chapter, keeps level and gear.
+	var hero_draft: CharacterDraft = CharacterDraft.new()
+	hero_draft.class_id = "warrior"
+	Run.start(hero_draft)
+	Gear.buy("bandit_hood")
+	Run.level = 4
+	Run.gold = 51
+	Run.room = 6
+	Run.hero.hp = 0
+	_check(Run.lose_life() == 25 and Run.gold == 26 and Run.lives == 2, "a death costs a life and half the gold")
+	_check(Run.room == 1 and Run.hero.hp == Run.hero.max_hp and Run.level == 4 and Run.bag.size() == 1, "restart at room 1, healed, keeping level and gear")
+	Run.start(hero_draft)
+	_check(Run.lives == Run.LIVES, "a new hero has 3 lives")
+
 	if failed:
 		quit(1)
 		return
