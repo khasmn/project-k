@@ -31,6 +31,18 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 
 ## Session log (newest first)
 
+### 2026-11-05 – Review panel on the story and game
+- New review-panel skill (film director, RPG game director, gamer influencer, twist-loving reader).
+- Scores 5 / 7 / 7 / 5. Kha kept all 12 adjustments (see design.md Story and decisions.md).
+- Next: build order stays Lancer first; before chapter 2, build data/chapters.json with scaling.
+
+### 2026-11-05 – Class and story plan (setup/class-and-story-plan)
+- Tester fixes PR #49 merged.
+- design-class-evolution run: Lancer, tier 2 changes, 5 secret classes (3-step quests from ch 6).
+- 10-chapter story with twists at ch 5 (Demon King was the seal) and ch 7 (the King betrayed you).
+- Build order: 1. Lancer class, 2. level 10 evolution event + tier 2 skills, 3. one secret path end to end
+  (Holy Knight), 4. art. Chapters 2-10 come later.
+
 ### 2026-11-05 – Tester fixes (fix/tester-bugs)
 - Events PR #48 merged. Game tester run: 7 bugs fixed.
 - Boss now gives EXP and gold; Chosen One advantage on events, haggling, forging, upgrades.
