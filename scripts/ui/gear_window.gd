@@ -1,10 +1,12 @@
 class_name GearWindow
 extends Control
-## One window for the Shop (buy and sell) and the GEAR screen (wear and take off), with the hero in the
-## middle so you see the gear on them. Built in code; the town and path screens each add one.
+## One window for the Shop (buy and sell), the GEAR screen (wear and take off) and the Blacksmith (forge),
+## with the hero in the middle so you see the gear on them. Built in code; the town and path screens add one.
 ## It covers the whole screen with a dark backdrop, so nothing behind it can be clicked while it's open.
 
 signal closed
+
+enum Mode { SHOP, GEAR, FORGE }
 
 const BOX: StyleBox = preload("res://scenes/ui/gold_box.tres")
 const POTION: String = "healing_potion"
@@ -17,11 +19,16 @@ const SLOT_NAMES: Dictionary = {"helmet": "Helmet", "armor": "Armor", "weapon": 
 	"jewelry1": "Jewelry", "jewelry2": "Jewelry"}
 ## GEAR page: which slot boxes stand left and right of the hero.
 const SLOT_SIDES: Array = [["helmet", "armor", "weapon"], ["offhand", "jewelry1", "jewelry2"]]
+const TITLES: Array[String] = ["SHOP", "GEAR", "BLACKSMITH"]
+const FORGE_SECTIONS: Dictionary = {"basic": "BASIC RECIPES", "blueprint": "BLUEPRINTS (dropped by monsters)",
+	"starmetal": "STARMETAL (1 Shard each, the boss drops them)"}
 
-var shop: bool = false
+var mode: Mode = Mode.SHOP
+var forge_text: String = ""  # the last forge result, shown until the window closes
 var title: Label = Label.new()
 var sprite: HeroSprite = HeroSprite.new()
 var stats: Label = Label.new()
+var scroll: ScrollContainer = ScrollContainer.new()
 var left: VBoxContainer = VBoxContainer.new()
 var right: VBoxContainer = VBoxContainer.new()
 var slots_left: VBoxContainer = VBoxContainer.new()
@@ -56,18 +63,21 @@ func _ready() -> void:
 	middle.add_child(sprite)
 	stats.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	middle.add_child(stats)
-	for column in [left, slots_left, middle, slots_right, right]:
+	scroll.custom_minimum_size = Vector2(420, 380)  # the Blacksmith list is longer than the window
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	left.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(left)
+	for column in [scroll, slots_left, middle, slots_right, right]:
 		columns.add_child(column)
-	left.custom_minimum_size.x = 400
 	right.custom_minimum_size.x = 280
 	middle.custom_minimum_size.x = 220
 	rows.add_child(UI.menu_button("Close", _close))
 	hide()
 
 
-## shop = true: Buy and Sell lists. false: what you wear and what's in your bag.
-func open(as_shop: bool) -> void:
-	shop = as_shop
+func open(as_mode: Mode) -> void:
+	mode = as_mode
+	forge_text = ""
 	refresh()
 	show()
 
@@ -76,43 +86,94 @@ func refresh() -> void:
 	for column in [left, right, slots_left, slots_right]:
 		for old in column.get_children():
 			old.queue_free()
-	left.visible = shop
-	slots_left.visible = not shop
-	slots_right.visible = not shop
-	title.text = "%s      Gold %d" % ["SHOP" if shop else "GEAR", Run.gold]
+	scroll.visible = mode != Mode.GEAR
+	slots_left.visible = mode == Mode.GEAR
+	slots_right.visible = mode == Mode.GEAR
+	title.text = "%s      Gold %d" % [TITLES[mode], Run.gold]
 	sprite.show_look(Run.hero_look)
 	var hero: Combatant = Run.hero
 	stats.text = "HP %d / %d\n%s %d   Defense %d   Speed %d" % [hero.hp, hero.max_hp, hero.attack_name, hero.attack, hero.defense, hero.speed]
-	if shop:
-		_header(left, "BUY")
-		var potion: Button = _button(left, "Healing Potion  %dg  (have %d)" % [POTION_PRICE, Run.items.get(POTION, 0)], _buy_potion, POTION)
-		potion.disabled = Run.gold < POTION_PRICE
-		for id: String in Run.data("gear"):
-			if Gear.fits(id):
-				var buy: Button = _button(left, "%s  %dg  (%s)" % [Gear.entry(id).name, Gear.entry(id).price, Gear.bonus_text(id)],
-					_act.bind(Gear.buy, id), id)
-				buy.tooltip_text = Gear.bonus_text(id)
-				buy.disabled = Run.gold < int(Gear.entry(id).price)
-		_header(right, "SELL (your bag)")
-		for id in Run.bag:
-			_button(right, "%s  +%dg" % [Gear.entry(id).name, Gear.sell_price(id)], _act.bind(Gear.sell, id), id)
-		if Run.bag.is_empty():
-			_header(right, "Nothing to sell. Take gear off in GEAR first.")
-	else:
-		for slot in SLOT_SIDES[0]:
-			_slot_box(slots_left, slot)
-		for slot in SLOT_SIDES[1]:
-			_slot_box(slots_right, slot)
-		_header(right, "BAG (click to wear)")
-		for id in Run.bag:
-			var wear: Button = _button(right, "%s  (%s)" % [Gear.entry(id).name, Gear.bonus_text(id)], _act.bind(Gear.wear, id), id)
-			wear.disabled = not Gear.fits(id)
-		if Run.bag.is_empty():
-			_header(right, "Empty. Buy gear at the Shop.")
+	match mode:
+		Mode.SHOP: _show_shop()
+		Mode.GEAR: _show_gear()
+		Mode.FORGE: _show_forge()
 
 
-## Run a Gear action (buy, sell, wear, take_off) on one id or slot, then redraw.
-func _act(action: Callable, what: String) -> void:
+func _show_shop() -> void:
+	_header(left, "BUY")
+	var potion: Button = _button(left, "Healing Potion  %dg  (have %d)" % [POTION_PRICE, Run.items.get(POTION, 0)], _buy_potion, POTION)
+	potion.disabled = Run.gold < POTION_PRICE
+	var recipes: Dictionary = Run.data("recipes")
+	for id: String in Run.data("gear"):
+		if Gear.fits(id) and not recipes.has(id):  # forged gear isn't sold
+			var item: Dictionary = Gear.piece(id)
+			var buy: Button = _button(left, "%s  %dg  (%s)" % [Gear.title(item), Gear.entry(id).price, Gear.bonus_text(item)],
+				_act.bind(Gear.buy, id), id)
+			buy.disabled = Run.gold < int(Gear.entry(id).price)
+	_header(right, "SELL (your bag)")
+	for item in Run.bag:
+		_piece_button(right, "%s  +%dg" % [Gear.title(item), Gear.sell_price(item)], _act.bind(Gear.sell, item), item)
+	if Run.bag.is_empty():
+		_header(right, "Nothing to sell. Take gear off in GEAR first.")
+
+
+func _show_gear() -> void:
+	for slot in SLOT_SIDES[0]:
+		_slot_box(slots_left, slot)
+	for slot in SLOT_SIDES[1]:
+		_slot_box(slots_right, slot)
+	_header(right, "BAG (click to wear)")
+	for item in Run.bag:
+		var wear: Button = _piece_button(right, "%s  (%s)" % [Gear.title(item), Gear.bonus_text(item)], _act.bind(Gear.wear, item), item)
+		wear.disabled = not Gear.fits(item.id)
+	if Run.bag.is_empty():
+		_header(right, "Empty. Buy gear at the Shop.")
+
+
+## Recipes by section; each line says what it needs and how many you have. Unfound blueprints say who drops them.
+func _show_forge() -> void:
+	var recipes: Dictionary = Run.data("recipes")
+	var materials: Dictionary = Run.data("materials")
+	for section in FORGE_SECTIONS:
+		_header(left, FORGE_SECTIONS[section])
+		for id: String in recipes:
+			var recipe: Dictionary = recipes[id]
+			if recipe.section != section or not Gear.fits(id):
+				continue
+			var item: Dictionary = Gear.piece(id)
+			if not Gear.known(id):
+				_line(left, "%s  (find its blueprint: %s)" % [Gear.entry(id).name, _dropped_by(id)], id).modulate.a = 0.4
+				continue
+			var needs: PackedStringArray = []
+			for material in recipe.materials:
+				needs.append("%d %s (have %d)" % [recipe.materials[material], materials[material].name, Run.materials.get(material, 0)])
+			var forge: Button = _button(left, "%s  (%s)\n%s, %dg" % [Gear.entry(id).name, Gear.bonus_text(item), ", ".join(needs), recipe.gold],
+				_forge.bind(id), id)
+			forge.disabled = not Gear.can_forge(id)
+	if forge_text:
+		_header(right, forge_text)
+	_header(right, "MATERIALS")
+	for material: String in materials:
+		_line(right, "%s  x%d" % [materials[material].name, Run.materials.get(material, 0)], material)
+	_header(right, "Forging rolls d20 + Luck (%d) for the grade:\nCrude, Common, Uncommon, Rare, Epic, Legendary." % Run.hero.luck)
+
+
+## The name of the monster whose loot has this blueprint, e.g. "Wolf".
+func _dropped_by(id: String) -> String:
+	var enemies: Dictionary = Run.data("enemies")
+	for enemy: String in enemies:
+		if enemies[enemy].has("rooms") and enemies[enemy].get("loot", {}).get("blueprint", "") == id:
+			return enemies[enemy].name
+	return "?"
+
+
+func _forge(id: String) -> void:
+	forge_text = Gear.forge(id)
+	refresh()
+
+
+## Run a Gear action (buy, sell, wear, take_off) on one id, piece or slot, then redraw.
+func _act(action: Callable, what: Variant) -> void:
 	action.call(what)
 	refresh()
 
@@ -126,6 +187,7 @@ func _buy_potion() -> void:
 func _header(column: VBoxContainer, text: String) -> void:
 	var label: Label = Label.new()
 	label.text = text
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	label.add_theme_font_size_override("font_size", 13)
 	label.add_theme_color_override("font_color", UI.GOLD)
 	column.add_child(label)
@@ -140,9 +202,31 @@ func _button(column: VBoxContainer, text: String, on_pressed: Callable, icon_id:
 	return button
 
 
+## A picture and text that can't be clicked (materials, blueprints not found yet).
+func _line(column: VBoxContainer, text: String, icon_id: String) -> HBoxContainer:
+	var line: HBoxContainer = HBoxContainer.new()
+	var picture: TextureRect = TextureRect.new()
+	picture.texture = Gear.icon(icon_id)
+	picture.custom_minimum_size = Vector2(ICON_SIZE, ICON_SIZE)
+	picture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	line.add_child(picture)
+	var label: Label = Label.new()
+	label.text = text
+	label.add_theme_font_size_override("font_size", FONT_SIZE)
+	line.add_child(label)
+	column.add_child(line)
+	return line
+
+
+## A list line for a piece you own, in its grade's color.
+func _piece_button(column: VBoxContainer, text: String, on_pressed: Callable, item: Dictionary) -> Button:
+	var button: Button = _button(column, text, on_pressed, item.id)
+	button.add_theme_color_override("font_color", Gear.color(item))
+	return button
+
+
 ## A framed box with the picture of what's worn in this slot (empty if nothing). Click it to take that off.
 func _slot_box(column: VBoxContainer, slot: String) -> void:
-	var id: String = Run.gear.get(slot, "")
 	var box: Button = Button.new()
 	for state in ["normal", "hover", "pressed", "disabled", "focus"]:
 		box.add_theme_stylebox_override(state, BOX)
@@ -150,10 +234,11 @@ func _slot_box(column: VBoxContainer, slot: String) -> void:
 	box.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	box.expand_icon = true
 	box.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	box.disabled = id == ""
-	if id:
-		box.icon = Gear.icon(id)
-		box.tooltip_text = "%s: %s\nClick to take off" % [Gear.entry(id).name, Gear.bonus_text(id)]
+	box.disabled = not Run.gear.has(slot)
+	if Run.gear.has(slot):
+		var item: Dictionary = Run.gear[slot]
+		box.icon = Gear.icon(item.id)
+		box.tooltip_text = "%s: %s\nClick to take off" % [Gear.title(item), Gear.bonus_text(item)]
 		box.pressed.connect(_act.bind(Gear.take_off, slot))
 		UI.add_cursor(box)
 	column.add_child(box)

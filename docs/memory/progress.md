@@ -31,6 +31,12 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 
 ## Session log (newest first)
 
+### 2026-11-04 – Blacksmith (feature/blacksmith)
+- Materials and blueprint drops from monsters; Starmetal Shard from the boss; Blacksmith forging with Luck grades.
+- BACK TO TOWN button (chapter restarts, hero keeps everything); after the boss: Back to town / Next chapter (soon).
+- 25 item pictures, 9 new gear layers on the hero. Shop PR #39 merged before this.
+- Next: gear upgrades (+1 to +3), then the Peddler's Cart with its own random stock.
+
 ### 2026-11-04 – Shop and gear (feature/shop-gear)
 - 11 gear pieces in data/gear.json, 5 new sprite layers (cap, helm, leather armor, chainmail, shield).
 - Town Shop: buy potions and gear, sell gear for half. GEAR window in town and on the path screen.

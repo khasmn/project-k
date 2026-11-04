@@ -1,0 +1,21 @@
+{
+	"steel_helm": {"section": "basic", "materials": {"iron_scrap": 3}, "gold": 15},
+	"studded_armor": {"section": "basic", "materials": {"wolf_pelt": 2, "iron_scrap": 2}, "gold": 20},
+	"steel_sword": {"section": "basic", "materials": {"iron_scrap": 4, "rat_tail": 1}, "gold": 20},
+	"longbow": {"section": "basic", "materials": {"iron_scrap": 4, "rat_tail": 1}, "gold": 20},
+	"ash_staff": {"section": "basic", "materials": {"iron_scrap": 4, "rat_tail": 1}, "gold": 20},
+	"steel_knuckles": {"section": "basic", "materials": {"iron_scrap": 4, "rat_tail": 1}, "gold": 20},
+	"rat_fang_charm": {"section": "blueprint", "materials": {"rat_tail": 3}, "gold": 10},
+	"bandit_hood": {"section": "blueprint", "materials": {"wolf_pelt": 1, "iron_scrap": 2}, "gold": 15},
+	"wolf_pelt_cloak": {"section": "blueprint", "materials": {"wolf_pelt": 3}, "gold": 15},
+	"bone_helm": {"section": "blueprint", "materials": {"old_bone": 3, "iron_scrap": 1}, "gold": 20},
+	"tusk_shield": {"section": "blueprint", "materials": {"orc_tusk": 2, "iron_scrap": 2}, "gold": 20},
+	"starmetal_blade": {"section": "starmetal", "materials": {"starmetal_shard": 1}, "gold": 30},
+	"starmetal_bow": {"section": "starmetal", "materials": {"starmetal_shard": 1}, "gold": 30},
+	"starmetal_staff": {"section": "starmetal", "materials": {"starmetal_shard": 1}, "gold": 30},
+	"starmetal_knuckles": {"section": "starmetal", "materials": {"starmetal_shard": 1}, "gold": 30},
+	"starmetal_helm": {"section": "starmetal", "materials": {"starmetal_shard": 1}, "gold": 30},
+	"starmetal_plate": {"section": "starmetal", "materials": {"starmetal_shard": 1}, "gold": 30},
+	"starmetal_shield": {"section": "starmetal", "materials": {"starmetal_shard": 1}, "gold": 30},
+	"starmetal_amulet": {"section": "starmetal", "materials": {"starmetal_shard": 1}, "gold": 30}
+}

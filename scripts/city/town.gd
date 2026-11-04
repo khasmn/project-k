@@ -7,10 +7,12 @@ const ART_SIZE: Vector2 = Vector2(384, 216)
 ## Each building: its clickable rectangle in art pixels (x, y, width, height) and what its window says.
 const BUILDINGS: Array = [
 	{"name": "Farm", "rect": [4, 92, 92, 74], "text": "Raise animals here. Some can follow you into battle as companions. (Coming soon)"},
-	{"name": "Blacksmith", "rect": [100, 92, 70, 74], "text": "Craft and upgrade gear: helmet, armor, weapons, shields and jewelry. (Coming soon)"},
+	{"name": "Blacksmith", "rect": [100, 92, 70, 74]},
 	{"name": "Inn", "rect": [178, 84, 94, 82], "text": "A warm bed and a hot meal."},
-	{"name": "Shop", "rect": [282, 100, 92, 66], "text": ""},  # opens the GearWindow as a shop
+	{"name": "Shop", "rect": [282, 100, 92, 66]},
 ]
+## Buildings that open the GearWindow instead of the plain window.
+const GEAR_WINDOW_MODES: Dictionary = {"Blacksmith": GearWindow.Mode.FORGE, "Shop": GearWindow.Mode.SHOP}
 
 
 var gear_window: GearWindow = GearWindow.new()
@@ -23,7 +25,7 @@ func _ready() -> void:
 	gold.add_theme_font_size_override("font_size", 22)
 	gold.add_theme_color_override("font_color", UI.GOLD)
 	%Leave.add_child(gold)
-	%Leave.add_child(UI.menu_button("Gear", _open_gear_window.bind(false), 24))
+	%Leave.add_child(UI.menu_button("Gear", _open_gear_window.bind(GearWindow.Mode.GEAR), 24))
 	%Leave.add_child(UI.menu_button("Leave town", get_tree().change_scene_to_file.bind(COMBAT_SCENE), 24))
 	add_child(gear_window)
 	gear_window.closed.connect(_update_gold)
@@ -65,14 +67,14 @@ func _update_gold() -> void:
 	gold.text = "   Gold %d" % Run.gold
 
 
-func _open_gear_window(shop: bool) -> void:
+func _open_gear_window(mode: GearWindow.Mode) -> void:
 	%Window.hide()
-	gear_window.open(shop)
+	gear_window.open(mode)
 
 
 func _open(building: Dictionary) -> void:
-	if building.name == "Shop":
-		_open_gear_window(true)
+	if building.name in GEAR_WINDOW_MODES:
+		_open_gear_window(GEAR_WINDOW_MODES[building.name])
 		return
 	%WindowTitle.text = building.name.to_upper()
 	%WindowText.text = building.text

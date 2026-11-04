@@ -2,6 +2,7 @@ extends Control
 ## Path screen between fights: pick 1 of 3 doors (every door ends in a battle), or spend stat points.
 
 const COMBAT_SCENE: String = "res://scenes/combat/combat.tscn"
+const TOWN_SCENE: String = "res://scenes/city/town.tscn"
 const CARD_STYLE: StyleBoxFlat = preload("res://scenes/ui/box_style.tres")
 const REST_CLICK_DELAY: float = 0.5  # Rest/Train appear where the door was: block a double click picking one
 ## Left stripe color and subtitle per door type.
@@ -28,8 +29,13 @@ func _ready() -> void:
 	%CharacterPanel.closed.connect(_close_character)
 	var gear_button: Button = %CharacterButton.duplicate()  # same gold look as CHARACTER
 	gear_button.text = "GEAR"
-	gear_button.pressed.connect(gear_window.open.bind(false))
+	gear_button.pressed.connect(gear_window.open.bind(GearWindow.Mode.GEAR))
 	%CharacterButton.add_sibling(gear_button)
+	var town_button: Button = %CharacterButton.duplicate()
+	town_button.text = "BACK TO TOWN"
+	town_button.tooltip_text = "Go back to town. The chapter starts again from room 1;\nyou keep your level, gear, gold and materials."
+	town_button.pressed.connect(_back_to_town)
+	gear_button.add_sibling(town_button)
 	add_child(gear_window)
 	gear_window.closed.connect(_update_sidebar)
 	_update_sidebar()
@@ -129,6 +135,11 @@ func _clear_doors() -> void:
 	for card in %Doors.get_children():
 		%Doors.remove_child(card)
 		card.queue_free()
+
+
+func _back_to_town() -> void:
+	Run.restart_chapter()
+	get_tree().change_scene_to_file(TOWN_SCENE)
 
 
 func _open_character() -> void:

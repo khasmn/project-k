@@ -25,8 +25,12 @@ static var experience: int = 0
 static var points: int = 0  # unspent stat points
 static var gold: int = 0
 static var items: Dictionary = {}  # item id -> how many, see data/items.json
-static var bag: Array[String] = []  # gear you carry but don't wear (data/gear.json ids)
-static var gear: Dictionary = {}  # slot (helmet, armor, weapon, offhand, jewelry1, jewelry2) -> gear id you wear
+static var bag: Array[Dictionary] = []  # gear pieces you carry but don't wear (see Gear.piece)
+static var gear: Dictionary = {}  # slot (helmet, armor, weapon, offhand, jewelry1, jewelry2) -> piece you wear
+static var materials: Dictionary = {}  # material id -> how many, see data/materials.json
+## Kept for every future hero (not reset): blueprints found and "kept" materials (Starmetal Shards).
+## ponytail: lost when the game closes until saving exists (build step 5).
+static var blueprints: Array[String] = []
 
 
 static func start(draft: CharacterDraft) -> void:
@@ -56,6 +60,16 @@ static func _reset() -> void:
 	items = START_ITEMS.duplicate()
 	bag = []
 	gear = {}
+	for material: String in materials.keys():
+		if not data("materials")[material].get("kept", false):
+			materials.erase(material)
+
+
+## Back to town (path screen, or after the boss): the chapter starts again from room 1. The hero keeps everything.
+static func restart_chapter() -> void:
+	room = 1
+	room_type = ""
+	room_note = ""
 
 
 static func is_boss() -> bool:
