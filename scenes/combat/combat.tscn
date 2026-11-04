@@ -91,6 +91,7 @@ horizontal_alignment = 1
 
 [node name="Arena" type="PanelContainer" parent="Margin/VBox"]
 layout_mode = 2
+unique_name_in_owner = true
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("arena")
 
@@ -101,6 +102,8 @@ theme_override_constants/separation = 6
 [node name="TurnLabel" type="Label" parent="Margin/VBox/Arena/VBox"]
 layout_mode = 2
 unique_name_in_owner = true
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
 theme_override_font_sizes/font_size = 16
 horizontal_alignment = 1
 
@@ -138,6 +141,8 @@ size_flags_vertical = 4
 layout_mode = 2
 unique_name_in_owner = true
 theme_override_colors/font_color = Color(0.5, 0.82, 0.5, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
 theme_override_font_sizes/font_size = 18
 horizontal_alignment = 1
 
