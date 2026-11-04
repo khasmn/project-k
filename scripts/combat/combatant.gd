@@ -41,7 +41,8 @@ func _init(data: Dictionary) -> void:
 	speed = int(data.speed)
 	damage_die = int(data.damage_die)
 	weapon = data.get("weapon", "weapon")
-	sprite = data.get("sprite", "")
+	var looks: Variant = data.get("sprite", "")
+	sprite = looks[Dice.roll(looks.size()) - 1] if looks is Array else looks  # a list of looks: pick one
 	exp_reward = int(data.get("exp", 0))
 	gold_reward = int(data.get("gold", 0))
 	passive_names = data.get("passive_names", {})

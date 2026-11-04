@@ -31,6 +31,10 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 
 ## Session log (newest first)
 
+### 2026-11-04 – Bandit sprites and target arrow
+- Two Bandit looks drawn (rogue, brigand); each Bandit picks one at random.
+- Target arrow above the chosen monster replaces the gold frame.
+
 ### 2026-11-04 – Hero sprite and customization
 - LOOK box in character creation with live preview, name + Random, skin/hair/color/outfit arrows.
 - Layered hero sprite (HeroSprite) shown in battle; the log uses the hero's name.
