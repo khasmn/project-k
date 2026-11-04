@@ -9,17 +9,28 @@ const BUILDINGS: Array = [
 	{"name": "Farm", "rect": [4, 92, 92, 74], "text": "Raise animals here. Some can follow you into battle as companions. (Coming soon)"},
 	{"name": "Blacksmith", "rect": [100, 92, 70, 74], "text": "Craft and upgrade gear: helmet, armor, weapons, shields and jewelry. (Coming soon)"},
 	{"name": "Inn", "rect": [178, 84, 94, 82], "text": "A warm bed and a hot meal."},
-	{"name": "Shop", "rect": [282, 100, 92, 66], "text": "Buy potions and supplies with your gold. (Coming soon)"},
+	{"name": "Shop", "rect": [282, 100, 92, 66], "text": ""},  # opens the GearWindow as a shop
 ]
+
+
+var gear_window: GearWindow = GearWindow.new()
+var gold: Label = Label.new()
 
 
 func _ready() -> void:
 	for building: Dictionary in BUILDINGS:
 		%Picture.add_child(_building_button(building))
+	gold.add_theme_font_size_override("font_size", 22)
+	gold.add_theme_color_override("font_color", UI.GOLD)
+	%Leave.add_child(gold)
+	%Leave.add_child(UI.menu_button("Gear", _open_gear_window.bind(false), 24))
 	%Leave.add_child(UI.menu_button("Leave town", get_tree().change_scene_to_file.bind(COMBAT_SCENE), 24))
-	for button: Button in %Leave.get_children():
-		button.add_theme_color_override("font_outline_color", Color.BLACK)
-		button.add_theme_constant_override("outline_size", 6)
+	add_child(gear_window)
+	gear_window.closed.connect(_update_gold)
+	_update_gold()
+	for node: Control in %Leave.get_children():  # the gold label and the buttons, readable over the art
+		node.add_theme_color_override("font_outline_color", Color.BLACK)
+		node.add_theme_constant_override("outline_size", 6)
 
 
 ## An invisible button over the building's art with its name floating above the roof.
@@ -50,7 +61,19 @@ func _building_button(building: Dictionary) -> Button:
 	return button
 
 
+func _update_gold() -> void:
+	gold.text = "   Gold %d" % Run.gold
+
+
+func _open_gear_window(shop: bool) -> void:
+	%Window.hide()
+	gear_window.open(shop)
+
+
 func _open(building: Dictionary) -> void:
+	if building.name == "Shop":
+		_open_gear_window(true)
+		return
 	%WindowTitle.text = building.name.to_upper()
 	%WindowText.text = building.text
 	for old in %WindowButtons.get_children():

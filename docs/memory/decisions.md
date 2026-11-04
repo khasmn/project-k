@@ -5,6 +5,8 @@ if a decision changes, add a new entry that says what it replaces.
 
 | Date | Decision | Why |
 | --- | --- | --- |
+| 2026-11-04 | Shop sells gear + potions (10g), sells gear back at half; start gold 30; GEAR window with bag | Kha's choices |
+| 2026-11-04 | Copper Ring is +1 Speed instead of +1 Luck | Luck has no effect in fights yet |
 | 2026-11-04 | Skill cooldown = cost + 2 turns (monsters 2); Meditate moved to COMMAND; Info button removed, hover only | Kha's choices |
 | 2026-11-04 | Farm is for animals that can become companions, not food (replaces "farm = food") | Kha's choice |
 | 2026-11-04 | Town: warm sunset, built step by step (Inn first, others "coming soon"); menu art animated too | Kha's choices |

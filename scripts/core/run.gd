@@ -12,6 +12,7 @@ const POINTS_PER_LEVEL: int = 3
 const REST_HEAL_PERCENT: int = 30
 const TRAIN_POINTS: int = 1
 const START_ITEMS: Dictionary = {"healing_potion": 2}
+const START_GOLD: int = 30  # enough for a first piece of gear in the town Shop
 
 static var hero: Combatant
 static var hero_title: String = ""
@@ -24,6 +25,8 @@ static var experience: int = 0
 static var points: int = 0  # unspent stat points
 static var gold: int = 0
 static var items: Dictionary = {}  # item id -> how many, see data/items.json
+static var bag: Array[String] = []  # gear you carry but don't wear (data/gear.json ids)
+static var gear: Dictionary = {}  # slot -> gear id you wear, see Gear.SLOTS
 
 
 static func start(draft: CharacterDraft) -> void:
@@ -49,8 +52,10 @@ static func _reset() -> void:
 	level = 1
 	experience = 0
 	points = 0
-	gold = 0
+	gold = START_GOLD
 	items = START_ITEMS.duplicate()
+	bag = []
+	gear = {}
 
 
 static func is_boss() -> bool:

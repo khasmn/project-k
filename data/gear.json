@@ -1,0 +1,13 @@
+{
+	"leather_cap": {"name": "Leather Cap", "slot": "helmet", "price": 15, "stats": {"defense": 1}},
+	"iron_helm": {"name": "Iron Helm", "slot": "helmet", "price": 35, "stats": {"defense": 2}},
+	"leather_armor": {"name": "Leather Armor", "slot": "armor", "price": 20, "stats": {"defense": 1, "max_hp": 4}},
+	"chainmail": {"name": "Chainmail", "slot": "armor", "price": 40, "stats": {"defense": 2, "speed": -1}},
+	"iron_sword": {"name": "Iron Sword", "slot": "weapon", "classes": ["warrior"], "price": 30, "stats": {"attack": 1}, "tint": [0.8, 0.9, 1.25]},
+	"hunting_bow": {"name": "Hunting Bow", "slot": "weapon", "classes": ["archer"], "price": 30, "stats": {"attack": 1}, "tint": [0.8, 0.65, 0.55]},
+	"oak_staff": {"name": "Oak Staff", "slot": "weapon", "classes": ["mage"], "price": 30, "stats": {"attack": 1}, "tint": [1.1, 1.2, 1.4]},
+	"iron_knuckles": {"name": "Iron Knuckles", "slot": "weapon", "classes": ["brawler"], "price": 30, "stats": {"attack": 1}, "tint": [0.7, 0.75, 0.85]},
+	"wooden_shield": {"name": "Wooden Shield", "slot": "offhand", "classes": ["warrior", "brawler"], "price": 20, "stats": {"defense": 1}},
+	"copper_ring": {"name": "Copper Ring", "slot": "jewelry", "price": 15, "stats": {"speed": 1}},
+	"bone_charm": {"name": "Bone Charm", "slot": "jewelry", "price": 15, "stats": {"max_hp": 4}}
+}
