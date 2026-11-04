@@ -84,7 +84,9 @@ func _init() -> void:
 			_check(room > 2 or group.all(func(c: Combatant) -> bool: return not c.display_name.begins_with("Wolf")), "wolf too early")
 			Run.room_type = "elite"
 			group = Run.enemies()
+			_check_collars(group)
 			_check(group[0].display_name in elite_names and group.size() <= Run.MAX_ENEMIES - 1, "elite room wrong")
+			_check_collars(group)
 	Run.room = Run.ROOMS + 1
 	var boss_group: Array = Run.enemies().map(func(c: Combatant) -> String: return c.display_name)
 	_check(Run.is_boss() and boss_group == ["Bandit Chief", "Bandit 1", "Bandit 2"], "boss group wrong: %s" % [boss_group])
@@ -184,6 +186,14 @@ func _hero(effects: Dictionary) -> Combatant:
 
 
 # assert() doesn't stop a headless run, so record failures and exit with code 1.
+## Wolves wear a collar exactly when a Bandit or Bandit Captain is in the same fight.
+func _check_collars(group: Array[Combatant]) -> void:
+	var with_bandit: bool = group.any(func(c: Combatant) -> bool: return c.display_name.begins_with("Bandit"))
+	for foe in group:
+		if foe.display_name.begins_with("Wolf"):
+			_check((foe.sprite == "wolf_collar_idle") == with_bandit, "wolf collar wrong: %s" % foe.sprite)
+
+
 func _check(ok: bool, message: String) -> void:
 	if not ok:
 		printerr("FAIL: " + message)

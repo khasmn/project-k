@@ -88,7 +88,13 @@ static func enemies() -> Array[Combatant]:
 			ids[0] = all[ids[0]].elite
 	var group: Array[Combatant] = []
 	for id in ids:
-		group.append(Combatant.new(all[id]))
+		var foe: Combatant = Combatant.new(all[id])
+		# "sprite_with": a different look when a certain monster is in the same fight (wolves with bandits wear a collar).
+		var with: Dictionary = all[id].get("sprite_with", {})
+		for other in with:
+			if other in ids:
+				foe.sprite = with[other]
+		group.append(foe)
 	# Two of the same monster get numbers: "Bandit 1", "Bandit 2".
 	for foe in group:
 		var same: Array = group.filter(func(other: Combatant) -> bool: return other.display_name == foe.display_name)

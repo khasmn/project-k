@@ -1,8 +1,8 @@
 {
 	"giant_rat": {"name": "Giant Rat", "hp": 4, "attack": 0, "defense": 0, "speed": 3, "weapon": "bite", "damage_die": 3, "exp": 4, "gold": 2, "rooms": [1, 2], "elite": "rat_king", "sprite": "giant_rat_idle"},
 	"bandit": {"name": "Bandit", "hp": 5, "attack": 0, "defense": 0, "speed": 1, "weapon": "dagger", "damage_die": 4, "exp": 5, "gold": 3, "rooms": [1, 6], "elite": "bandit_captain", "sprite": ["bandit_rogue_idle", "bandit_brigand_idle"]},
-	"wolf": {"name": "Wolf", "hp": 6, "attack": 0, "defense": 0, "speed": 4, "weapon": "bite", "damage_die": 4, "exp": 6, "gold": 3, "rooms": [3, 8], "elite": "dire_wolf"},
-	"skeleton": {"name": "Skeleton", "hp": 8, "attack": 0, "defense": 1, "speed": 1, "weapon": "rusty sword", "damage_die": 4, "exp": 7, "gold": 4, "rooms": [5, 8], "elite": "bone_knight"},
+	"wolf": {"name": "Wolf", "hp": 6, "attack": 0, "defense": 0, "speed": 4, "weapon": "bite", "damage_die": 4, "exp": 6, "gold": 3, "rooms": [3, 8], "elite": "dire_wolf", "sprite": "wolf_idle", "sprite_with": {"bandit": "wolf_collar_idle", "bandit_captain": "wolf_collar_idle"}},
+	"skeleton": {"name": "Skeleton", "hp": 8, "attack": 0, "defense": 1, "speed": 1, "weapon": "rusty sword", "damage_die": 4, "exp": 7, "gold": 4, "rooms": [5, 8], "elite": "bone_knight", "sprite": "skeleton_idle"},
 	"orc_raider": {"name": "Orc Raider", "hp": 9, "attack": 1, "defense": 1, "speed": 2, "weapon": "cleaver", "damage_die": 4, "exp": 9, "gold": 5, "rooms": [5, 8], "elite": "orc_warlord"},
 
 	"rat_king": {"name": "Rat King", "hp": 10, "attack": 1, "defense": 1, "speed": 3, "weapon": "bite", "damage_die": 4, "exp": 12, "gold": 6},
