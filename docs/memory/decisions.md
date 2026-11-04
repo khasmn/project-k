@@ -5,6 +5,9 @@ if a decision changes, add a new entry that says what it replaces.
 
 | Date | Decision | Why |
 | --- | --- | --- |
+| 2026-11-05 | Story: 10 chapters; 4 crystals + 4 Demon Lords, Demon King in ch 5; twist 1 (ch 5) he was the seal against the Hollow; twist 2 (ch 7) the King betrayed you | Kha's story idea, Claude's chapter plan |
+| 2026-11-05 | New base class Lancer (Skylancer / Phalanx); Mage tier 2: Elementalist or Dark Mage (replaces Warlock); evolution at level 10 (was 15) | Kha's choices |
+| 2026-11-05 | 1 secret class per class (Holy Knight, Grove Warden, Necromancer, Tempest Fist, Drakerider): ch 6+, event check -> deed -> solo trial boss | Kha: secret classes must be hard with 10 chapters |
 | 2026-11-05 | The boss gives EXP and gold like every fight (the run goes on after it now) | Tester bug, Kha OK |
 | 2026-11-05 | Events: story + choice cards on the path screen; outcomes include rewards, HP/EXP, next-fight changes, skip the fight, and a one-battle helper | Kha's choices |
 | 2026-11-05 | Death with lives left: straight to town (not the main menu), lose half the gold, full HP; hearts in battle only. Replaces "back to the main menu" | Kha's choices |

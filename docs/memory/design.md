@@ -66,15 +66,38 @@ Rolling rules:
 
 ### Classes
 
-Picked freely. At level 15 an evolution event appears: choose 1 of 2 advanced paths
-(new skills + boost to the class's main stat).
+Picked freely. At level 10 an evolution event appears (Kha 2026-11-05; was 15): choose 1 of 2 advanced
+paths (new skills + boost to the class's main stat). Each class also has 1 secret class (below).
 
-| Class | Role | Main stat | Evolves into |
-| --- | --- | --- | --- |
-| Warrior | Front-line melee | Attack | Knight (tank) or Berserker (damage) |
-| Archer | Ranged damage | Attack, Speed | Ranger (traps, pets) or Sharpshooter (crits) |
-| Mage | Spells | Magic | Elementalist (fire, ice, storm) or Warlock (curses, life drain) |
-| Brawler | Fast unarmed combos | Attack, Speed | Monk (dodge, counters) or Pit Fighter (stun, grapple) |
+| Class | Role | Main stat | Evolves into | Secret class (from) |
+| --- | --- | --- | --- | --- |
+| Warrior | Front-line melee | Attack | Knight (tank) or Berserker (damage) | Holy Knight (Knight) |
+| Archer | Ranged damage | Attack, Speed | Ranger (beasts) or Sharpshooter (crits) | Grove Warden (Ranger) |
+| Mage | Spells | Magic | Elementalist (fire, ice, storm) or Dark Mage (curses, life drain; replaces Warlock) | Necromancer (Dark Mage) |
+| Brawler | Fast unarmed combos | Attack, Speed | Monk (dodge, counters) or Pit Fighter (stun, grapple) | Tempest Fist (Monk) |
+| Lancer (NEW) | Reach and charges | Attack, Speed | Skylancer (leaps) or Phalanx (spear wall) | Drakerider (Skylancer) |
+
+Lancer (planned): HP 32, Attack 3, Defense 2, Speed 2, Charisma 1, Luck 1, spear d8. Skills: Piercing Thrust
+(2 Energy: to_hit +2, extra_die 4), Sweeping Arc (3: Speed save, all monsters, d6). Skylancer: Leap Strike
+(3: advantage, extra_die 8), Wind Step (1: shield 5). Phalanx: Spear Wall (2: shield 4 for all), Impale
+(3: extra_die 8, stun on a failed Defense save). Look: light scale armor, long spear held low, red pennant.
+
+### Secret classes (Kha 2026-11-05)
+
+A 3-step quest, open from chapter 6 (after twist 1). Fail the event check or lose the trial: that path is
+gone this run (it can come back in a later run). Dying during the deed resets its counter. The trial is
+fought ALONE (no companion, no helper, no potions); trial bosses are 48x48, about chapter 6 boss strength.
+Win: the class changes, +stat boost, 2 new skills, a short scene line.
+
+| Secret class | Needs | 1. Event (rare, ch 6+) -> token | 2. Deed | 3. Trial boss | Boost | Skills |
+| --- | --- | --- | --- | --- | --- | --- |
+| Holy Knight | Knight | The Last Oath (dying paladin), Charisma DC 16 -> Oath Sigil | Defeat 3 demon/Hollow elites | Ashmaw, horned fire demon (HP 70, Atk 6, Def 4, Spd 3, d10; Hellbrand: Speed save, burn 3 x2) | Defense +3 | Sacred Aegis (3: shield 10 all), Radiant Smite (4: advantage, extra_die 10) |
+| Necromancer | Dark Mage | The Bone Lantern (graveyard ghost), Magic DC 16 -> Forbidden Tome | Defeat 25 undead | The Grave Warden, crowned skeleton king (HP 60, Atk 5, Def 3, Spd 2, d8; Bone Legion: shield 6 all) | Magic +3 | Raise Dead (4: a skeleton ally this fight, NEW key summon), Soul Drain (3: extra_die 8, heal half, NEW key drain) |
+| Grove Warden | Ranger + an Adult Owl | The White Stag, Speed DC 16 -> Stag Antler | Win 6 fights in a row without the Owl falling | Thornmaw, bramble-grown wolf (HP 65, Atk 5, Def 3, Spd 5, d8; Rot Thorns: poison 2 x3) | Speed +2, Attack +1 | Hail of Thorns (3: Speed save, all, poison 2 x3), Hunter's Mark (2: advantage, extra_die 6, stun save) |
+| Tempest Fist | Monk | The Silent Waterfall (old master), Defense DC 15 -> Master's Sash | Win 6 fights without a potion | Gravel, stone mountain ogre (HP 80, Atk 5, Def 5, Spd 1, d10; Quake: Speed save, stun) | Speed +3 | Hundred Blows (3: 4 attacks at -3), Eye of the Storm (2: shield 6 + next attack advantage) |
+| Drakerider | Skylancer + an Adult Drake | The Sky Altar, Charisma DC 16 -> Drake Horn | Beat a chapter boss with the Drake standing | Stormwing, wild drake matriarch (HP 75, Atk 6, Def 3, Spd 6, d10; Gale Dive: advantage, extra_die 6) | Attack +2, Speed +1 | Diving Lance (4: advantage, extra_die 12), Dragonfire Charge (4: Speed save, all, burn 2 x2) |
+
+Watch in testing: Radiant Smite and Diving Lance (strongest), Raise Dead (keep the skeleton weak, ~8 HP).
 
 ## Stats
 
@@ -171,6 +194,26 @@ Example event, "a bandit blocks the bridge":
 | Persuade | Charisma | 14 |
 | Intimidate | Charisma (Emberkin +2) | 12 |
 | Sneak | Speed | 15 |
+
+## Story: 10 chapters (Kha 2026-11-05)
+
+Monsters keep attacking the kingdom. The King summons the hero: kill the Demon King and the evil stops.
+His castle is sealed behind 4 Crystals, each guarded by one of his 4 Demon Lords.
+
+| Ch | Place | Story | Boss |
+| --- | --- | --- | --- |
+| 1 | Whispering Woods (built) | Bandits raid villages (monsters drove them from the hills). After the boss a royal knight brings the King's summons. | Bandit Chief |
+| 2 | Frostfang Peaks | Crystal of Frost | Demon Lord Vharn the Frost Tyrant |
+| 3 | Sunken Marsh | Crystal of Venom | Demon Lord Mother Silt (swamp witch-demon) |
+| 4 | Ember Wastes | Crystal of Flame | Demon Lord Pyrrax the Cinder Beast |
+| 5 | Obsidian Citadel | Crystal of Shadow (Lord Nyxara, mid-chapter), then the Demon King | Malzareth, the Demon King |
+| 6 | The Shattered Lands | TWIST 1 (end of ch 5): dying, Malzareth says he was not the plague but the lock; the crystals sealed the Hollow and the hero broke all four. Hollow creatures pour out; some demons offer a truce. Secret class paths open. | The First Herald of the Hollow |
+| 7 | Royal Capital | TWIST 2: the King knew all along. He made a pact with the Hollow for eternal life and used the hero to break the seal. | The King, twisted by the Hollow |
+| 8 | Forgotten Temple | Loyal demons and the King's betrayed knights show how to reforge the seal from the crystals' remains. | Nyxara Reborn (now serving the Hollow) |
+| 9 | The Abyss Gate | Fight to the gate with the reforged seal. | The Gatekeeper |
+| 10 | The Hollow Throne | Final battle. | The Hollow One |
+
+Each chapter gets its own background, monsters and boss (like chapter 1).
 
 ## Run loop and meta-progression
 
