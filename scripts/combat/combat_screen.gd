@@ -4,6 +4,7 @@ extends Control
 const ENEMY_TURN_DELAY: float = 0.6
 const CREATION_SCENE: String = "res://scenes/character/character_creation.tscn"
 const PATH_SCENE: String = "res://scenes/path/path.tscn"
+const TOWN_SCENE: String = "res://scenes/city/town.tscn"
 const CARD_STYLE: StyleBoxFlat = preload("res://scenes/ui/box_style.tres")
 const SPRITE_FPS: int = 6
 const START_DELAY: float = 1.0  # seconds before the initiative roll
@@ -403,10 +404,17 @@ func _win() -> void:
 	if heal_text != "":
 		_log(heal_text)
 	fight_over = true
+	for foe in enemies:
+		var loot: String = Gear.loot(foe)
+		if loot:
+			_log("[color=%s]%s[/color]" % [GOLD, loot])
 	if Run.is_boss():
-		_log("[color=" + GOLD + "][b]Run complete![/b][/color] You beat the %s!" % enemies[0].display_name)
-		%TurnLabel.text = "Run complete! You beat the %s!" % enemies[0].display_name
-		_add_choice("New hero", _new_hero)
+		_log("[color=" + GOLD + "][b]Chapter complete![/b][/color] You beat the %s!" % enemies[0].display_name)
+		%TurnLabel.text = "Chapter complete! You beat the %s!" % enemies[0].display_name
+		_add_choice("Back to town", _back_to_town)
+		var next: Button = UI.menu_button("Next chapter (coming soon)", _back_to_town)
+		next.disabled = true
+		%Choices.add_child(next)
 		_update_labels()
 		return
 	var exp_total: int = 0
@@ -432,6 +440,11 @@ func _continue() -> void:
 	Run.room += 1
 	Run.room_type = ""
 	get_tree().change_scene_to_file(PATH_SCENE)
+
+
+func _back_to_town() -> void:
+	Run.restart_chapter()
+	get_tree().change_scene_to_file(TOWN_SCENE)
 
 
 func _new_hero() -> void:

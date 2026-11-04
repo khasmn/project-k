@@ -49,6 +49,7 @@ func hero_data() -> Dictionary:
 		"attack_name": hero_class.attack_stat.capitalize(),
 		"defense": s.defense,
 		"speed": s.speed,
+		"luck": s.luck,
 		"damage_die": hero_class.damage_die,
 		"weapon": hero_class.weapon.to_lower(),
 		"skills": hero_class.skills,

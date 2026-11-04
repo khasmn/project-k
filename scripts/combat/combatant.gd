@@ -20,6 +20,8 @@ var weapon: String = "weapon"  # for the log: "sword (d8)"
 var sprite: String = ""  # file in assets/sprites/enemies/, a strip of square frames
 var exp_reward: int = 0
 var gold_reward: int = 0
+var luck: int = 0  # forging grade (Gear.forge)
+var loot: Dictionary = {}  # what a monster drops when beaten (Gear.loot)
 var defending: bool = false
 var skills: Array[Dictionary] = []  # from data/skills.json: heroes list "skills", monsters have one "skill"
 var start_energy: int = 1  # Energy at your first turn of a fight (Mage: 3 Mana)
@@ -59,6 +61,8 @@ func _init(data: Dictionary) -> void:
 	for id: String in data.get("skills", [data.skill] if data.has("skill") else []):
 		skills.append(Run.data("skills")[id])
 	exp_reward = int(data.get("exp", 0))
+	luck = int(data.get("luck", 0))
+	loot = data.get("loot", {})
 	gold_reward = int(data.get("gold", 0))
 	passive_names = data.get("passive_names", {})
 	var effects: Dictionary = data.get("effects", {})

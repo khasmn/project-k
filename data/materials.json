@@ -1,0 +1,8 @@
+{
+	"rat_tail": {"name": "Rat Tail"},
+	"iron_scrap": {"name": "Iron Scrap"},
+	"wolf_pelt": {"name": "Wolf Pelt"},
+	"old_bone": {"name": "Old Bone"},
+	"orc_tusk": {"name": "Orc Tusk"},
+	"starmetal_shard": {"name": "Starmetal Shard", "kept": true}
+}

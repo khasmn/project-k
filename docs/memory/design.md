@@ -234,6 +234,23 @@ the hero; currency earned still unlocks content for future runs.
   Every gear piece and item has a 16x16 picture in `assets/sprites/items/<id>.png`, shown on Shop and bag lines. Helmet, armor and shield show on the hero sprite; a weapon tints the class weapon.
   Rules in `scripts/core/gear.gd`, window in `scripts/ui/gear_window.gd`. Two-handed weapons not yet.
 
+### Blacksmith, materials, blueprints (built 2026-11-04)
+
+- Every beaten monster drops its material (normal 1, elite 2): Rat Tail, Iron Scrap, Wolf Pelt, Old Bone, Orc Tusk.
+  Then a d20 for its blueprint: 20 for normal monsters, 15+ for elites (data "loot" in enemies.json).
+- The boss drops 1 Starmetal Shard. 1 Shard + 30g forges one top piece of your choice (Starmetal Blade/Bow/Staff/
+  Knuckles, Helm, Plate, Shield, Amulet).
+- Blacksmith (town): basic recipes known from the start (tier 2, not in the Shop: Steel Helm, Studded Armor, a steel
+  class weapon), blueprint recipes once found, Starmetal recipes. Cost = materials + gold (data/recipes.json).
+- Forging rolls d20 + Luck for the grade: 1-5 Crude (-1), 6-11 Common, 12-15 Uncommon (+1), 16-18 Rare (+2),
+  19-21 Epic (+3), 22+ Legendary (+4); a natural 20 is at least Epic. The bonus goes to the piece's main (first) stat.
+  Shop gear is Common.
+- Blueprints and Starmetal Shards are kept for every future hero; other materials and gear belong to the hero.
+- BACK TO TOWN (path screen): restart the chapter at room 1, keep hero, level, gear, gold and materials.
+  After the boss: Back to town, or Next chapter (coming soon).
+- Peddler's Cart (path Shop door, later): its own random stock, different from the town Shop (Kha 2026-11-04).
+- Next: gear upgrades +1 to +3 at the Blacksmith (materials + gold, no roll).
+
 ## Attack animations (Kha 2026-11-04)
 
 - Full character frames: every class and monster gets its own attack frames, skills get their own effects.
