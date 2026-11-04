@@ -1,63 +1,75 @@
 extends Control
-## Character creation screen: shows the rolled race and talent with their rerolls, and class buttons.
+## Character creation screen: shows the rolled race and talent with their rerolls, and the class choice.
 
+const MENU_SCENE: String = "res://scenes/menu/main_menu.tscn"
 const RARITY_COLORS: Dictionary = {
 	"common": Color(0.75, 0.75, 0.75), "uncommon": Color(0.4, 0.85, 0.4), "rare": Color(0.4, 0.6, 1.0),
 	"epic": Color(0.75, 0.45, 1.0), "legendary": Color(1.0, 0.65, 0.2),
 }
+const SPIN_STEPS: int = 14
 
 var draft: CharacterDraft
-var class_group: ButtonGroup = ButtonGroup.new()
+var spinning: int = 0  # how many names are still spinning; buttons wait until they land
+var race_button: Button
+var talent_button: Button
+var start_button: Button
 
 
 func _ready() -> void:
-	%RerollRaceButton.pressed.connect(func() -> void: draft.reroll("race"); _refresh())
-	%RerollTalentButton.pressed.connect(func() -> void: draft.reroll("talent"); _refresh())
-	%NewHeroButton.pressed.connect(_new_hero)
-	%StartButton.pressed.connect(_start_run)
-	# One toggle button per class in classes.json. A ButtonGroup keeps only one pressed at a time.
+	race_button = UI.menu_button("", _reroll.bind("race"))
+	talent_button = UI.menu_button("", _reroll.bind("talent"))
+	%RaceActions.add_child(race_button)
+	%TalentActions.add_child(talent_button)
 	for id in CharacterDraft.new().classes:
-		var button: Button = Button.new()
-		button.toggle_mode = true
-		button.button_group = class_group
-		button.custom_minimum_size = Vector2(0, 36)
-		button.add_theme_stylebox_override("pressed", _selected_style())
-		button.add_theme_stylebox_override("hover_pressed", _selected_style())
-		button.pressed.connect(func() -> void: draft.class_id = id; _refresh())
-		%ClassButtons.add_child(button)
+		%ClassButtons.add_child(UI.menu_button("", func() -> void: draft.class_id = id; _refresh(), 20))
+	start_button = UI.menu_button("Start run", _start_run, 22)
+	for button: Button in [UI.menu_button("Back", get_tree().change_scene_to_file.bind(MENU_SCENE), 22),
+			UI.menu_button("New hero", _new_hero, 22), start_button]:
+		%BottomButtons.add_child(button)
 	_new_hero()
-
-
-## Gold frame so the picked class stands out.
-func _selected_style() -> StyleBoxFlat:
-	var style: StyleBoxFlat = StyleBoxFlat.new()
-	style.bg_color = Color(0.25, 0.2, 0.08)
-	style.set_border_width_all(2)
-	style.border_color = Color(0.95, 0.75, 0.25)
-	style.set_corner_radius_all(4)
-	return style
 
 
 func _new_hero() -> void:
 	draft = CharacterDraft.new()
-	for button in %ClassButtons.get_children():
-		button.button_pressed = false
+	_spin(%RaceName, draft.races, "race")
+	_spin(%TalentName, draft.talents, "talent")
+
+
+func _reroll(kind: String) -> void:
+	draft.reroll(kind)
+	_spin(%RaceName if kind == "race" else %TalentName, draft.races if kind == "race" else draft.talents, kind)
+
+
+## Slot-machine look: the name flicks through the other entries, slowing down, then lands on the
+## real roll (already made by the draft through the dice module) and flashes.
+func _spin(label: Label, entries: Dictionary, kind: String) -> void:
+	spinning += 1
 	_refresh()
+	var ids: Array = entries.keys()
+	for i in SPIN_STEPS:
+		_show_rolled(label, entries[ids[i % ids.size()]])
+		await get_tree().create_timer(0.03 + i * 0.012).timeout
+	spinning -= 1
+	_refresh()
+	label.modulate = Color(2, 2, 2)  # brighter than normal, fading back = a flash
+	create_tween().tween_property(label, "modulate", Color.WHITE, 0.5)
 
 
 func _refresh() -> void:
 	var race: Dictionary = draft.races[draft.race_id]
-	_show_rolled(%RaceName, race)
-	%RaceInfo.text = "%s\n%s\nPassive: %s\nCheck: %s" % [
-		race.role, _stat_changes(race.stats), race.passive, race.check_bonus]
-
 	var talent: Dictionary = draft.talents[draft.talent_id]
-	_show_rolled(%TalentName, talent)
-	%TalentInfo.text = talent.effect
+	if spinning == 0:
+		_show_rolled(%RaceName, race)
+		_show_rolled(%TalentName, talent)
+	%RaceInfo.text = "" if spinning else "%s\n%s\nPassive: %s\nCheck: %s" % [
+		race.role, _stat_changes(race.stats), race.passive, race.check_bonus]
+	%TalentInfo.text = "" if spinning else talent.effect
 
 	var class_ids: Array = draft.classes.keys()
 	for i in class_ids.size():
-		%ClassButtons.get_child(i).text = draft.classes[class_ids[i]].name
+		var button: Button = %ClassButtons.get_child(i)
+		button.text = button.text.left(3) + draft.classes[class_ids[i]].name
+		button.add_theme_color_override("font_color", UI.GOLD if class_ids[i] == draft.class_id else Color.WHITE)
 	if draft.class_id == "":
 		%ClassInfo.text = "Pick a class."
 	else:
@@ -65,12 +77,12 @@ func _refresh() -> void:
 		%ClassInfo.text = "%s\nWeapon: %s (d%d)\nEvolves at level 15: %s" % [
 			hero_class.role, hero_class.weapon, hero_class.damage_die, hero_class.evolves]
 
-	%RerollRaceButton.text = "Reroll race (%d left)" % draft.race_rerolls_left
-	%RerollTalentButton.text = "Reroll talent (%d left)" % draft.talent_rerolls_left
-	%RerollRaceButton.disabled = draft.race_rerolls_left == 0
-	%RerollTalentButton.disabled = draft.talent_rerolls_left == 0
-	%HeroSummary.text = _summary()
-	%StartButton.disabled = draft.class_id == ""
+	race_button.text = race_button.text.left(3) + "Reroll race (%d left)" % draft.race_rerolls_left
+	talent_button.text = talent_button.text.left(3) + "Reroll talent (%d left)" % draft.talent_rerolls_left
+	race_button.disabled = spinning > 0 or draft.race_rerolls_left == 0
+	talent_button.disabled = spinning > 0 or draft.talent_rerolls_left == 0
+	%HeroSummary.text = "Rolling..." if spinning else _summary()
+	start_button.disabled = spinning > 0 or draft.class_id == ""
 
 
 func _start_run() -> void:
@@ -93,9 +105,9 @@ func _stat_changes(changes: Dictionary) -> String:
 
 func _summary() -> String:
 	if draft.class_id == "":
-		return "Your hero: %s with %s. Pick a class to see the final stats." % [
+		return "%s with %s. Pick a class to see the final stats." % [
 			draft.races[draft.race_id].name, draft.talents[draft.talent_id].name]
 	var s: Dictionary = draft.stats()
-	return "Your hero: %s %s with %s\nHP %d   Attack %d   Magic %d   Defense %d   Speed %d   Charisma %d   Luck %d" % [
+	return "%s %s with %s\nHP %d   Attack %d   Magic %d   Defense %d   Speed %d   Charisma %d   Luck %d" % [
 		draft.races[draft.race_id].name, draft.classes[draft.class_id].name, draft.talents[draft.talent_id].name,
 		s.hp, s.attack, s.magic, s.defense, s.speed, s.charisma, s.luck]
