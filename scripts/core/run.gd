@@ -5,6 +5,7 @@ class_name Run
 const ROOMS: int = 8  # rooms before the boss
 const BOSS: String = "bandit_chief"
 const BACKGROUND: String = "woods"  # chapter 1, in assets/backgrounds/
+const BOSS_BACKGROUND: String = "bandit_fortress"  # the boss fight: the bandits' fortress at night
 const DOOR_TYPES: Array[String] = ["elite", "rest", "shop", "event"]
 const DOORS: int = 3
 const MAX_ENEMIES: int = 4
