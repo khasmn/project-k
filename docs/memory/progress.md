@@ -31,6 +31,10 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 
 ## Session log (newest first)
 
+### 2026-11-04 – Boss sprites
+- Rat King, Bandit Captain, Dire Wolf, Bone Knight, Orc Warlord (48x48) and Bandit Chief (64x64) drawn; every monster now has art.
+- Monster cards size the picture from the strip height, so bigger canvases just work.
+
 ### 2026-11-04 – Orc Raider sprite
 - Orc Raider drawn (green skin, tusks, topknot, fur pad, cleaver). All normal monsters now have art.
 - Still text cards: the 5 elites and the Bandit Chief boss.

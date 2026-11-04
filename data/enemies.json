@@ -5,11 +5,11 @@
 	"skeleton": {"name": "Skeleton", "hp": 8, "attack": 0, "defense": 1, "speed": 1, "weapon": "rusty sword", "damage_die": 4, "exp": 7, "gold": 4, "rooms": [5, 8], "elite": "bone_knight", "sprite": "skeleton_idle"},
 	"orc_raider": {"name": "Orc Raider", "hp": 9, "attack": 1, "defense": 1, "speed": 2, "weapon": "cleaver", "damage_die": 4, "exp": 9, "gold": 5, "rooms": [5, 8], "elite": "orc_warlord", "sprite": "orc_raider_idle"},
 
-	"rat_king": {"name": "Rat King", "hp": 10, "attack": 1, "defense": 1, "speed": 3, "weapon": "bite", "damage_die": 4, "exp": 12, "gold": 6},
-	"bandit_captain": {"name": "Bandit Captain", "hp": 14, "attack": 2, "defense": 1, "speed": 2, "weapon": "saber", "damage_die": 6, "exp": 14, "gold": 9},
-	"dire_wolf": {"name": "Dire Wolf", "hp": 14, "attack": 2, "defense": 1, "speed": 5, "weapon": "bite", "damage_die": 6, "exp": 16, "gold": 9},
-	"bone_knight": {"name": "Bone Knight", "hp": 18, "attack": 2, "defense": 3, "speed": 1, "weapon": "longsword", "damage_die": 6, "exp": 18, "gold": 11},
-	"orc_warlord": {"name": "Orc Warlord", "hp": 22, "attack": 3, "defense": 2, "speed": 2, "weapon": "great axe", "damage_die": 6, "exp": 20, "gold": 13},
+	"rat_king": {"name": "Rat King", "hp": 10, "attack": 1, "defense": 1, "speed": 3, "weapon": "bite", "damage_die": 4, "exp": 12, "gold": 6, "sprite": "rat_king_idle"},
+	"bandit_captain": {"name": "Bandit Captain", "hp": 14, "attack": 2, "defense": 1, "speed": 2, "weapon": "saber", "damage_die": 6, "exp": 14, "gold": 9, "sprite": "bandit_captain_idle"},
+	"dire_wolf": {"name": "Dire Wolf", "hp": 14, "attack": 2, "defense": 1, "speed": 5, "weapon": "bite", "damage_die": 6, "exp": 16, "gold": 9, "sprite": "dire_wolf_idle"},
+	"bone_knight": {"name": "Bone Knight", "hp": 18, "attack": 2, "defense": 3, "speed": 1, "weapon": "longsword", "damage_die": 6, "exp": 18, "gold": 11, "sprite": "bone_knight_idle"},
+	"orc_warlord": {"name": "Orc Warlord", "hp": 22, "attack": 3, "defense": 2, "speed": 2, "weapon": "great axe", "damage_die": 6, "exp": 20, "gold": 13, "sprite": "orc_warlord_idle"},
 
-	"bandit_chief": {"name": "Bandit Chief", "hp": 30, "attack": 3, "defense": 2, "speed": 2, "weapon": "axe", "damage_die": 8, "exp": 30, "gold": 0, "guards": ["bandit", "bandit"]}
+	"bandit_chief": {"name": "Bandit Chief", "hp": 30, "attack": 3, "defense": 2, "speed": 2, "weapon": "axe", "damage_die": 8, "exp": 30, "gold": 0, "guards": ["bandit", "bandit"], "sprite": "bandit_chief_idle"}
 }

@@ -46,7 +46,7 @@ Inspired by Pixel Lineage (Roblox). Solo hobby project, built to play myself fir
 - Comments only where they add something the code doesn't say (a game rule, a Godot concept, a why).
   No comments that just repeat the code.
 - No emoji in code, comments, data or commit messages.
-- Pixel art: nearest-neighbor filtering, sprites 16x16 or 32x32.
+- Pixel art: nearest-neighbor filtering, sprites 16x16 or 32x32; elites 48x48, chapter bosses 64x64.
 
 ## How I want to work
 
