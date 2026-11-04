@@ -6,12 +6,14 @@ extends Control
 
 const FPS: int = 6
 const ATTACK_FPS: int = 10
-## [file, which look value fills the %s, tint, part]. Missing files are skipped: only Dwarves have a beard.
+## [file, which look value fills the %s, tint, part]. Missing files are skipped: only Dwarves have a beard,
+## and gear layers only show when that piece is worn (look "helmet", "armor", "offhand"; Gear sets them).
 ## The part says how a layer moves in an attack pose: with the body, the head or the weapon.
 const LAYERS: Array = [
 	["race/%s_back", "race", "", "body"], ["race/%s", "race", "skin", "body"], ["race/%s_face", "race", "", "head"],
-	["outfit/%s", "outfit", "", "body"], ["race/%s_beard", "race", "hair_color", "head"], ["hair/%s", "hair_style", "hair_color", "head"],
-	["race/%s_ears", "race", "skin", "head"], ["race/%s_top", "race", "", "head"], ["weapon/%s", "class", "", "body"],
+	["outfit/%s", "outfit", "", "body"], ["gear/%s", "armor", "", "body"], ["race/%s_beard", "race", "hair_color", "head"],
+	["hair/%s", "hair_style", "hair_color", "head"], ["race/%s_ears", "race", "skin", "head"], ["race/%s_top", "race", "", "head"],
+	["gear/%s", "helmet", "", "head"], ["gear/%s", "offhand", "", "body"], ["weapon/%s", "class", "weapon_tint", "body"],
 ]
 ## Per attack strip: one [body x, body y, head x, head y] pixel offset per frame (negative x = toward the monsters),
 ## and "hits", the frames where a blow lands or a shot leaves. The head lags a little: it reads as weight.
@@ -43,8 +45,8 @@ func show_look(look: Dictionary) -> void:
 	frames.clear()
 	parts.clear()
 	for layer in LAYERS:
-		var path: String = "res://assets/sprites/hero/%s.png" % (layer[0] % look[layer[1]])
-		if not ResourceLoader.exists(path):
+		var path: String = "res://assets/sprites/hero/%s.png" % (layer[0] % look.get(layer[1], ""))
+		if look.get(layer[1], "") == "" or not ResourceLoader.exists(path):
 			continue
 		var picture: TextureRect = TextureRect.new()
 		picture.texture = UI.strip(path)
@@ -52,7 +54,7 @@ func show_look(look: Dictionary) -> void:
 		picture.set_anchors_preset(Control.PRESET_FULL_RECT)
 		picture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		picture.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		if layer[2]:
+		if look.has(layer[2]):
 			picture.modulate = look[layer[2]]
 		add_child(picture)
 		parts.append([picture, layer[3]])

@@ -31,6 +31,13 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 
 ## Session log (newest first)
 
+### 2026-11-04 – Shop and gear (feature/shop-gear)
+- 11 gear pieces in data/gear.json, 5 new sprite layers (cap, helm, leather armor, chainmail, shield).
+- Town Shop: buy potions and gear, sell gear for half. GEAR window in town and on the path screen.
+- Start gold 30. Copper Ring gives +1 Speed (not Luck: Luck does nothing in fights yet).
+- New check tests/test_gear.gd.
+- Item pictures (16x16) on Shop lines; GEAR page has framed slot boxes in two columns beside the hero (Kha's pick).
+
 ### 2026-11-04 – Commands and cooldowns (update/commands-cooldowns)
 - Info button removed (hover shows monster info); Meditate/Concentrate is a COMMAND button; Flee stays in the skill list.
 - Skill cooldowns: cost + 2 turns for heroes, 2 for monsters; the list shows "wait N".

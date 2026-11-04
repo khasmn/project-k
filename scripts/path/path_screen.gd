@@ -17,6 +17,7 @@ const SUBTITLES: Dictionary = {
 }
 
 var hero: Combatant
+var gear_window: GearWindow = GearWindow.new()
 
 
 func _ready() -> void:
@@ -25,6 +26,12 @@ func _ready() -> void:
 	hero = Run.hero
 	%CharacterButton.pressed.connect(_open_character)
 	%CharacterPanel.closed.connect(_close_character)
+	var gear_button: Button = %CharacterButton.duplicate()  # same gold look as CHARACTER
+	gear_button.text = "GEAR"
+	gear_button.pressed.connect(gear_window.open.bind(false))
+	%CharacterButton.add_sibling(gear_button)
+	add_child(gear_window)
+	gear_window.closed.connect(_update_sidebar)
 	_update_sidebar()
 	_show_doors()
 
