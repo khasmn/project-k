@@ -31,6 +31,10 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 
 ## Session log (newest first)
 
+### 2026-11-04 – Orc Raider sprite
+- Orc Raider drawn (green skin, tusks, topknot, fur pad, cleaver). All normal monsters now have art.
+- Still text cards: the 5 elites and the Bandit Chief boss.
+
 ### 2026-11-04 – Wolf and Skeleton sprites
 - Wolf (plus collared version with bandits) and Skeleton drawn; test_run checks the collar rule.
 - Still text cards: Orc Raider, the elites and the boss.
