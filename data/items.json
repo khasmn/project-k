@@ -1,3 +1,6 @@
 {
-	"healing_potion": {"name": "Healing Potion", "heal_percent": 30}
+	"healing_potion": {"name": "Healing Potion", "price": 10, "heal_percent": 30, "description": "Heal 30% of your Max HP."},
+	"greater_healing_potion": {"name": "Greater Healing Potion", "price": 25, "heal_percent": 50, "description": "Heal 50% of your Max HP."},
+	"energy_tonic": {"name": "Energy Tonic", "price": 20, "energy": 2, "description": "+2 Energy (Mana for a Mage)."},
+	"luck_charm": {"name": "Luck Charm", "price": 20, "advantage": true, "description": "Your next attack rolls with advantage."}
 }

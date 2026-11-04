@@ -37,7 +37,7 @@ func _ready() -> void:
 	town_button.pressed.connect(_back_to_town)
 	gear_button.add_sibling(town_button)
 	add_child(gear_window)
-	gear_window.closed.connect(_update_sidebar)
+	gear_window.closed.connect(_on_window_closed)
 	_update_sidebar()
 	_show_doors()
 
@@ -54,7 +54,7 @@ func _show_doors() -> void:
 		_add_card(door.name, door.type, door.description, _enter.bind(door.type))
 
 
-## Clicked a door. Rest asks Rest or Train first; Shop and Event aren't built yet, so they go straight to battle.
+## Clicked a door. Rest asks Rest or Train first, Shop opens the Peddler's Cart; Event isn't built yet. All end in a battle.
 func _enter(type: String) -> void:
 	Run.room_type = type
 	match type:
@@ -62,7 +62,10 @@ func _enter(type: String) -> void:
 			_show_rest()
 			return
 		"shop":
-			Run.room_note = "The peddler's cart is packed up for now. An enemy jumps out!"
+			Run.room_note = "You leave the peddler's cart behind. Down the road, an enemy jumps out!"
+			Peddler.open_cart()
+			gear_window.open(GearWindow.Mode.PEDDLER)  # closing it ("Leave the cart") starts the battle
+			return
 		"event":
 			Run.room_note = "Nobody's there anymore, but something is waiting for you..."
 		"elite":
@@ -135,6 +138,13 @@ func _clear_doors() -> void:
 	for card in %Doors.get_children():
 		%Doors.remove_child(card)
 		card.queue_free()
+
+
+func _on_window_closed() -> void:
+	if gear_window.mode == GearWindow.Mode.PEDDLER:
+		_to_battle()
+	else:
+		_update_sidebar()
 
 
 func _back_to_town() -> void:

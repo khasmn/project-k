@@ -1,6 +1,7 @@
 {
 	"blacksmith": {
 		"name": "Ladis Washrum",
+		"portrait": "blacksmith",
 		"greet": [
 			"Bring me scrap and coin, and I'll make you something fine.",
 			"Mind the sparks. What are we making today?",
@@ -12,5 +13,18 @@
 		"upgrade2": ["Two steps at once! The metal liked you today."],
 		"fail": ["Bah! The metal fought back. Your scrap's gone, but the piece is safe.", "Not today. The forge is moody."],
 		"down": ["Ach... a crack. It's a step weaker now. Sorry, friend."]
+	},
+	"peddler": {
+		"name": "Pip Wanderwick",
+		"portrait": "peddler",
+		"greet": [
+			"Step right up! Everything's one of a kind, and none of it's stolen. Mostly.",
+			"Ah, a customer! Have a look, have a look.",
+			"Fresh from three kingdoms away. Don't ask which three."
+		],
+		"buy": ["A fine choice! You've got an eye for quality.", "Pleasure doing business!", "Take good care of that one."],
+		"haggle_win": ["Oof, you drive a hard bargain. Fine, fine, a quarter off!"],
+		"haggle_fail": ["Hah! Nice try, friend. Prices stay as they are."],
+		"haggle_bad": ["Insulting! For that, prices just went up."]
 	}
 }

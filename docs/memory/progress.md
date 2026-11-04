@@ -31,6 +31,12 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 
 ## Session log (newest first)
 
+### 2026-11-05 – Peddler's Cart (feature/peddler-cart)
+- Gear upgrades PR #41 merged (blacksmith named Ladis Washrum).
+- Peddler's Cart: Pip Wanderwick, 4 random offers, haggling with Charisma, 3 new potions usable in fights.
+- Play tool: "leave" closes the cart. New check tests/test_peddler.gd.
+- Next: the Farm (animal companions), 3 lives, events.
+
 ### 2026-11-05 – Gear upgrades (feature/gear-upgrades)
 - Blacksmith PR #40 merged. Upgrades +1 to +3 with d20 + Luck, fail / -1 on nat 1 / +2 on beating the DC by 10.
 - Ladis Washrum (dwarf NPC portrait, talk lines), Forge new / Upgrade tabs, anvil cutscene + Settings switch.

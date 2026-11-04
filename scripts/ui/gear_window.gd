@@ -1,19 +1,19 @@
 class_name GearWindow
 extends Control
-## One window for the Shop (buy and sell), the GEAR screen (wear and take off) and the Blacksmith (forge and
-## upgrade, with Ladis the dwarf talking above the lists and a ForgeScene cutscene after each try),
+## One window for the Shop (buy and sell), the GEAR screen (wear and take off), the Blacksmith (forge and
+## upgrade, with a ForgeScene cutscene after each try) and the Peddler's Cart (random offers, haggling).
+## The Blacksmith and the Peddler have their NPC talking above the lists (data/npcs.json),
 ## with the hero in the middle so you see the gear on them. Built in code; the town and path screens add one.
 ## It covers the whole screen with a dark backdrop, so nothing behind it can be clicked while it's open.
 
 signal closed
 
-enum Mode { SHOP, GEAR, FORGE }
+enum Mode { SHOP, GEAR, FORGE, PEDDLER }
 
 const BOX: StyleBox = preload("res://scenes/ui/gold_box.tres")
 const TAB: StyleBox = preload("res://scenes/ui/gold_tab.tres")
 const TAB_TEXT: Color = Color(0.12, 0.09, 0.04)  # dark text on the gold tab, like the battle screen
 const POTION: String = "healing_potion"
-const POTION_PRICE: int = 10
 const PREVIEW_SIZE: int = 160
 const FONT_SIZE: int = 16
 const ICON_SIZE: int = 32  # item pictures in the lists (16x16 art shown 2x)
@@ -22,14 +22,19 @@ const SLOT_NAMES: Dictionary = {"helmet": "Helmet", "armor": "Armor", "weapon": 
 	"jewelry1": "Jewelry", "jewelry2": "Jewelry"}
 ## GEAR page: which slot boxes stand left and right of the hero.
 const SLOT_SIDES: Array = [["helmet", "armor", "weapon"], ["offhand", "jewelry1", "jewelry2"]]
-const TITLES: Array[String] = ["SHOP", "GEAR", "BLACKSMITH"]
+const TITLES: Array[String] = ["SHOP", "GEAR", "BLACKSMITH", "PEDDLER'S CART"]
+const NPCS: Dictionary = {Mode.FORGE: "blacksmith", Mode.PEDDLER: "peddler"}  # modes with an NPC and framed boxes
 const FORGE_SECTIONS: Dictionary = {"basic": "BASIC RECIPES", "blueprint": "BLUEPRINTS (dropped by monsters)",
 	"starmetal": "STARMETAL (1 Shard each, the boss drops them)"}
 
 var mode: Mode = Mode.SHOP
-var forge_text: String = ""  # the last forge or upgrade result, shown until the window closes
+var forge_text: String = ""  # the last forge, upgrade, haggle or buy result, shown until the window closes
 var upgrading: bool = false  # Blacksmith tab: false = forge new gear, true = upgrade gear you have
 var npc: Dictionary = {}
+var portrait: TextureRect = TextureRect.new()
+var npc_tab: Label
+var right_tab: Label
+var close_button: Button
 var npc_row: HBoxContainer = HBoxContainer.new()
 var talk: Label = Label.new()
 var scene: ForgeScene = ForgeScene.new()
@@ -67,9 +72,6 @@ func _ready() -> void:
 	title.add_theme_font_size_override("font_size", 22)
 	title.add_theme_color_override("font_color", UI.GOLD)
 	rows.add_child(title)
-	npc = Run.data("npcs").blacksmith
-	var portrait: TextureRect = TextureRect.new()
-	portrait.texture = load("res://assets/sprites/npc/blacksmith.png")
 	portrait.custom_minimum_size = Vector2(96, 96)
 	portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	npc_row.add_child(portrait)
@@ -78,7 +80,8 @@ func _ready() -> void:
 	talk.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	talk.add_theme_font_size_override("font_size", 17)
 	npc_row.add_child(talk)
-	npc_box = _section(npc_row, npc.name.to_upper())
+	npc_box = _section(npc_row, "")
+	npc_tab = npc_box.get_child(0).get_child(0)
 	rows.add_child(npc_box)
 	var columns: HBoxContainer = HBoxContainer.new()
 	columns.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -96,11 +99,14 @@ func _ready() -> void:
 	scroll.add_child(left)
 	list_box = _section(scroll, "FORGE")
 	list_tab = list_box.get_child(0).get_child(0)
-	for column in [list_box, slots_left, _section(middle, "HERO"), slots_right, _section(right, "MATERIALS")]:
+	var right_box: VBoxContainer = _section(right, "MATERIALS")
+	right_tab = right_box.get_child(0).get_child(0)
+	for column in [list_box, slots_left, _section(middle, "HERO"), slots_right, right_box]:
 		columns.add_child(column)
 	right.custom_minimum_size.x = 280
 	middle.custom_minimum_size.x = 220
-	rows.add_child(UI.menu_button("Close", _close))
+	close_button = UI.menu_button("Close", _close)
+	rows.add_child(close_button)
 	add_child(scene)
 	hide()
 
@@ -109,7 +115,12 @@ func open(as_mode: Mode) -> void:
 	mode = as_mode
 	forge_text = ""
 	upgrading = false
-	_say("greet")
+	if mode in NPCS:
+		npc = Run.data("npcs")[NPCS[mode]]
+		portrait.texture = load("res://assets/sprites/npc/%s.png" % npc.portrait)
+		npc_tab.text = npc.name.to_upper()
+		_say("greet")
+	close_button.text = "   Leave the cart (on to the battle)" if mode == Mode.PEDDLER else "   Close"
 	refresh()
 	show()
 
@@ -119,10 +130,11 @@ func refresh() -> void:
 		for old in column.get_children():
 			old.queue_free()
 	list_box.visible = mode != Mode.GEAR
-	npc_box.visible = mode == Mode.FORGE
+	npc_box.visible = mode in NPCS
+	right_tab.text = "YOUR BAG" if mode == Mode.PEDDLER else "MATERIALS"
 	for section: Array in sections:
-		section[0].visible = mode == Mode.FORGE
-		section[1].add_theme_stylebox_override("panel", BOX if mode == Mode.FORGE else no_box)
+		section[0].visible = mode in NPCS
+		section[1].add_theme_stylebox_override("panel", BOX if mode in NPCS else no_box)
 	slots_left.visible = mode == Mode.GEAR
 	slots_right.visible = mode == Mode.GEAR
 	title.text = "%s      Gold %d" % [TITLES[mode], Run.gold]
@@ -133,12 +145,14 @@ func refresh() -> void:
 		Mode.SHOP: _show_shop()
 		Mode.GEAR: _show_gear()
 		Mode.FORGE: _show_forge()
+		Mode.PEDDLER: _show_peddler()
 
 
 func _show_shop() -> void:
 	_header(left, "BUY")
-	var potion: Button = _button(left, "Healing Potion  %dg  (have %d)" % [POTION_PRICE, Run.items.get(POTION, 0)], _buy_potion, POTION)
-	potion.disabled = Run.gold < POTION_PRICE
+	var price: int = Run.data("items")[POTION].price
+	var potion: Button = _button(left, "Healing Potion  %dg  (have %d)" % [price, Run.items.get(POTION, 0)], _buy_potion, POTION)
+	potion.disabled = Run.gold < price
 	var recipes: Dictionary = Run.data("recipes")
 	for id: String in Run.data("gear"):
 		if Gear.fits(id) and not recipes.has(id):  # forged gear isn't sold
@@ -164,6 +178,46 @@ func _show_gear() -> void:
 		wear.disabled = not Gear.fits(item.id)
 	if Run.bag.is_empty():
 		_header(right, "Empty. Buy gear at the Shop.")
+
+
+## 4 random offers (Peddler), a Haggle button, and what you carry on the right.
+func _show_peddler() -> void:
+	list_tab.text = "OFFERS"
+	var haggle: Button = UI.menu_button("Haggle (d20 + Charisma %+d vs DC %d)" % [Run.hero.charisma, Peddler.HAGGLE_DC], _haggle, 18)
+	haggle.disabled = Peddler.haggled
+	left.add_child(haggle)
+	for offer in Peddler.offers:
+		var about: String = Gear.bonus_text(Gear.piece(offer.id, offer.grade)) if offer.kind == "gear" else (
+			Run.data("items")[offer.id].description if offer.kind == "item" else "material")
+		var button: Button = _button(left, "%s  %dg\n%s" % [Peddler.title(offer), Peddler.price(offer), about], _buy_offer.bind(offer), offer.id)
+		if offer.kind == "gear":
+			button.add_theme_color_override("font_color", Gear.GRADES[offer.grade][3])
+		button.disabled = not Peddler.can_buy(offer)
+	if Peddler.offers.is_empty():
+		_header(left, "Sold out!")
+	if forge_text:
+		_header(right, forge_text)
+	for id: String in Run.items:
+		_line(right, "%s  x%d" % [Run.data("items")[id].name, Run.items[id]], id)
+	for item in Run.bag:
+		_line(right, Gear.title(item), item.id).modulate = Gear.color(item)
+	for material: String in Run.materials:
+		if Run.materials[material] > 0:
+			_line(right, "%s  x%d" % [Run.data("materials")[material].name, Run.materials[material]], material)
+
+
+func _haggle() -> void:
+	var result: Dictionary = Peddler.haggle()
+	forge_text = result.text
+	_say(result.outcome)
+	refresh()
+
+
+func _buy_offer(offer: Dictionary) -> void:
+	Peddler.buy(offer)
+	forge_text = "Bought %s." % Peddler.title(offer)
+	_say("buy")
+	refresh()
 
 
 ## Two tabs: Forge (recipes) and Upgrade (gear you have). Materials and the last result on the right.
@@ -273,7 +327,7 @@ func _act(action: Callable, what: Variant) -> void:
 
 
 func _buy_potion() -> void:
-	Run.gold -= POTION_PRICE
+	Run.gold -= Run.data("items")[POTION].price
 	Run.items[POTION] = Run.items.get(POTION, 0) + 1
 	refresh()
 
