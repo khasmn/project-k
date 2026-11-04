@@ -5,6 +5,7 @@ if a decision changes, add a new entry that says what it replaces.
 
 | Date | Decision | Why |
 | --- | --- | --- |
+| 2026-11-04 | Rat King redrawn as one big scary rat (no crown): hunched, spiky matted fur, many scars, torn ear, glowing red eye, yellow fangs, claws; Giant Rat colors. Replaces the three-rat knot | Kha's request |
 | 2026-11-04 | Dire Wolf redrawn: slate blue-grey, big spiky mane, bushy tail, prowling with a paw raised, calm amber eye (inspired by a Fear & Hunger wolf, made less scary); normal Wolf unchanged | Kha's reference |
 | 2026-11-04 | Boss art: elites on 48x48, the Bandit Chief on 64x64, shown at the same pixel scale and standing on the same floor; each boss is a very different design from its normal monster (Rat King = three of Kha's rats knotted by the tails) | Kha's choices; .pxo stays as the Pixelorama source, the game reads the exported PNG strip |
 | 2026-11-04 | Wolf and Skeleton sprites; wolves wear a collar when a Bandit or Bandit Captain is in the same fight (enemies.json "sprite_with": {monster id: sprite}) | Kha's idea: the bandits' tamed wolves |
