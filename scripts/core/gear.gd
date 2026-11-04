@@ -3,13 +3,17 @@ class_name Gear
 ## Run.bag (ids you carry) and Run.gear (slot -> id you wear). Worn gear adds its "stats" to the hero
 ## and shows on the hero sprite (helmet, armor, shield; a weapon gets a "tint").
 
-const SLOTS: Array[String] = ["helmet", "armor", "weapon", "offhand", "jewelry1", "jewelry2"]
 const SELL_RATE: float = 0.5  # gear sells back for half its price
 const STAT_NAMES: Dictionary = {"defense": "Defense", "max_hp": "Max HP", "speed": "Speed"}
 
 
 static func entry(id: String) -> Dictionary:
 	return Run.data("gear")[id]
+
+
+## The 16x16 picture of a gear piece or an item (assets/sprites/items/<id>.png).
+static func icon(id: String) -> Texture2D:
+	return load("res://assets/sprites/items/%s.png" % id)
 
 
 ## Some gear is for certain classes only ("classes"); everything else fits anyone.

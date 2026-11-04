@@ -36,6 +36,7 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 - Town Shop: buy potions and gear, sell gear for half. GEAR window in town and on the path screen.
 - Start gold 30. Copper Ring gives +1 Speed (not Luck: Luck does nothing in fights yet).
 - New check tests/test_gear.gd.
+- Item pictures (16x16) on Shop lines; GEAR page has framed slot boxes in two columns beside the hero (Kha's pick).
 
 ### 2026-11-04 – Commands and cooldowns (update/commands-cooldowns)
 - Info button removed (hover shows monster info); Meditate/Concentrate is a COMMAND button; Flee stays in the skill list.

@@ -26,7 +26,7 @@ static var points: int = 0  # unspent stat points
 static var gold: int = 0
 static var items: Dictionary = {}  # item id -> how many, see data/items.json
 static var bag: Array[String] = []  # gear you carry but don't wear (data/gear.json ids)
-static var gear: Dictionary = {}  # slot -> gear id you wear, see Gear.SLOTS
+static var gear: Dictionary = {}  # slot (helmet, armor, weapon, offhand, jewelry1, jewelry2) -> gear id you wear
 
 
 static func start(draft: CharacterDraft) -> void:

@@ -11,8 +11,12 @@ const POTION: String = "healing_potion"
 const POTION_PRICE: int = 10
 const PREVIEW_SIZE: int = 160
 const FONT_SIZE: int = 16
+const ICON_SIZE: int = 32  # item pictures in the lists (16x16 art shown 2x)
+const SLOT_SIZE: int = 72  # the boxes around the hero on the GEAR page
 const SLOT_NAMES: Dictionary = {"helmet": "Helmet", "armor": "Armor", "weapon": "Weapon", "offhand": "Shield",
 	"jewelry1": "Jewelry", "jewelry2": "Jewelry"}
+## GEAR page: which slot boxes stand left and right of the hero.
+const SLOT_SIDES: Array = [["helmet", "armor", "weapon"], ["offhand", "jewelry1", "jewelry2"]]
 
 var shop: bool = false
 var title: Label = Label.new()
@@ -20,6 +24,8 @@ var sprite: HeroSprite = HeroSprite.new()
 var stats: Label = Label.new()
 var left: VBoxContainer = VBoxContainer.new()
 var right: VBoxContainer = VBoxContainer.new()
+var slots_left: VBoxContainer = VBoxContainer.new()
+var slots_right: VBoxContainer = VBoxContainer.new()
 
 
 func _ready() -> void:
@@ -50,9 +56,11 @@ func _ready() -> void:
 	middle.add_child(sprite)
 	stats.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	middle.add_child(stats)
-	for column in [left, middle, right]:
-		column.custom_minimum_size.x = 280 if column != middle else 220
+	for column in [left, slots_left, middle, slots_right, right]:
 		columns.add_child(column)
+	left.custom_minimum_size.x = 400
+	right.custom_minimum_size.x = 280
+	middle.custom_minimum_size.x = 220
 	rows.add_child(UI.menu_button("Close", _close))
 	hide()
 
@@ -65,38 +73,39 @@ func open(as_shop: bool) -> void:
 
 
 func refresh() -> void:
-	for column in [left, right]:
+	for column in [left, right, slots_left, slots_right]:
 		for old in column.get_children():
 			old.queue_free()
+	left.visible = shop
+	slots_left.visible = not shop
+	slots_right.visible = not shop
 	title.text = "%s      Gold %d" % ["SHOP" if shop else "GEAR", Run.gold]
 	sprite.show_look(Run.hero_look)
 	var hero: Combatant = Run.hero
 	stats.text = "HP %d / %d\n%s %d   Defense %d   Speed %d" % [hero.hp, hero.max_hp, hero.attack_name, hero.attack, hero.defense, hero.speed]
 	if shop:
 		_header(left, "BUY")
-		var potion: Button = _button(left, "Healing Potion  %dg  (have %d)" % [POTION_PRICE, Run.items.get(POTION, 0)], _buy_potion)
+		var potion: Button = _button(left, "Healing Potion  %dg  (have %d)" % [POTION_PRICE, Run.items.get(POTION, 0)], _buy_potion, POTION)
 		potion.disabled = Run.gold < POTION_PRICE
 		for id: String in Run.data("gear"):
 			if Gear.fits(id):
 				var buy: Button = _button(left, "%s  %dg  (%s)" % [Gear.entry(id).name, Gear.entry(id).price, Gear.bonus_text(id)],
-					_act.bind(Gear.buy, id))
+					_act.bind(Gear.buy, id), id)
 				buy.tooltip_text = Gear.bonus_text(id)
 				buy.disabled = Run.gold < int(Gear.entry(id).price)
 		_header(right, "SELL (your bag)")
 		for id in Run.bag:
-			_button(right, "%s  +%dg" % [Gear.entry(id).name, Gear.sell_price(id)], _act.bind(Gear.sell, id))
+			_button(right, "%s  +%dg" % [Gear.entry(id).name, Gear.sell_price(id)], _act.bind(Gear.sell, id), id)
 		if Run.bag.is_empty():
 			_header(right, "Nothing to sell. Take gear off in GEAR first.")
 	else:
-		_header(left, "WEARING (click to take off)")
-		for slot in Gear.SLOTS:
-			var id: String = Run.gear.get(slot, "")
-			var worn: Button = _button(left, "%s: %s" % [SLOT_NAMES[slot], Gear.entry(id).name if id else "-"], _act.bind(Gear.take_off, slot))
-			worn.disabled = id == ""
-			worn.tooltip_text = Gear.bonus_text(id) if id else ""
+		for slot in SLOT_SIDES[0]:
+			_slot_box(slots_left, slot)
+		for slot in SLOT_SIDES[1]:
+			_slot_box(slots_right, slot)
 		_header(right, "BAG (click to wear)")
 		for id in Run.bag:
-			var wear: Button = _button(right, "%s  (%s)" % [Gear.entry(id).name, Gear.bonus_text(id)], _act.bind(Gear.wear, id))
+			var wear: Button = _button(right, "%s  (%s)" % [Gear.entry(id).name, Gear.bonus_text(id)], _act.bind(Gear.wear, id), id)
 			wear.disabled = not Gear.fits(id)
 		if Run.bag.is_empty():
 			_header(right, "Empty. Buy gear at the Shop.")
@@ -122,10 +131,37 @@ func _header(column: VBoxContainer, text: String) -> void:
 	column.add_child(label)
 
 
-func _button(column: VBoxContainer, text: String, on_pressed: Callable) -> Button:
+func _button(column: VBoxContainer, text: String, on_pressed: Callable, icon_id: String) -> Button:
 	var button: Button = UI.menu_button(text, on_pressed, FONT_SIZE)
+	button.icon = Gear.icon(icon_id)
+	button.expand_icon = true  # scale the 16x16 picture up to the line height
+	button.add_theme_constant_override("icon_max_width", ICON_SIZE)
 	column.add_child(button)
 	return button
+
+
+## A framed box with the picture of what's worn in this slot (empty if nothing). Click it to take that off.
+func _slot_box(column: VBoxContainer, slot: String) -> void:
+	var id: String = Run.gear.get(slot, "")
+	var box: Button = Button.new()
+	for state in ["normal", "hover", "pressed", "disabled", "focus"]:
+		box.add_theme_stylebox_override(state, BOX)
+	box.custom_minimum_size = Vector2(SLOT_SIZE, SLOT_SIZE)
+	box.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	box.expand_icon = true
+	box.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	box.disabled = id == ""
+	if id:
+		box.icon = Gear.icon(id)
+		box.tooltip_text = "%s: %s\nClick to take off" % [Gear.entry(id).name, Gear.bonus_text(id)]
+		box.pressed.connect(_act.bind(Gear.take_off, slot))
+		UI.add_cursor(box)
+	column.add_child(box)
+	var label: Label = Label.new()
+	label.text = SLOT_NAMES[slot]
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.add_theme_font_size_override("font_size", 13)
+	column.add_child(label)
 
 
 func _close() -> void:

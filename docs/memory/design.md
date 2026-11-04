@@ -229,8 +229,9 @@ the hero; currency earned still unlocks content for future runs.
 - Built 2026-11-04 (step 2, Shop and gear): start with 30 gold. Town Shop sells Healing Potion (10g) and gear
   (`data/gear.json`, 11 pieces: Leather Cap, Iron Helm, Leather Armor, Chainmail, one weapon per class, Wooden Shield
   for Warrior/Brawler, Copper Ring +1 Speed, Bone Charm +4 Max HP). Sell gear back for half price.
-  GEAR window (town "Gear" button, path screen GEAR button): 6 slots (helmet, armor, weapon, shield, 2 jewelry)
-  and a bag; click to wear or take off. Helmet, armor and shield show on the hero sprite; a weapon tints the class weapon.
+  GEAR window (town "Gear" button, path screen GEAR button): 6 framed slot boxes with item pictures, 3 left of
+  the hero (helmet, armor, weapon) and 3 right (shield, 2 jewelry), and a bag; click to wear or take off.
+  Every gear piece and item has a 16x16 picture in `assets/sprites/items/<id>.png`, shown on Shop and bag lines. Helmet, armor and shield show on the hero sprite; a weapon tints the class weapon.
   Rules in `scripts/core/gear.gd`, window in `scripts/ui/gear_window.gd`. Two-handed weapons not yet.
 
 ## Attack animations (Kha 2026-11-04)
