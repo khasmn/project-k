@@ -31,6 +31,11 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 
 ## Session log (newest first)
 
+### 2026-11-04 – Town, step 1 (feature/city)
+- Town screen after character creation: animated sunset art, clickable Farm, Blacksmith, Inn, Shop; Leave town starts the run.
+- Inn heals to full; the other buildings are "coming soon". Menu and creation pictures now animate gently.
+- Next town steps: Shop (buy potions), Blacksmith + gear slots, Farm, lives (town after 1st/2nd death).
+
 ### 2026-11-04 – HP and Energy bars (update/hp-energy-bars)
 - Red HP bar over each monster on the battlefield; gold Energy bar (blue Mana for the Mage) in the HERO box.
 - Mage's Energy is named Mana ("energy_name" in classes.json); skill costs show in Energy or Mana.
