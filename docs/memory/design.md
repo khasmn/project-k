@@ -249,7 +249,12 @@ the hero; currency earned still unlocks content for future runs.
 - BACK TO TOWN (path screen): restart the chapter at room 1, keep hero, level, gear, gold and materials.
   After the boss: Back to town, or Next chapter (coming soon).
 - Peddler's Cart (path Shop door, later): its own random stock, different from the town Shop (Kha 2026-11-04).
-- Next: gear upgrades +1 to +3 at the Blacksmith (materials + gold, no roll).
+- Upgrades (built 2026-11-05): +1 to +3, each +1 adds +1 to the main stat. d20 + Luck vs DC 6 / 10 / 14.
+  Cost 2/3/4 of the piece's "upgrade" material (gear.json) + 10/20/30 gold. Fail: cost gone, piece safe.
+  Natural 1: also -1 level. Beat the DC by 10+: +2 levels (Kha: high Luck can give +2). Natural 20 always works.
+- The Blacksmith is Torvik Emberbeard, a dwarf (portrait + talk lines in data/npcs.json). After each forge or
+  upgrade an anvil cutscene plays (3 slow hammer strikes, then the piece in its grade color; click to skip).
+  Settings switch "Forge cutscene".
 
 ## Attack animations (Kha 2026-11-04)
 

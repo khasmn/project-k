@@ -21,9 +21,11 @@ func _ready() -> void:
 	%FullscreenCheck.button_pressed = Settings.fullscreen
 	%DiceCheck.button_pressed = Settings.animate_dice
 	%AttackCheck.button_pressed = Settings.animate_attacks
+	%ForgeCheck.button_pressed = Settings.animate_forge
 	%AnimateCheck.toggled.connect(func(on: bool) -> void: Settings.animate_background = on; Settings.save_file())
 	%DiceCheck.toggled.connect(func(on: bool) -> void: Settings.animate_dice = on; Settings.save_file())
 	%AttackCheck.toggled.connect(func(on: bool) -> void: Settings.animate_attacks = on; Settings.save_file())
+	%ForgeCheck.toggled.connect(func(on: bool) -> void: Settings.animate_forge = on; Settings.save_file())
 	%FullscreenCheck.toggled.connect(func(on: bool) -> void: Settings.fullscreen = on; Settings.save_file())
 	%Options.add_child(UI.menu_button("Back", _show_settings.bind(false)))
 

@@ -1,0 +1,16 @@
+{
+	"blacksmith": {
+		"name": "Torvik Emberbeard",
+		"greet": [
+			"Bring me scrap and coin, and I'll make you something fine.",
+			"Mind the sparks. What are we making today?",
+			"Steel remembers every hammer blow. Let's give it good ones."
+		],
+		"forge": ["Hah! Finest work this side of the mountain.", "There. Wear it with pride.", "Still warm. Try not to lose it."],
+		"great": ["By my beard... I haven't made one like that in years!", "That one's going in the song books."],
+		"upgrade": ["Stronger now. Hit things with it.", "A few more blows and it sings."],
+		"upgrade2": ["Two steps at once! The metal liked you today."],
+		"fail": ["Bah! The metal fought back. Your scrap's gone, but the piece is safe.", "Not today. The forge is moody."],
+		"down": ["Ach... a crack. It's a step weaker now. Sorry, friend."]
+	}
+}

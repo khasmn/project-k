@@ -52,6 +52,26 @@ func _init() -> void:
 	_check(Run.bag.back().grade == Gear.EPIC, "a natural 20 should be at least Epic")
 	_check(not Gear.known("bandit_hood") and not Gear.known("steel_sword"), "blueprints unknown, other classes hidden")
 
+	# Upgrades: DC 6/10/14 with d20 + Luck, natural 1 drops a level, beating the DC by 10 gives two levels.
+	var worn_helm: Dictionary = Gear.piece("iron_helm")
+	Run.bag.append(worn_helm)
+	Gear.wear(worn_helm)
+	Run.materials = {"iron_scrap": 20}
+	Run.gold = 200
+	var before: int = hero.defense
+	Dice.forced_rolls = [6]
+	_check(Gear.upgrade(worn_helm).outcome == "upgrade" and worn_helm.plus == 1 and hero.defense == before + 1, "a worn upgrade should raise Defense")
+	_check(Run.materials.iron_scrap == 18 and Run.gold == 190, "upgrade +0 -> +1 costs 2 scrap and 10 gold")
+	Dice.forced_rolls = [9]
+	_check(Gear.upgrade(worn_helm).outcome == "fail" and worn_helm.plus == 1, "9 vs DC 10 should fail and keep the level")
+	Dice.forced_rolls = [1]
+	_check(Gear.upgrade(worn_helm).outcome == "down" and worn_helm.plus == 0 and hero.defense == before, "a natural 1 drops a level")
+	Dice.forced_rolls = [16]
+	_check(Gear.upgrade(worn_helm).outcome == "upgrade2" and worn_helm.plus == 2, "beating DC 6 by 10 gives two levels")
+	Dice.forced_rolls = [20]
+	Gear.upgrade(worn_helm)
+	_check(worn_helm.plus == 3 and not Gear.can_upgrade(worn_helm) and Gear.title(worn_helm) == "Iron Helm +3", "+3 is the max")
+
 	# Loot: material always, blueprint on a high enough d20.
 	var wolf: Combatant = Combatant.new(Run.data("enemies").wolf)
 	Dice.forced_rolls = [20]

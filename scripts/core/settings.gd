@@ -8,6 +8,7 @@ static var animate_background: bool = true
 static var fullscreen: bool = false
 static var animate_dice: bool = true
 static var animate_attacks: bool = true
+static var animate_forge: bool = true  # the Blacksmith anvil cutscene
 
 
 static func load_file() -> void:
@@ -17,6 +18,7 @@ static func load_file() -> void:
 	fullscreen = file.get_value("options", "fullscreen", false)
 	animate_dice = file.get_value("options", "animate_dice", true)
 	animate_attacks = file.get_value("options", "animate_attacks", true)
+	animate_forge = file.get_value("options", "animate_forge", true)
 	_apply()
 
 
@@ -26,6 +28,7 @@ static func save_file() -> void:
 	file.set_value("options", "fullscreen", fullscreen)
 	file.set_value("options", "animate_dice", animate_dice)
 	file.set_value("options", "animate_attacks", animate_attacks)
+	file.set_value("options", "animate_forge", animate_forge)
 	file.save(PATH)
 	_apply()
 
