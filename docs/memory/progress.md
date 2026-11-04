@@ -31,6 +31,12 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 
 ## Session log (newest first)
 
+### 2026-11-04 – Attack animations (feature/attack-animations)
+- Hero attack and skill strips for all 4 classes, attack strips for all 13 monsters, 20 effect strips in assets/sprites/fx/.
+- scripts/combat/fight_fx.gd plays effects, projectiles, hit flash and damage numbers; combat_screen._animate wires every attack and all 15 skills.
+- Animation names live in classes.json and skills.json. New Settings switch "Attack animation" (off in the play tool).
+- Next: Kha tests in game; then the make-attack-animation Claude skill; then the city and gear.
+
 ### 2026-11-04 – Skills, Energy and status effects
 - data/skills.json; classes and monsters name their skill. Skill button in COMMAND, Energy in the HERO box, statuses on rows and in Info.
 - Combatant: energy, shield, statuses, afflict (saves), use_skill; monsters tick poison/burn and can be stunned.
