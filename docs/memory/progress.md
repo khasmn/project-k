@@ -31,6 +31,11 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 
 ## Session log (newest first)
 
+### 2026-11-05 – Farm step 2: eggs (feature/farm-eggs)
+- Farm PR #44 merged.
+- Owl, Raven and Drake eggs drop from wolves/skeletons, bandits and the Bandit Chief; they hatch at the Farm.
+- New skills Keen Sight, Snatch, Fire Breath; Release button in the barn; owl, raven, drake art.
+
 ### 2026-11-05 – Farm step 1 (feature/farm)
 - Boss background PR #43 merged.
 - Farm window (farmer Marta Hayes): buy Puppy, Chick, Piglet; name them; pick one to bring.

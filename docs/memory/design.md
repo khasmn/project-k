@@ -273,7 +273,12 @@ the hero; currency earned still unlocks content for future runs.
   At 0 HP it runs back to the farm; next fight it's back at full HP.
 - It gets the monsters' EXP after each won fight: Young at 20 EXP, Adult at 60 (bigger art and stats).
 - Animals belong to the hero like gear: kept on Back to town, a new hero starts with an empty farm.
-- Step 2 (later): eggs from loot that hatch into rarer animals (Owl, Raven, Drake).
+- Eggs (step 2): a beaten monster may drop its egg on a loot d20 (normal 20, elite 17+, boss 15+).
+  Owl Egg: wolves, skeletons (and their elites) -> Owlet/Owl, Keen Sight (hero's next attack has advantage).
+  Raven Egg: bandits (and the captain) -> Raven, Snatch (attack, a hit steals d3 x power gold).
+  Drake Egg: the Bandit Chief -> Drake, Fire Breath (all monsters, Speed save, fail = damage + burn).
+  Eggs count as barn places; with a full barn the egg rolls away. Eggs hatch as soon as you open the Farm.
+  Release button lets an animal go to make room.
 
 ### Boss background (Kha 2026-11-05)
 

@@ -1,5 +1,6 @@
 class_name Farm
 ## The Farm in town: buy baby animals (data/animals.json), name them, pick one to come along.
+## Some monsters drop eggs (loot "egg"); an egg hatches the next time you open the Farm.
 ## The companion fights on its own after the hero and grows with every won fight: Baby -> Young -> Adult.
 ## An animal is {"kind", "name", "exp"}; it lives in Run.animals.
 
@@ -7,14 +8,51 @@ const MAX_ANIMALS: int = 4
 const GROW_EXP: Array[int] = [20, 60]  # EXP to become Young, then Adult
 
 
+## A beaten monster may drop its egg: loot d20 >= "egg_roll". Eggs need a free barn place. Returns a log line or "".
+static func egg_drop(foe: Combatant) -> String:
+	var kind: String = foe.loot.get("egg", "")
+	if not kind:
+		return ""
+	var rolled: int = Dice.roll(20)
+	if rolled < int(foe.loot.egg_roll):
+		return ""
+	var egg: String = Run.data("animals")[kind].egg
+	if Run.animals.size() + Run.eggs.size() >= MAX_ANIMALS:
+		return "Egg roll %d: %s dropped a %s, but your barn is full. It rolls away." % [rolled, foe.display_name, egg]
+	Run.eggs.append(kind)
+	return "Egg roll %d: %s dropped a %s! It will hatch at the Farm." % [rolled, foe.display_name, egg]
+
+
+## Every egg you carry hatches into a baby (opening the Farm). Returns the new animals.
+static func hatch() -> Array[Dictionary]:
+	var born: Array[Dictionary] = []
+	for kind in Run.eggs:
+		born.append(_add(kind))
+	Run.eggs.clear()
+	return born
+
+
+## Let an animal go to make room; the one coming along stays the same animal.
+static func release(index: int) -> void:
+	Run.animals.remove_at(index)
+	if Run.companion == index:
+		Run.companion = -1
+	elif Run.companion > index:
+		Run.companion -= 1
+
+
 static func can_buy(kind: String) -> bool:
-	return Run.gold >= int(Run.data("animals")[kind].price) and Run.animals.size() < MAX_ANIMALS
+	return Run.gold >= int(Run.data("animals")[kind].price) and Run.animals.size() + Run.eggs.size() < MAX_ANIMALS
 
 
-## Pay, get the baby with a random name; the first animal comes along by itself.
 static func buy(kind: String) -> Dictionary:
+	Run.gold -= int(Run.data("animals")[kind].price)
+	return _add(kind)
+
+
+## A new baby with a random name; the first animal comes along by itself.
+static func _add(kind: String) -> Dictionary:
 	var data: Dictionary = Run.data("animals")[kind]
-	Run.gold -= int(data.price)
 	var animal: Dictionary = {"kind": kind, "name": data.names[Dice.roll(data.names.size(), false) - 1], "exp": 0}
 	Run.animals.append(animal)
 	if Run.companion == -1:

@@ -36,6 +36,8 @@
 			"They're well fed and ready for adventure!"
 		],
 		"buy": ["Treat them kindly and they'll follow you anywhere.", "A fine little one. Give it a good name!"],
+		"hatch": ["Oh! Listen to that tapping... it's hatching!", "Well I never. Look at the little thing!"],
+		"release": ["I'll find them a good meadow. Don't you worry.", "They'll be happy roaming free."],
 		"bring": ["Off you go, then. Bring them back in one piece!", "Good choice. They've been itching for a walk."]
 	}
 }
