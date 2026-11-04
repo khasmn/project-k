@@ -5,7 +5,7 @@ if a decision changes, add a new entry that says what it replaces.
 
 | Date | Decision | Why |
 | --- | --- | --- |
-| 2026-11-04 | Chapter 1 is a deep jungle-like forest: bright with a little grim, day, a giant old tree, pointed leaves (no cloud-like blobs), many trunks, vines, ferns; backgrounds are 384x128 PNGs in assets/backgrounds/ shown 3x | Kha's choice; make-background skill (JRPG style inspiration only, never copied) |
+| 2026-11-04 | Chapter 1 is a deep jungle-like forest: bright with a little grim, day, a giant old tree, pointed leaves (no cloud-like blobs), many trunks, vines, ferns; 5-frame breeze loop stored as a strip of 384x128 frames; backgrounds are 384x128 PNGs in assets/backgrounds/ shown 3x | Kha's choice; make-background skill (JRPG style inspiration only, never copied) |
 | 2026-11-05 | Battle log floats top-left inside a frameless battle area (no box, outlined text, hidden scrollbar) | Kha's reference picture; replaces the BATTLE LOG box |
 | 2026-11-05 | Art in Pixelorama: 32x32, exported as a strip of square frames (assets/sprites/enemies/<id>_idle.png), 6 FPS; enemies.json "sprite" field; nearest filter project-wide | First sprite: Kha's Giant Rat with a 5-frame breathing idle |
 | 2026-11-05 | When sprites exist: battle area is art only; monster info by mouse hover tooltip or an Info command that shows it in the HERO box (tab renamed to the monster) | Kha's plan for later; see design.md "Battle screen once art exists" |
