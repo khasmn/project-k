@@ -6,6 +6,8 @@ if a decision changes, add a new entry that says what it replaces.
 | Date | Decision | Why |
 | --- | --- | --- |
 | 2026-11-04 | Skill cooldown = cost + 2 turns (monsters 2); Meditate moved to COMMAND; Info button removed, hover only | Kha's choices |
+| 2026-11-04 | Farm is for animals that can become companions, not food (replaces "farm = food") | Kha's choice |
+| 2026-11-04 | Town: warm sunset, built step by step (Inn first, others "coming soon"); menu art animated too | Kha's choices |
 | 2026-11-04 | Energy max 7 (was 3), start 1, Mage starts at 3 Mana; Meditate/Concentrate gives +1 for your turn; Flee moved into the skill list | Kha asked: Energy builds up over a fight |
 | 2026-11-04 | Mage's Energy is called Mana (same rules); HP bars over monsters; Energy/Mana bar in HERO box | Kha asked |
 | 2026-11-04 | Skill button opens a list of skills; each class gets a 2nd skill (Iron Guard, Aimed Shot, Frost Bolt, Uppercut) | Kha's choice: Attack stays one click; more choice per class |

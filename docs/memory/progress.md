@@ -34,6 +34,10 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 ### 2026-11-04 – Commands and cooldowns (update/commands-cooldowns)
 - Info button removed (hover shows monster info); Meditate/Concentrate is a COMMAND button; Flee stays in the skill list.
 - Skill cooldowns: cost + 2 turns for heroes, 2 for monsters; the list shows "wait N".
+### 2026-11-04 – Town, step 1 (feature/city)
+- Town screen after character creation: animated sunset art, clickable Farm, Blacksmith, Inn, Shop; Leave town starts the run.
+- Inn heals to full; the other buildings are "coming soon". Menu and creation pictures now animate gently.
+- Next town steps: Shop (buy potions), Blacksmith + gear slots, Farm, lives (town after 1st/2nd death).
 
 ### 2026-11-04 – HP and Energy bars (update/hp-energy-bars)
 - Red HP bar over each monster on the battlefield; gold Energy bar (blue Mana for the Mage) in the HERO box.
