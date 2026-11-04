@@ -260,20 +260,6 @@ theme_override_styles/focus = ExtResource("flat")
 text = "   Info"
 alignment = 0
 
-[node name="FleeButton" type="Button" parent="Margin/VBox/Bottom/Command/Panel/ActionPanel/Buttons"]
-layout_mode = 2
-unique_name_in_owner = true
-theme_override_colors/font_hover_color = Color(1, 0.83, 0.3, 1)
-theme_override_colors/font_disabled_color = Color(1, 1, 1, 0.3)
-theme_override_font_sizes/font_size = 18
-theme_override_styles/normal = ExtResource("flat")
-theme_override_styles/hover = ExtResource("flat")
-theme_override_styles/pressed = ExtResource("flat")
-theme_override_styles/disabled = ExtResource("flat")
-theme_override_styles/focus = ExtResource("flat")
-text = "   Flee"
-alignment = 0
-
 [node name="ItemMenu" type="VBoxContainer" parent="Margin/VBox/Bottom/Command/Panel/ActionPanel"]
 layout_mode = 2
 unique_name_in_owner = true
@@ -330,11 +316,11 @@ custom_minimum_size = Vector2(0, 14)
 theme_override_styles/fill = SubResource("hero_fill")
 show_percentage = false
 
-[node name="HeroEnergyBar" type="ProgressBar" parent="Margin/VBox/Bottom/Hero/Panel/HeroInfo"]
+[node name="HeroEnergyBar" type="HBoxContainer" parent="Margin/VBox/Bottom/Hero/Panel/HeroInfo"]
 layout_mode = 2
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 8)
-show_percentage = false
+custom_minimum_size = Vector2(0, 10)
+theme_override_constants/separation = 3
 
 [node name="HeroHP" type="Label" parent="Margin/VBox/Bottom/Hero/Panel/HeroInfo"]
 layout_mode = 2

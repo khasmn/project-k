@@ -19,15 +19,18 @@ func _init() -> void:
 		for id: String in entry.skills:
 			_check(skills[id].has("cost") and skills[id].has("description"), "hero skill %s without cost" % id)
 
-	# Energy: starts full, a skill costs its cost, +1 each turn up to the max.
+	# Energy: 1 at your first turn (Mage 3 Mana), a skill costs its cost, +1 each turn up to the max.
 	var warrior: Combatant = _fighter("shield_bash", 3)
 	warrior.start_fight()
+	warrior.start_turn()
+	_check(warrior.energy == 1, "first turn Energy should be 1, not %d" % warrior.energy)
+	warrior.start_turn()
+	warrior.start_turn()
 	Dice.forced_rolls = [1]  # a natural 1: miss
 	warrior.use_skill(warrior.skills[0], [_dummy()], [warrior])
 	_check(warrior.energy == 1, "Shield Bash didn't cost 2 Energy")
-	warrior.start_turn()
-	warrior.start_turn()
-	warrior.start_turn()
+	for i in 10:
+		warrior.start_turn()
 	_check(warrior.energy == Combatant.MAX_ENERGY, "Energy went past the max")
 
 	# Shield Bash: a hit and a failed save stun the target; a stunned fighter loses one turn.
@@ -90,7 +93,7 @@ func _init() -> void:
 
 	# A new fight clears Energy, statuses and shields.
 	far.start_fight()
-	_check(far.statuses.is_empty() and far.shield == 0 and far.energy == Combatant.MAX_ENERGY, "start_fight didn't reset")
+	_check(far.statuses.is_empty() and far.shield == 0 and far.energy == far.start_energy - 1, "start_fight didn't reset")
 
 	if failed:
 		quit(1)

@@ -35,7 +35,6 @@ func _ready() -> void:
 	%AttackButton.pressed.connect(_on_attack)
 	%SkillButton.pressed.connect(_open_skills)
 	%DefendButton.pressed.connect(_on_defend)
-	%FleeButton.pressed.connect(_on_flee)
 	%ItemButton.pressed.connect(_open_items)
 	var back: StyleBoxTexture = StyleBoxTexture.new()
 	back.texture = _strip("res://assets/backgrounds/%s.png" % Run.BACKGROUND, BACKGROUND_FRAME,
@@ -71,11 +70,11 @@ func _start_fight() -> void:
 	enemies = Run.enemies()
 	target = enemies[0]
 	hero.start_fight()
-	%FleeButton.visible = not Run.is_boss()
 	%SkillButton.visible = not hero.skills.is_empty()
-	var energy_fill: StyleBoxFlat = StyleBoxFlat.new()
-	energy_fill.bg_color = Color(0.3, 0.7, 1) if hero.energy_name == "Mana" else Color(1, 0.78, 0.3)
-	%HeroEnergyBar.add_theme_stylebox_override("fill", energy_fill)
+	for i in Combatant.MAX_ENERGY:  # one box per point of Energy
+		var box: ColorRect = ColorRect.new()
+		box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		%HeroEnergyBar.add_child(box)
 	for foe in enemies:
 		%EnemyList.add_child(_make_card(foe))
 		var row: Button = UI.menu_button("", _set_target.bind(foe))
@@ -178,7 +177,24 @@ func _open_skills() -> void:
 		button.tooltip_text = "%s You get 1 %s back each turn." % [skill.description, hero.energy_name]
 		button.disabled = hero.energy < int(skill.cost)
 		buttons.append(button)
+	var rest: Button = UI.menu_button("%s (+1)" % ("Meditate" if hero.energy_name == "Mana" else "Concentrate"), _on_meditate)
+	rest.tooltip_text = "Skip your attack to gain 1 extra %s." % hero.energy_name
+	rest.disabled = hero.energy >= Combatant.MAX_ENERGY
+	buttons.append(rest)
+	if not Run.is_boss():
+		var flee: Button = UI.menu_button("Flee", _on_flee)
+		flee.tooltip_text = "d20 + Speed vs 10 + the fastest monster's Speed. Escape = no gold or EXP; fail = you lose your turn."
+		buttons.append(flee)
 	_open_menu(buttons)
+
+
+## Meditate (Concentrate without Mana): the whole turn goes into 1 more Energy.
+func _on_meditate() -> void:
+	_close_menu()
+	_set_buttons_enabled(false)
+	hero.energy = mini(hero.energy + 1, Combatant.MAX_ENERGY)
+	_log("%s focuses: +1 %s." % [hero.display_name, hero.energy_name])
+	_after_action()
 
 
 func _on_skill(skill: Dictionary) -> void:
@@ -318,6 +334,7 @@ func _use_item(id: String, item: Dictionary) -> void:
 
 ## Flee: d20 + Speed vs 10 + the fastest monster's Speed. Escape = no gold or EXP. Fail = you lose your turn.
 func _on_flee() -> void:
+	_close_menu()
 	_set_buttons_enabled(false)
 	var dc: int = FLEE_DC_BASE + _fastest_speed()
 	var result: Dictionary = Dice.check(hero.speed, dc, hero.roll_mode())
@@ -525,8 +542,9 @@ func _update_labels() -> void:
 	%HeroName.text = Run.hero_title
 	%HeroHPBar.max_value = hero.max_hp
 	%HeroHPBar.value = hero.hp
-	%HeroEnergyBar.max_value = Combatant.MAX_ENERGY
-	%HeroEnergyBar.value = hero.energy
+	var full: Color = Color(0.3, 0.7, 1) if hero.energy_name == "Mana" else Color(1, 0.78, 0.3)
+	for i in %HeroEnergyBar.get_child_count():
+		%HeroEnergyBar.get_child(i).color = full if i < hero.energy else Color(0.22, 0.22, 0.27)
 	%HeroHP.text = "HP %d / %d     %s %d / %d" % [hero.hp, hero.max_hp, hero.energy_name, hero.energy, Combatant.MAX_ENERGY]
 	var passives: Array = []
 	for name in hero.passive_names.values():
@@ -579,9 +597,8 @@ func _set_buttons_enabled(enabled: bool) -> void:
 	if not enabled:
 		_show_info(false)
 	%AttackButton.disabled = not enabled
-	%SkillButton.disabled = not enabled or hero.skills.all(func(skill: Dictionary) -> bool: return hero.energy < int(skill.cost))
+	%SkillButton.disabled = not enabled
 	%DefendButton.disabled = not enabled
-	%FleeButton.disabled = not enabled
 	%ItemButton.disabled = not enabled or Run.items.values().all(func(count: int) -> bool: return count == 0)
 
 

@@ -3,7 +3,7 @@ extends RefCounted
 ## One fighter (hero or enemy): stats, HP, passives, and how it attacks.
 
 const DEFEND_BONUS: int = 4
-const MAX_ENERGY: int = 3
+const MAX_ENERGY: int = 7
 const SKILL_CHANCE: int = 5  # a monster uses its skill on a d6 roll of 5 or 6
 
 var display_name: String
@@ -21,7 +21,8 @@ var exp_reward: int = 0
 var gold_reward: int = 0
 var defending: bool = false
 var skills: Array[Dictionary] = []  # from data/skills.json: heroes list "skills", monsters have one "skill"
-var energy: int = MAX_ENERGY  # heroes pay a skill's "cost" in Energy; monsters use theirs by chance
+var start_energy: int = 1  # Energy at your first turn of a fight (Mage: 3 Mana)
+var energy: int = 0  # heroes pay a skill's "cost" in Energy; monsters use theirs by chance
 var shield: int = 0  # absorbs this much damage, then breaks
 var statuses: Dictionary = {}  # "poison"/"burn" -> {"power", "turns"}, "stun" -> true
 
@@ -45,6 +46,7 @@ func _init(data: Dictionary) -> void:
 	attack = int(data.attack)
 	attack_name = data.get("attack_name", "Attack")
 	energy_name = data.get("energy_name", "Energy")
+	start_energy = int(data.get("start_energy", 1))
 	defense = int(data.defense)
 	speed = int(data.speed)
 	damage_die = int(data.damage_die)
@@ -102,7 +104,7 @@ func passive(effect: String) -> String:
 func start_fight() -> void:
 	defending = false
 	lucky_used = false
-	energy = MAX_ENERGY
+	energy = start_energy - 1  # your first turn adds the 1 back
 	shield = 0
 	statuses.clear()
 
