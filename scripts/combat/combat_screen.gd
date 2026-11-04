@@ -85,6 +85,7 @@ func _process(_delta: float) -> void:
 	for frames in animations:
 		var width: int = int(frames.region.size.x)
 		frames.region.position.x = tick % (frames.atlas.get_width() / width) * width
+	%Arena.queue_redraw()  # a box style doesn't repaint by itself when its texture changes; the sprites do
 
 
 ## An animated strip of frames side by side (frame_width 0 = square frames, like 32x32 sprites).
