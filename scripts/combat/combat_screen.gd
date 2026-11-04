@@ -31,13 +31,14 @@ func _ready() -> void:
 	%FleeButton.pressed.connect(_on_flee)
 	%ItemButton.pressed.connect(_open_items)
 	var back: StyleBoxTexture = StyleBoxTexture.new()
-	back.texture = _strip("res://assets/backgrounds/%s.png" % Run.BACKGROUND, BACKGROUND_FRAME, BACKGROUND_FPS)
+	back.texture = _strip("res://assets/backgrounds/%s.png" % Run.BACKGROUND, BACKGROUND_FRAME,
+		BACKGROUND_FPS if Settings.animate_background else 0)  # 0 FPS = stays on frame 1
 	back.set_content_margin_all(12)
 	%Arena.add_theme_stylebox_override("panel", back)
 	%Log.get_v_scroll_bar().modulate.a = 0  # floating log: no visible scrollbar, the mouse wheel still scrolls
 	%InfoButton.pressed.connect(func() -> void: _show_info(not %InfoText.visible))
 	for button in %Buttons.get_children():
-		_add_cursor(button)
+		UI.add_cursor(button)
 	if Run.hero == null:
 		Run.start_test()  # this scene was started on its own, not from character creation
 	_start_fight()
@@ -51,7 +52,7 @@ func _start_fight() -> void:
 	%FleeButton.visible = not Run.is_boss()
 	for foe in enemies:
 		%EnemyList.add_child(_make_card(foe))
-		var row: Button = _command_button("", _set_target.bind(foe))
+		var row: Button = UI.menu_button("", _set_target.bind(foe))
 		%TargetList.add_child(row)
 	var where: String = "Boss fight" if Run.is_boss() else "Room %d of %d" % [Run.room, Run.ROOMS]
 	var names: String = ", ".join(enemies.map(func(foe: Combatant) -> String: return foe.display_name))
@@ -143,11 +144,11 @@ func _open_items() -> void:
 		button.queue_free()
 	for id in Run.items:
 		var item: Dictionary = all[id]
-		var button: Button = _command_button("%s x%d" % [item.name, Run.items[id]], _use_item.bind(id, item))
+		var button: Button = UI.menu_button("%s x%d" % [item.name, Run.items[id]], _use_item.bind(id, item))
 		button.tooltip_text = "Heal %d%% of your Max HP" % item.heal_percent
 		button.disabled = Run.items[id] == 0 or hero.hp == hero.max_hp
 		%ItemMenu.add_child(button)
-	%ItemMenu.add_child(_command_button("Back", _close_items))
+	%ItemMenu.add_child(UI.menu_button("Back", _close_items))
 	%Buttons.hide()
 	%ItemMenu.show()
 
@@ -258,27 +259,11 @@ func _new_hero() -> void:
 
 
 func _add_choice(text: String, on_pressed: Callable) -> void:
-	%Choices.add_child(_command_button(text, on_pressed))
+	%Choices.add_child(UI.menu_button(text, on_pressed))
 	%Buttons.hide()  # the fight is over: only the choice buttons make sense now
 
 
 ## A menu line in the COMMAND style (same look as Attack/Defend), with the hover cursor.
-func _command_button(text: String, on_pressed: Callable) -> Button:
-	var button: Button = %AttackButton.duplicate(0)  # copy the look only, not the Attack signal
-	button.unique_name_in_owner = false
-	button.disabled = false  # Attack is disabled when the fight ends; the copy must not be
-	button.text = "   " + text
-	button.pressed.connect(on_pressed)
-	_add_cursor(button)
-	return button
-
-
-## Show a ▶ in front of a command while the mouse is over it.
-func _add_cursor(button: Button) -> void:
-	button.mouse_entered.connect(func() -> void: button.text = "▶" + button.text.substr(1))
-	button.mouse_exited.connect(func() -> void: button.text = " " + button.text.substr(1))
-
-
 func _alive() -> Array[Combatant]:
 	var alive: Array[Combatant] = []
 	alive.assign(enemies.filter(func(foe: Combatant) -> bool: return foe.is_alive()))
