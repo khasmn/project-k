@@ -104,6 +104,15 @@ Mechanics are free to use; the D&D name and its unique monsters/settings are off
 Status effects: burn, poison, stun, shield.
 Later idea: a timing click on attacks for bonus damage.
 
+### Battle screen once art exists (planned, Kha 2026-11-05)
+
+- The BATTLE area shows only art (monster and hero sprites), no words.
+- Monster info, two ways:
+  1. Hover the mouse over a monster: a small info box appears at the mouse.
+  2. COMMAND gets an "Info" option: pick a monster and its info shows in the HERO box,
+     whose title tab changes from "HERO" to that monster's name.
+- Until sprites exist, the monster cards with words stay.
+
 ## Talk and exploration checks
 
 - Talk: Charisma checks to persuade, intimidate or deceive (discounts, enemies backing down, secrets)

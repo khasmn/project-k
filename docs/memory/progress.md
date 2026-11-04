@@ -27,6 +27,7 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 - Bot sim clears 42-52% with groups (never defends or flees); real play should be easier. Retune after Kha plays.
 - Monsters are now small (4-9 HP) so a hero often kills one per hit; elites and the boss are the real threats.
 - Human +10% XP and Fast Learner not built yet.
+- Later (with art): art-only battle area, hover info and Info command (design.md).
 
 ## Session log (newest first)
 

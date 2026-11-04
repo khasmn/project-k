@@ -5,6 +5,7 @@ if a decision changes, add a new entry that says what it replaces.
 
 | Date | Decision | Why |
 | --- | --- | --- |
+| 2026-11-05 | When sprites exist: battle area is art only; monster info by mouse hover tooltip or an Info command that shows it in the HERO box (tab renamed to the monster) | Kha's plan for later; see design.md "Battle screen once art exists" |
 | 2026-11-05 | Combat screen in classic RPG layout: BATTLE area (monster cards + hero), BATTLE LOG, bottom bar ENEMIES / COMMAND / HERO; dark fantasy boxes with gold title tabs, hover cursor on commands | Kha's reference picture; replaces the log/actions half-half row |
 | 2026-11-05 | Combat bottom row: battle log and actions side by side (half/half); Item button | Kha's layout request |
 | 2026-11-05 | Every run starts with 2 Healing Potions (heal 30% Max HP, uses your turn); items in data/items.json | Kha picked potions now instead of waiting for the shop |
