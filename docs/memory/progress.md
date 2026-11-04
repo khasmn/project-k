@@ -17,6 +17,8 @@ Read this first in every new session. Keep it short: replace "Current status" an
 
 Branch update/balance-and-groups is ready for Kha to test (monster groups, targeting, Flee, new Defend,
 half-Attack damage, elites, Train point). After merge:
+- setup/code-style from main: add CLAUDE.md rule (shortest code, no useless comments, no emoji,
+  delete unused code) and clean up all scripts/tests to match (Kha said yes, 2026-11-05).
 3. Shop + potions + Item button in combat.
 4. NPC events with d20 checks.
 
