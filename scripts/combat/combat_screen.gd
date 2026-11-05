@@ -562,9 +562,13 @@ func _win() -> void:
 		_log("[color=%s]%s[/color]" % [GOLD, Run.chapter_data().outro])
 		%TurnLabel.text = "Chapter complete! You beat the %s!" % enemies[0].display_name
 		_add_choice("Back to town", _back_to_town)
-		var next: Button = UI.menu_button("Next chapter (coming soon)", _back_to_town)
-		next.disabled = true
-		%Choices.add_child(next)
+		var next_id: String = str(int(Run.chapter) + 1)
+		if Run.data("chapters").has(next_id):
+			_add_choice("Next chapter: " + Run.data("chapters")[next_id].name, _back_to_town.bind(next_id))
+		else:
+			var next: Button = UI.menu_button("Next chapter (coming soon)", _back_to_town)
+			next.disabled = true
+			%Choices.add_child(next)
 		return
 	%TurnLabel.text = "Victory!"
 	_add_choice("Continue", _continue)
@@ -579,13 +583,17 @@ func _continue() -> void:
 	get_tree().change_scene_to_file(PATH_SCENE)
 
 
-func _back_to_town() -> void:
+## After the boss: next_chapter moves the run on to that chapter; without it the same chapter starts again.
+func _back_to_town(next_chapter: String = "") -> void:
+	var ending: String = Run.chapter_data().get("outro_cutscene", "")
 	var first_win: bool = Run.is_boss() and not Run.chapter in Run.chapters_won
 	if first_win:
 		Run.chapters_won.append(Run.chapter)
+	if next_chapter:
+		Run.chapter = next_chapter
 	Run.restart_chapter()
-	if first_win:  # the chapter's ending plays once a run
-		Cutscene.play(get_tree(), Run.chapter_data().outro_cutscene, TOWN_SCENE)
+	if first_win and ending:  # the chapter's ending plays once a run
+		Cutscene.play(get_tree(), ending, TOWN_SCENE)
 	else:
 		get_tree().change_scene_to_file(TOWN_SCENE)
 

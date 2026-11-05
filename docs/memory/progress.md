@@ -31,6 +31,15 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 
 ## Session log (newest first)
 
+### 2026-11-05 – Chapter 2 flow (feature/chapter-2-flow), step 1 of 4
+- chapters.json "2" Frostfang Peaks (hp_mult 1.1, attack_bonus +1; woods/bandit_fortress backgrounds until step 3).
+- Monsters: Snow Imp, Rime Goblin, Frost Wolf, Yeti, Frozen Soldier; elites Imp Swarmlord, Goblin Chieftain,
+  Winter Alpha, Elder Yeti, Frost Captain; boss Vharn the Frost Tyrant (Blizzard: Speed save, all, d8 + stun).
+  New skills frost_nip, cold_jab, avalanche_slam, ice_shell, blizzard. No art yet (name boxes).
+- Boss win: "Next chapter: <name>" moves Run.chapter on (ending cutscene first), "Back to town" replays.
+- test_run plays chapter 2 with chapter 1 winners: ~42% clear it (Kha wants ~40%).
+- Next: step 2 art (5 monsters + 5 elites + attack poses), step 3 Vharn art + snowy backgrounds, step 4 story.
+
 ### 2026-11-05 – Cutscenes (feature/prologue)
 - New make-cutscene skill. Cutscene player: scripts/story/cutscene.gd + scenes/story/cutscene.tscn,
   data/cutscenes.json (art strip, fps, text, optional hero spot), art in assets/cutscenes/ (384x216 frames, 8 each).

@@ -81,5 +81,10 @@
 	"pounce": {"name": "Pounce", "aura": "dust", "impact": "bite", "advantage": true, "effect": {"status": "stun", "save": "defense"}},
 	"dark_aegis": {"name": "Dark Aegis", "shield_fx": "dark_shield", "shield": 8},
 	"rampage": {"name": "Rampage", "aura": "rage", "impact": "slash", "attacks": 2},
-	"firebomb": {"name": "Firebomb", "projectile": "flask", "impact": "explosion", "save": "speed", "damage_die": 6, "effect": {"status": "burn", "power": 2, "turns": 2}}
+	"firebomb": {"name": "Firebomb", "projectile": "flask", "impact": "explosion", "save": "speed", "damage_die": 6, "effect": {"status": "burn", "power": 2, "turns": 2}},
+	"frost_nip": {"name": "Frost Nip", "impact": "slash", "effect": {"status": "stun", "save": "speed"}},
+	"cold_jab": {"name": "Cold Jab", "impact": "slash", "extra_die": 4},
+	"avalanche_slam": {"name": "Avalanche Slam", "aura": "rage", "impact": "punch", "to_hit": -2, "extra_die": 8},
+	"ice_shell": {"name": "Ice Shell", "shield_fx": "shield", "shield": 4},
+	"blizzard": {"name": "Blizzard", "save": "speed", "area": "all", "damage_die": 8, "effect": {"status": "stun"}}
 }
