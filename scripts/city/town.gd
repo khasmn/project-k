@@ -2,7 +2,7 @@ extends Control
 ## The town between runs: click a building to open its window, or leave town to start the chapter.
 ## Shown after character creation (later also after the 1st and 2nd death).
 
-const COMBAT_SCENE: String = "res://scenes/combat/combat.tscn"
+const PATH_SCENE: String = "res://scenes/path/path.tscn"  # room 1 shows the chapter intro first
 const ART_SIZE: Vector2 = Vector2(384, 216)
 ## Each building: its clickable rectangle in art pixels (x, y, width, height) and what its window says.
 const BUILDINGS: Array = [
@@ -26,7 +26,7 @@ func _ready() -> void:
 	gold.add_theme_color_override("font_color", UI.GOLD)
 	%Leave.add_child(gold)
 	%Leave.add_child(UI.menu_button("Gear", _open_gear_window.bind(GearWindow.Mode.GEAR), 24))
-	%Leave.add_child(UI.menu_button("Leave town", get_tree().change_scene_to_file.bind(COMBAT_SCENE), 24))
+	%Leave.add_child(UI.menu_button("Leave town", get_tree().change_scene_to_file.bind(PATH_SCENE), 24))
 	add_child(gear_window)
 	gear_window.closed.connect(_update_gold)
 	_update_gold()

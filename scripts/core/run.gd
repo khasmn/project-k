@@ -3,9 +3,10 @@ class_name Run
 ## Static variables stay alive when Godot switches scenes, so every screen can read them.
 
 const ROOMS: int = 8  # rooms before the boss
-const BOSS: String = "bandit_chief"
-const BACKGROUND: String = "woods"  # chapter 1, in assets/backgrounds/
-const BOSS_BACKGROUND: String = "bandit_fortress"  # the boss fight: the bandits' fortress at night
+## Normal monsters and elites grow deeper into a chapter: +5% HP per room after room 1 (a Bandit: 5 HP in room 1,
+## 7 in room 8). Tuned with tests/test_run.gd to ~40% wins for an all-attack bot with one life.
+## The boss and its guards don't. A chapter's own "hp_mult" and "attack_bonus" (data/chapters.json) apply to all.
+const ROOM_HP_STEP: float = 0.05
 const DOOR_TYPES: Array[String] = ["elite", "rest", "shop", "event"]
 const DOORS: int = 3
 const MAX_ENEMIES: int = 4
@@ -18,6 +19,8 @@ const LIVES: int = 3
 
 static var hero: Combatant
 static var hero_look: Dictionary = {}  # for HeroSprite; empty for the test hero
+static var chapter: String = "1"  # id in data/chapters.json
+static var chapters_seen: Array[String] = []  # chapters started this run: a replay shows the short intro
 static var room: int = 1  # 1..ROOMS, then ROOMS + 1 is the boss
 static var room_type: String = ""  # the door picked for this room
 static var room_note: String = ""  # shown at the start of the next battle log
@@ -63,6 +66,8 @@ static func _reset() -> void:
 	level = 1
 	experience = 0
 	evolution = ""
+	chapter = "1"
+	chapters_seen = []
 	points = 0
 	gold = START_GOLD
 	lives = LIVES
@@ -97,6 +102,10 @@ static func lose_life() -> int:
 	return lost
 
 
+static func chapter_data() -> Dictionary:
+	return data("chapters")[chapter]
+
+
 static func is_boss() -> bool:
 	return room > ROOMS
 
@@ -125,12 +134,12 @@ static func door_choices() -> Array:
 ## Elite room: that room's elite (data "elite") plus 0-2 helpers. Boss: the boss plus its "guards".
 static func enemies() -> Array[Combatant]:
 	var all: Dictionary = data("enemies")
+	var place: Dictionary = chapter_data()
 	var ids: Array = []
 	if is_boss():
-		ids = [BOSS] + all[BOSS].guards
+		ids = [place.boss] + all[place.boss].guards
 	else:
-		var pool: Array = all.keys().filter(func(id: String) -> bool:
-			return all[id].has("rooms") and room >= all[id].rooms[0] and room <= all[id].rooms[1])
+		var pool: Array = place.monsters.filter(func(id: String) -> bool: return room >= all[id].rooms[0] and room <= all[id].rooms[1])
 		var count: int = Dice.roll(MAX_ENEMIES) if room_type != "elite" else Dice.roll(MAX_ENEMIES - 1)
 		for i in count:
 			ids.append(pool[Dice.roll(pool.size()) - 1])
@@ -139,6 +148,10 @@ static func enemies() -> Array[Combatant]:
 	var group: Array[Combatant] = []
 	for id in ids:
 		var foe: Combatant = Combatant.new(all[id])
+		var room_hp: float = 1.0 if is_boss() else 1.0 + ROOM_HP_STEP * (room - 1)
+		foe.max_hp = roundi(foe.max_hp * place.hp_mult * room_hp)
+		foe.hp = foe.max_hp
+		foe.attack += int(place.attack_bonus)
 		# "sprite_with": a different look when a certain monster is in the same fight (wolves with bandits wear a collar).
 		var with: Dictionary = all[id].get("sprite_with", {})
 		for other in with:

@@ -10,12 +10,12 @@ const REST_CLICK_DELAY: float = 0.5  # Rest/Train appear where the door was: blo
 const TYPE_COLORS: Dictionary = {
 	"elite": Color(0.9, 0.3, 0.3), "rest": Color(0.4, 0.8, 0.45), "shop": Color(0.95, 0.75, 0.25),
 	"event": Color(0.45, 0.65, 1.0), "boss": Color(0.75, 0.3, 0.9),
-	"heal": Color(0.4, 0.8, 0.45), "train": Color(0.4, 0.6, 1.0), "evolve": Color(1.0, 0.83, 0.3),
+	"heal": Color(0.4, 0.8, 0.45), "train": Color(0.4, 0.6, 1.0), "evolve": Color(1.0, 0.83, 0.3), "start": Color(0.45, 0.65, 1.0),
 }
 const SUBTITLES: Dictionary = {
 	"elite": "ELITE  -  HARDER BATTLE", "rest": "REST  -  THEN A BATTLE", "shop": "SHOP  -  THEN A BATTLE",
 	"event": "EVENT  -  THEN A BATTLE", "boss": "BOSS  -  FINAL BATTLE",
-	"heal": "HEAL  -  THEN A BATTLE", "train": "TRAIN  -  THEN A BATTLE",
+	"heal": "HEAL  -  THEN A BATTLE", "train": "TRAIN  -  THEN A BATTLE", "start": "SET OUT  -  THE FIRST BATTLE",
 }
 
 var hero: Combatant
@@ -58,9 +58,16 @@ func _show_doors() -> void:
 		_show_evolution()
 		return
 	%HeadingTitle.text = "CHOOSE YOUR PATH"
+	var place: Dictionary = Run.chapter_data()
+	if Run.room == 1:  # the chapter starts: its story, then the first fight
+		%HeadingTitle.text = "CHAPTER %s: %s" % [Run.chapter, place.name.to_upper()]
+		%HeadingText.text = place.intro_retry if Run.chapter in Run.chapters_seen else place.intro
+		%HeadingText.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		_add_card("Set out", "start", "Into the %s." % place.name, _set_out)
+		return
 	if Run.is_boss():
 		%HeadingText.text = "The road ends here."
-		_add_card("Bandit Camp", "boss", "The Bandit Chief waits by the fire, axe in hand.", _enter.bind("boss"))
+		_add_card(place.boss_door, "boss", place.boss_text, _enter.bind("boss"))
 		return
 	%HeadingText.text = "Pick a path to continue"
 	for door in Run.door_choices():
@@ -87,6 +94,12 @@ func _evolve(id: String) -> void:
 	_update_sidebar()
 	_show_doors()
 	%HeadingText.text = "You are now a %s! %s" % [Run.data("evolutions")[id].name, %HeadingText.text]
+
+
+func _set_out() -> void:
+	if not Run.chapter in Run.chapters_seen:
+		Run.chapters_seen.append(Run.chapter)
+	_to_battle()
 
 
 ## Clicked a door. Rest asks Rest or Train first, Shop opens the Peddler's Cart, Event shows its scene. All end in a battle.

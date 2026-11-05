@@ -45,7 +45,7 @@ func _ready() -> void:
 	%DefendButton.pressed.connect(_on_defend)
 	%ItemButton.pressed.connect(_open_items)
 	var back: StyleBoxTexture = StyleBoxTexture.new()
-	back.texture = _strip("res://assets/backgrounds/%s.png" % (Run.BOSS_BACKGROUND if Run.is_boss() else Run.BACKGROUND), BACKGROUND_FRAME,
+	back.texture = _strip("res://assets/backgrounds/%s.png" % Run.chapter_data()["boss_background" if Run.is_boss() else "background"], BACKGROUND_FRAME,
 		BACKGROUND_FPS if Settings.animate_background else 0)  # 0 FPS = stays on frame 1
 	back.set_content_margin_all(12)
 	%Arena.add_theme_stylebox_override("panel", back)
@@ -559,6 +559,7 @@ func _win() -> void:
 	_update_labels()
 	if Run.is_boss():
 		_log("[color=" + GOLD + "][b]Chapter complete![/b][/color] You beat the %s!" % enemies[0].display_name)
+		_log("[color=%s]%s[/color]" % [GOLD, Run.chapter_data().outro])
 		%TurnLabel.text = "Chapter complete! You beat the %s!" % enemies[0].display_name
 		_add_choice("Back to town", _back_to_town)
 		var next: Button = UI.menu_button("Next chapter (coming soon)", _back_to_town)
