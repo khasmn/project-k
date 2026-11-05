@@ -31,6 +31,15 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 
 ## Session log (newest first)
 
+### 2026-11-05 – Chapters and scaling (feature/chapters)
+- data/chapters.json (chapter 1 only): name, background, boss_background, monsters, boss, boss_door, boss_text,
+  hp_mult, attack_bonus, intro, intro_retry, outro. Run.chapter, Run.chapters_seen, Run.chapter_data().
+  Removed the BOSS / BACKGROUND / BOSS_BACKGROUND constants.
+- Room scaling: +5% monster HP per room after room 1 (rounded), elites too, not the boss. Bot win rate went
+  46% -> ~38% (Kha wants ~40%). +10% HP and +1 Attack from room 5 were tried: 19-30%, too hard.
+- Leave town -> path screen room 1: "CHAPTER 1: WHISPERING WOODS" + intro (short intro on a replay), "Set out" card.
+- Boss win logs the chapter outro (Bandit Chief's shard line, Sir Corwin brings the King's summons).
+
 ### 2026-11-05 – Level 10 evolution (feature/evolution)
 - data/evolutions.json: 10 advanced classes (from, role, boost, 2 skills); 20 new skills in data/skills.json
   (existing keys only, reused class poses and effects). scripts/core/evolution.gd: ready, choices, evolve.
