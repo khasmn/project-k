@@ -107,6 +107,7 @@ func _init() -> void:
 	var report: PackedStringArray = []
 	for class_id in draft.classes:
 		var wins: int = 0
+		var wins_2: int = 0
 		var reached: Array[int] = []
 		reached.resize(Run.ROOMS + 2)
 		for i in RUNS:
@@ -118,7 +119,14 @@ func _init() -> void:
 			reached[result - 1] += 1
 			if result == Run.ROOMS + 2:
 				wins += 1
-		report.append("%s %d%% (died in room 1-8, boss: %s)" % [class_id, 100 * wins / RUNS, reached.slice(0, Run.ROOMS + 1)])
+				# Chapter 2 with the same hero (healed in town, no new gear: real players will be a bit stronger).
+				Run.chapter = "2"
+				Run.restart_chapter()
+				Run.hero.hp = Run.hero.max_hp
+				if _auto_run() == Run.ROOMS + 2:
+					wins_2 += 1
+		report.append("%s %d%% (died in room 1-8, boss: %s), chapter 2: %d%% of them" % [class_id, 100 * wins / RUNS,
+			reached.slice(0, Run.ROOMS + 1), 100 * wins_2 / maxi(wins, 1)])
 
 	# 3 lives: a death costs a life and half the gold, heals, restarts the chapter, keeps level and gear.
 	var hero_draft: CharacterDraft = CharacterDraft.new()
