@@ -10,7 +10,7 @@ const REST_CLICK_DELAY: float = 0.5  # Rest/Train appear where the door was: blo
 const TYPE_COLORS: Dictionary = {
 	"elite": Color(0.9, 0.3, 0.3), "rest": Color(0.4, 0.8, 0.45), "shop": Color(0.95, 0.75, 0.25),
 	"event": Color(0.45, 0.65, 1.0), "boss": Color(0.75, 0.3, 0.9),
-	"heal": Color(0.4, 0.8, 0.45), "train": Color(0.4, 0.6, 1.0),
+	"heal": Color(0.4, 0.8, 0.45), "train": Color(0.4, 0.6, 1.0), "evolve": Color(1.0, 0.83, 0.3),
 }
 const SUBTITLES: Dictionary = {
 	"elite": "ELITE  -  HARDER BATTLE", "rest": "REST  -  THEN A BATTLE", "shop": "SHOP  -  THEN A BATTLE",
@@ -38,6 +38,12 @@ func _ready() -> void:
 	town_button.tooltip_text = "Go back to town. The chapter starts again from room 1;\nyou keep your level, gear, gold and materials."
 	town_button.pressed.connect(_back_to_town)
 	gear_button.add_sibling(town_button)
+	if OS.is_debug_build():  # true when run from the Godot editor, false in an exported game
+		var test_button: Button = %CharacterButton.duplicate()
+		test_button.text = "TEST: LEVEL 10"
+		test_button.tooltip_text = "Testing only: gain the EXP to reach level %d (with its stat points)." % Evolution.LEVEL
+		test_button.pressed.connect(_test_level_up)
+		town_button.add_sibling(test_button)
 	add_child(gear_window)
 	dice.alignment = BoxContainer.ALIGNMENT_CENTER
 	Dice.recording = Settings.animate_dice
@@ -48,6 +54,9 @@ func _ready() -> void:
 
 func _show_doors() -> void:
 	_clear_doors()
+	if Evolution.ready():
+		_show_evolution()
+		return
 	%HeadingTitle.text = "CHOOSE YOUR PATH"
 	if Run.is_boss():
 		%HeadingText.text = "The road ends here."
@@ -56,6 +65,28 @@ func _show_doors() -> void:
 	%HeadingText.text = "Pick a path to continue"
 	for door in Run.door_choices():
 		_add_card(door.name, door.type, door.description, _enter.bind(door.type, door.get("event", "")))
+
+
+## Level 10: two class cards; the doors come back after the pick. Each card's tooltip explains its skills.
+func _show_evolution() -> void:
+	%HeadingTitle.text = "YOUR PATH SPLITS"
+	%HeadingText.text = "Level %d! Choose your new class. You keep your skills and learn 2 more. This choice is final." % Evolution.LEVEL
+	var skills: Dictionary = Run.data("skills")
+	for id: String in Evolution.choices():
+		var entry: Dictionary = Run.data("evolutions")[id]
+		var names: Array = entry.skills.map(func(skill: String) -> String: return skills[skill].name)
+		_add_card(entry.name, "evolve", "%s.  New skills: %s" % [Evolution.boost_text(id), " and ".join(names)],
+			_evolve.bind(id), "CLASS  -  " + entry.role.to_upper())
+		%Doors.get_child(-1).tooltip_text = "\n".join(entry.skills.map(func(skill: String) -> String:
+			return "%s (%d %s): %s" % [skills[skill].name, skills[skill].cost, hero.energy_name, skills[skill].description]))
+	await _block_double_click()
+
+
+func _evolve(id: String) -> void:
+	Evolution.evolve(id)
+	_update_sidebar()
+	_show_doors()
+	%HeadingText.text = "You are now a %s! %s" % [Run.data("evolutions")[id].name, %HeadingText.text]
 
 
 ## Clicked a door. Rest asks Rest or Train first, Shop opens the Peddler's Cart, Event shows its scene. All end in a battle.
@@ -196,6 +227,13 @@ func _on_window_closed() -> void:
 		_to_battle()
 	else:
 		_update_sidebar()
+
+
+func _test_level_up() -> void:
+	while Run.level < Evolution.LEVEL:
+		Run.gain_exp(Run.exp_needed() - Run.experience)
+	_update_sidebar()
+	_show_doors()
 
 
 func _back_to_town() -> void:

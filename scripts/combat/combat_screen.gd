@@ -241,7 +241,9 @@ func _on_skill(skill: Dictionary) -> void:
 	var foes: Array[Combatant] = [target]
 	foes.append_array(_alive().filter(func(foe: Combatant) -> bool: return foe != target))
 	var before: Dictionary = _snapshot()
-	var line: String = hero.use_skill(skill, foes, [hero])
+	var side: Array[Combatant] = [hero]  # Shield Wall and Spear Wall also cover the allies
+	side.append_array(allies.filter(func(ally: Combatant) -> bool: return ally.is_alive()))
+	var line: String = hero.use_skill(skill, foes, side)
 	await dice.show_rolls(true)
 	await _animate(hero, skill, foes if skill.get("area", "") == "all" else [target], before)
 	_log(line)
@@ -277,12 +279,15 @@ func _animate(user: Combatant, move: Dictionary, targets: Array, before: Diction
 				fx.hurt(_node_of(ally), "+%d" % (ally.hp - before[ally][0]), Color(0.5, 1, 0.5))
 		await get_tree().create_timer(0.35).timeout
 		return
+	var pose: String = move.get("pose", Run.hero_look.get("class", "") + "_attack")
 	var blows: int = int(move.get("attacks", 1))
+	if user == hero and hero_sprite:  # the pose's hit frames land the blows (3 attacks on a 1-hit pose land together)
+		blows = HeroSprite.POSES.get(pose, {}).get("hits", [0]).size()
 	var land: Callable = func(blow: int) -> void:
 		for target_hit: Combatant in targets:
 			_land(target_hit, node, move, before, blow == blows - 1)
 	if user == hero and hero_sprite:
-		await hero_sprite.play_attack(move.get("pose", Run.hero_look.get("class", "") + "_attack"), land)
+		await hero_sprite.play_attack(pose, land)
 	else:
 		if move.is_empty():
 			move = {"impact": "bite" if user.weapon == "bite" else "slash"}
@@ -549,6 +554,8 @@ func _win() -> void:
 	if levels > 0:
 		_log("[color=" + GOLD + "][b]Level up![/b][/color] Now level %d: +%d stat points. Spend them with CHARACTER on the path screen." % [
 			Run.level, levels * Run.POINTS_PER_LEVEL])
+		if Evolution.ready():
+			_log("[color=%s][b]Your path splits![/b][/color] Choose your new class on the path screen." % GOLD)
 	_update_labels()
 	if Run.is_boss():
 		_log("[color=" + GOLD + "][b]Chapter complete![/b][/color] You beat the %s!" % enemies[0].display_name)

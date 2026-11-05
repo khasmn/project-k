@@ -1,0 +1,12 @@
+{
+	"knight": {"name": "Knight", "from": "warrior", "role": "Tank", "boost": {"defense": 2}, "skills": ["shield_wall", "judgement"]},
+	"berserker": {"name": "Berserker", "from": "warrior", "role": "Damage", "boost": {"attack": 2}, "skills": ["reckless_swing", "frenzy"]},
+	"ranger": {"name": "Ranger", "from": "archer", "role": "Traps and quick shots", "boost": {"speed": 1, "attack": 1}, "skills": ["twin_shot", "snare_trap"]},
+	"sharpshooter": {"name": "Sharpshooter", "from": "archer", "role": "Precise shots", "boost": {"attack": 2}, "skills": ["deadeye", "pinning_shot"]},
+	"elementalist": {"name": "Elementalist", "from": "mage", "role": "Storm and fire", "boost": {"attack": 2}, "skills": ["thunderstorm", "flame_lance"]},
+	"dark_mage": {"name": "Dark Mage", "from": "mage", "role": "Curses", "boost": {"attack": 2}, "skills": ["hex_bolt", "curse_of_rot"]},
+	"monk": {"name": "Monk", "from": "brawler", "role": "Calm and counters", "boost": {"speed": 2}, "skills": ["stillness", "palm_strike"]},
+	"pit_fighter": {"name": "Pit Fighter", "from": "brawler", "role": "Stuns and big hits", "boost": {"attack": 1, "max_hp": 6}, "skills": ["headbutt", "haymaker"]},
+	"skylancer": {"name": "Skylancer", "from": "lancer", "role": "Leaps", "boost": {"speed": 2}, "skills": ["leap_strike", "wind_step"]},
+	"phalanx": {"name": "Phalanx", "from": "lancer", "role": "Spear wall", "boost": {"defense": 2}, "skills": ["spear_wall", "impale"]}
+}

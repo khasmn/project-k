@@ -25,6 +25,7 @@ static var next_fight: Dictionary = {}  # set by an event for the next battle: "
 static var events_seen: Array[String] = []  # event ids opened this run, so they don't repeat too soon
 static var level: int = 1
 static var experience: int = 0
+static var evolution: String = ""  # the advanced class picked at level 10, see Evolution
 static var points: int = 0  # unspent stat points
 static var gold: int = 0
 static var lives: int = LIVES  # left; dying on the last one ends the run
@@ -61,6 +62,7 @@ static func _reset() -> void:
 	events_seen = []
 	level = 1
 	experience = 0
+	evolution = ""
 	points = 0
 	gold = START_GOLD
 	lives = LIVES
