@@ -6,7 +6,7 @@
 		"intro": "Monsters stir in the hills. Driven out by them, bandits now raid the villages of the Whispering Woods. Their chief has made camp past the old road. Stop him.",
 		"intro_retry": "Back to the Whispering Woods. The bandits are still out there.",
 		"outro": "\"They pay us in shards...\" the Bandit Chief gasps. \"...the hills are cracking.\"", "outro_cutscene": "chapter_1_end"},
-	"2": {"name": "Frostfang Peaks", "background": "woods", "boss_background": "bandit_fortress",
+	"2": {"name": "Frostfang Peaks", "background": "frostfang", "boss_background": "frozen_throne",
 		"monsters": ["snow_imp", "rime_goblin", "frost_wolf", "yeti", "frozen_soldier"],
 		"boss": "vharn", "boss_door": "Frozen Throne", "boss_text": "Vharn the Frost Tyrant waits on a throne of ice, a blue crystal humming behind him.",
 		"hp_mult": 1.1, "attack_bonus": 1,

@@ -86,5 +86,5 @@
 	"cold_jab": {"name": "Cold Jab", "impact": "slash", "extra_die": 4},
 	"avalanche_slam": {"name": "Avalanche Slam", "aura": "rage", "impact": "punch", "to_hit": -2, "extra_die": 8},
 	"ice_shell": {"name": "Ice Shell", "shield_fx": "shield", "shield": 4},
-	"blizzard": {"name": "Blizzard", "save": "speed", "area": "all", "damage_die": 8, "effect": {"status": "stun"}}
+	"blizzard": {"name": "Blizzard", "aura": "ice", "impact": "ice", "save": "speed", "area": "all", "damage_die": 8, "effect": {"status": "stun"}}
 }
