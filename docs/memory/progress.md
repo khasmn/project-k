@@ -35,7 +35,8 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 - Vharn the Frost Tyrant 64x64 (frost giant king: ice armor, ice crown, glaive, pulsing blue heart) + attack strip.
 - Backgrounds: frostfang (epic vast, frozen pass at dusk, buried royal watchtower, slow snow) and frozen_throne
   (ice throne room, floating crystal that pulses, soldiers frozen in the walls). Blizzard uses the "ice" fx.
-- Art script: scratchpad frost_boss.py. Long names get cut off in the ENEMIES list (Vharn, Frozen Soldier 1).
+- Art script: scratchpad frost_boss.py. Names shortened to fit the ENEMIES list: Vharn (full title in the door
+  text), Ice Soldier, Goblin Chief. Keep enemy names short (about "Goblin Chief 24/24" at most).
 - Next: step 4 story (lore event, crystal ending cutscene).
 
 ### 2026-11-05 – Chapter 2 monster art (feature/chapter-2-art), step 2 of 4
