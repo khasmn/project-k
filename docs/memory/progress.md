@@ -31,6 +31,13 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 
 ## Session log (newest first)
 
+### 2026-11-05 – Chapter 2 boss art (feature/chapter-2-boss), step 3 of 4
+- Vharn the Frost Tyrant 64x64 (frost giant king: ice armor, ice crown, glaive, pulsing blue heart) + attack strip.
+- Backgrounds: frostfang (epic vast, frozen pass at dusk, buried royal watchtower, slow snow) and frozen_throne
+  (ice throne room, floating crystal that pulses, soldiers frozen in the walls). Blizzard uses the "ice" fx.
+- Art script: scratchpad frost_boss.py. Long names get cut off in the ENEMIES list (Vharn, Frozen Soldier 1).
+- Next: step 4 story (lore event, crystal ending cutscene).
+
 ### 2026-11-05 – Chapter 2 monster art (feature/chapter-2-art), step 2 of 4
 - Idle strips (5 frames, breathing) for Snow Imp, Rime Goblin, Frost Wolf, Yeti, Frozen Soldier (32x32) and
   Imp Swarmlord, Goblin Chieftain, Winter Alpha, Elder Yeti, Frost Captain (48x48); "sprite" in enemies.json.

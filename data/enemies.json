@@ -22,5 +22,5 @@
 	"frost_captain": {"loot": {"material": "iron_scrap", "count": 2}, "name": "Frost Captain", "skill": "dark_aegis", "hp": 24, "attack": 3, "defense": 3, "speed": 1, "weapon": "frozen longsword", "damage_die": 8, "exp": 28, "gold": 16, "sprite": "frost_captain_idle"},
 
 	"bandit_chief": {"loot": {"material": "starmetal_shard", "count": 1, "egg": "drake", "egg_roll": 15}, "name": "Bandit Chief", "skill": "firebomb", "hp": 30, "attack": 3, "defense": 2, "speed": 2, "weapon": "axe", "damage_die": 8, "exp": 30, "gold": 0, "guards": ["bandit", "bandit"], "sprite": "bandit_chief_idle"},
-	"vharn": {"loot": {"material": "starmetal_shard", "count": 1}, "name": "Vharn the Frost Tyrant", "skill": "blizzard", "hp": 48, "attack": 4, "defense": 3, "speed": 2, "weapon": "ice glaive", "damage_die": 10, "exp": 50, "gold": 0, "guards": ["frozen_soldier", "frozen_soldier"]}
+	"vharn": {"loot": {"material": "starmetal_shard", "count": 1}, "name": "Vharn the Frost Tyrant", "skill": "blizzard", "hp": 48, "attack": 4, "defense": 3, "speed": 2, "weapon": "ice glaive", "damage_die": 10, "exp": 50, "gold": 0, "guards": ["frozen_soldier", "frozen_soldier"], "sprite": "vharn_idle"}
 }
