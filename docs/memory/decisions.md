@@ -5,6 +5,7 @@ if a decision changes, add a new entry that says what it replaces.
 
 | Date | Decision | Why |
 | --- | --- | --- |
+| 2026-11-05 | Story cutscenes: prologue (King alone + hero sets out), chapter 1 ending = the King's quest scene (summons stays after ch 1) | Kha's choice; review panel wanted the King on screen early |
 | 2026-11-05 | data/chapters.json drives each chapter; normal monsters and elites +5% HP per room (not the boss); intro on the room 1 path screen, outro after the boss | Kha: room scaling, target ~40% bot win rate |
 | 2026-11-05 | Evolution at level 10: pick 1 of 2 advanced classes on the path screen; keep the 2 base skills and learn 2 more; boost per class (data/evolutions.json) | Kha's choices |
 | 2026-11-05 | Battle log: result first, dice math after it in gray, one line per attack, round dividers, names colored by side | Review panel: the log read like a math sheet |

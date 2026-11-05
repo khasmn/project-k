@@ -5,5 +5,5 @@
 		"hp_mult": 1.0, "attack_bonus": 0,
 		"intro": "Monsters stir in the hills. Driven out by them, bandits now raid the villages of the Whispering Woods. Their chief has made camp past the old road. Stop him.",
 		"intro_retry": "Back to the Whispering Woods. The bandits are still out there.",
-		"outro": "The Bandit Chief falls to his knees. \"They pay us in shards...\" he gasps. \"...the hills are cracking.\" At dawn a royal knight rides into camp: Sir Corwin Vale, with a letter sealed by King Oswin himself. The King summons you."}
+		"outro": "\"They pay us in shards...\" the Bandit Chief gasps. \"...the hills are cracking.\"", "outro_cutscene": "chapter_1_end"}
 }

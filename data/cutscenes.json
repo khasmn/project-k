@@ -1,0 +1,11 @@
+{
+	"prologue": [
+		{"art": "throne_night", "fps": 2, "text": "In the capital, King Oswin sits alone each night before the painting of his late queen. \"Soon,\" he whispers."},
+		{"art": "hero_dawn", "fps": 2, "hero": [258, 118], "text": "Far away, smoke rises over the villages of the Whispering Woods again. You take up your weapon and go."}
+	],
+	"chapter_1_end": [
+		{"art": "camp_dawn", "fps": 2, "text": "At dawn a royal knight rides into the camp: Sir Corwin Vale. \"The King asks for you.\""},
+		{"art": "throne_day", "fps": 2, "hero": [232, 120], "text": "\"The Demon King Malzareth sends his monsters against us. His castle is sealed by four crystals, each guarded by a Demon Lord. Break them, and end him.\""},
+		{"art": "throne_day", "fps": 2, "hero": [232, 120], "text": "\"And bring me the dust of every crystal you break,\" King Oswin says with a warm smile. \"For the royal vault.\""}
+	]
+}
