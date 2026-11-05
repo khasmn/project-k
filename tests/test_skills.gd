@@ -68,7 +68,7 @@ func _init() -> void:
 	foe = _dummy()
 	Dice.forced_rolls = [9, 1, 8]  # first hits (9 + 1 = 10), second misses (8 + 1 = 9)
 	var flurry: String = brawler.use_skill(brawler.skills[0], [foe], [brawler])
-	_check(flurry.count("attacks Dummy") == 2 and foe.hp == 48, "Flurry wrong: %d HP" % foe.hp)
+	_check(flurry.count("Flurry:") == 2 and foe.hp == 48, "Flurry wrong: %d HP" % foe.hp)
 
 	# Monster skills: Cleave adds a d4; Rally shields every ally.
 	var orc: Combatant = _fighter("cleave", 0)

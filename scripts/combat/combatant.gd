@@ -185,12 +185,13 @@ func take_damage(amount: int, blockable: bool = true) -> String:
 
 
 ## Attack roll (d20 + Attack) vs target's Armor; on a hit, roll damage (always at least 1).
-## Damage = weapon die + half Attack. A crit rolls the damage die twice. Returns two log lines, e.g.
-## "Warrior attacks Bandit: rolled 14, +5 Attack = 19 vs Armor 10: hit!"
-## "    Damage: sword (d8) rolled 7, +2 (half Attack) = 9 damage."
-## A skill can change the attack: "to_hit", "advantage", "extra_die" and an "effect" on a hit.
+## Damage = weapon die + half Attack. A crit rolls the damage die twice. The result comes first, the dice math
+## after it in {braces} (the battle log shows it in gray), e.g.
+## "Warrior hits Bandit for 9! {d20 14 +5 Attack = 19 vs Armor 10 | sword d8: 7 +2 half Attack}"
+## A skill can change the attack: "to_hit", "advantage", "extra_die" and an "effect" on a hit; its name leads the line.
 func strike(target: Combatant, move: Dictionary = {}) -> String:
-	var line: String = "%s attacks %s: " % [display_name, target.display_name]
+	var line: String = display_name + (" uses %s:" % move.name if move.has("name") else "")
+	var math: String = "d20 "
 	var mode: Dice.Mode = attack_mode(target, advantage or charmed or move.get("advantage", false))
 	charmed = false
 	var inspired: int = 0  # a companion's Howl: +power to hit and damage for a few attacks
@@ -203,20 +204,21 @@ func strike(target: Combatant, move: Dictionary = {}) -> String:
 	var result: Dictionary = Dice.check(to_hit, target.armor(), mode, crit_min)
 	if result.fumble and lucky and not lucky_used:
 		lucky_used = true
-		line += "rolled %s, a natural 1! %s rerolls: " % [rolled_text(result.rolls, mode, target.display_name), passive("lucky")]
+		math += "%s, natural 1, %s rerolls: " % [rolled_text(result.rolls, mode, target.display_name), passive("lucky")]
 		result = Dice.check(to_hit, target.armor(), mode, crit_min)
-	var rolled: String = rolled_text(result.rolls, mode, target.display_name)
+	math += rolled_text(result.rolls, mode, target.display_name)
 	if result.fumble:
-		return line + "rolled %s, a natural 1: automatic miss!" % rolled
+		return "%s misses %s: natural 1! {%s}" % [line, target.display_name, math]
 	if result.crit:
-		line += "rolled %s, a natural %d: CRITICAL HIT!" % [rolled, result.natural]
+		math += " natural %d" % result.natural
 		if result.natural < 20:
-			line += " (%s: crits on %d or more)" % [passive("crit_min"), crit_min]
+			math += ", %s crits on %d or more" % [passive("crit_min"), crit_min]
 	else:
-		line += "rolled %s, %+d %s = %d vs Armor %d: %s" % [rolled, to_hit, attack_name + (" + Inspired" if inspired else ""),
-			result.total, target.armor(), "hit!" if result.success else "miss."]
+		if to_hit != 0:
+			math += " %+d %s = %d" % [to_hit, attack_name + (" + Inspired" if inspired else ""), result.total]
+		math += " vs Armor %d" % target.armor()
 		if not result.success:
-			return line
+			return "%s misses %s. {%s}" % [line, target.display_name, math]
 
 	var rolls: Array[int] = [Dice.roll(damage_die)]
 	if result.crit:
@@ -226,21 +228,21 @@ func strike(target: Combatant, move: Dictionary = {}) -> String:
 	var dice_total: int = 0
 	for roll in rolls:
 		dice_total += roll
-	var damage_text: String = "%s (d%d) rolled %s" % [weapon, damage_die,
-		"twice: %d + %d" % [rolls[0], rolls[1]] if result.crit else str(rolls[0])]
+	math += " | %s d%d: %s" % [weapon, damage_die, "twice %d + %d" % [rolls[0], rolls[1]] if result.crit else str(rolls[0])]
 	if move.has("extra_die"):
-		damage_text += ", +d%d rolled %d" % [move.extra_die, rolls[-1]]
+		math += ", +d%d %d" % [move.extra_die, rolls[-1]]
 	var bonus: int = damage_from_attack() + damage_bonus + inspired
-	damage_text += ", %+d (half %s)" % [damage_from_attack(), attack_name]
+	if damage_from_attack() != 0:
+		math += " %+d half %s" % [damage_from_attack(), attack_name]
 	if inspired:
-		damage_text += ", %+d Inspired" % inspired
+		math += " %+d Inspired" % inspired
 	if damage_bonus != 0:
-		damage_text += ", %+d %s" % [damage_bonus, passive("damage_bonus")]
+		math += " %+d %s" % [damage_bonus, passive("damage_bonus")]
 	var damage: int = maxi(dice_total + bonus, 1)
-	damage_text += " = %d damage" % damage
 	if dice_total + bonus < 1:
-		damage_text += " (minimum 1)"
-	line += "\n    Damage: " + damage_text + "." + target.take_damage(damage)
+		math += ", minimum 1"
+	line += " %s %s for %d!" % ["lands a CRITICAL HIT on" if result.crit else "hits", target.display_name, damage]
+	line += target.take_damage(damage) + " {%s}" % math
 	if move.has("steal"):  # a Raven's Snatch: d3 gold times its power
 		var gold: int = Dice.roll(int(move.steal)) * power
 		Run.gold += gold
@@ -261,11 +263,10 @@ func afflict(target: Combatant, effect: Dictionary) -> String:
 	if effect.has("save"):
 		var stat: int = target.get(effect.save)
 		var result: Dictionary = Dice.check(stat, save_dc())
-		var line: String = "%s save: rolled %d, %+d %s = %d vs %d: " % [effect.save.capitalize(), result.natural, stat,
-			effect.save.capitalize(), result.total, save_dc()]
+		var math: String = " {%s save %d %+d = %d vs %d}" % [effect.save.capitalize(), result.natural, stat, result.total, save_dc()]
 		if result.success:
-			return line + "resists!"
-		return line + _set_status(target, effect, name)
+			return "%s resists the %s.%s" % [target.display_name, name, math]
+		return _set_status(target, effect, name) + math
 	return _set_status(target, effect, name)
 
 
@@ -274,7 +275,7 @@ func _set_status(target: Combatant, effect: Dictionary, name: String) -> String:
 		target.statuses.stun = true
 		return "%s is stunned and loses its next turn!" % target.display_name
 	target.statuses[effect.status] = {"power": int(effect.power), "turns": int(effect.turns)}
-	return "%s: %d damage a turn for %d turns!" % [name, effect.power, effect.turns]
+	return "%s gets %s: %d damage a turn for %d turns!" % [target.display_name, name, effect.power, effect.turns]
 
 
 static func cooldown(skill: Dictionary) -> int:
@@ -290,7 +291,8 @@ func skill_wait(skill: Dictionary) -> int:
 func use_skill(skill: Dictionary, foes: Array[Combatant], allies: Array[Combatant]) -> String:
 	energy -= int(skill.get("cost", 0))
 	ready_on[skill.name] = turn + cooldown(skill) + 1
-	var lines: PackedStringArray = ["%s uses %s!" % [display_name, skill.name]]
+	var attacks: bool = not (skill.has("shield") or skill.has("heal") or skill.has("charm") or skill.has("buff") or skill.has("save"))
+	var lines: PackedStringArray = [] if attacks else ["%s uses %s!" % [display_name, skill.name]]  # an attack names it in its line
 	if skill.has("shield"):
 		var shielded: Array = allies if skill.get("shield_all", false) else [self]
 		for ally: Combatant in shielded:
@@ -323,11 +325,12 @@ func _blast(foe: Combatant, skill: Dictionary) -> String:
 	var die: int = int(skill.get("damage_die", damage_die))
 	var full: int = Dice.roll(die) + damage_from_attack()
 	var damage: int = maxi(full / 2 if result.success else full, 1)
-	var line: String = "%s: %s save rolled %d, %+d = %d vs %d: %s %d damage." % [foe.display_name,
-		skill.save.capitalize(), result.natural, stat, result.total, save_dc(),
-		"pass, half:" if result.success else "fail!", damage] + foe.take_damage(damage)
+	var line: String = "    %s %s the %s save: %s %d damage!" % [foe.display_name, "passes" if result.success else "fails",
+		skill.save.capitalize(), "half," if result.success else "full", damage] + foe.take_damage(damage)
 	if not result.success and foe.is_alive() and skill.has("effect"):
 		line += " " + _set_status(foe, skill.effect, skill.effect.status.capitalize())
+	line += " {%s save %d %+d = %d vs %d | d%d: %d%s}" % [skill.save.capitalize(), result.natural, stat, result.total, save_dc(),
+		die, full - damage_from_attack(), " %+d half %s" % [damage_from_attack(), attack_name] if damage_from_attack() else ""]
 	return line
 
 

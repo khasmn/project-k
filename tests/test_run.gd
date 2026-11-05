@@ -25,7 +25,8 @@ func _init() -> void:
 	Dice.forced_rolls = [1, 12, 3]
 	_check("Lucky rerolls" in lucky.strike(Combatant.new(DUMMY)), "Lucky didn't reroll")
 	Dice.forced_rolls = [1]
-	_check("automatic miss" in lucky.strike(Combatant.new(DUMMY)), "Lucky rerolled twice in one fight")
+	var second: String = lucky.strike(Combatant.new(DUMMY))
+	_check("natural 1!" in second and not "rerolls" in second, "Lucky rerolled twice in one fight")
 	lucky.start_fight()
 	Dice.forced_rolls = [1, 12, 3]
 	_check("Lucky rerolls" in lucky.strike(Combatant.new(DUMMY)), "Lucky didn't reset for a new fight")

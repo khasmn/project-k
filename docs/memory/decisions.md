@@ -5,6 +5,7 @@ if a decision changes, add a new entry that says what it replaces.
 
 | Date | Decision | Why |
 | --- | --- | --- |
+| 2026-11-05 | Battle log: result first, dice math after it in gray, one line per attack, round dividers, names colored by side | Review panel: the log read like a math sheet |
 | 2026-11-05 | Review panel (6.0/10) adjustments, all kept: King Oswin on screen (envoy, crystal dust, dead queen motive), Sir Corwin recurring knight, Demon Lord last words, lore events, ch 1 hook (Starmetal Shard = crystal chip), Gatekeeper = the queen, twists play once, town sky cracks + Hollow-touched monsters, sealed secret hints, chapters.json with scaling, ch 1-5 = complete first act, token event with 2 stat choices, Necromancer deed 12 undead without reset | Panel: twists had no setup and the King was never on screen |
 | 2026-11-05 | Story: 10 chapters; 4 crystals + 4 Demon Lords, Demon King in ch 5; twist 1 (ch 5) he was the seal against the Hollow; twist 2 (ch 7) the King betrayed you | Kha's story idea, Claude's chapter plan |
 | 2026-11-05 | New base class Lancer (Skylancer / Phalanx); Mage tier 2: Elementalist or Dark Mage (replaces Warlock); evolution at level 10 (was 15) | Kha's choices |

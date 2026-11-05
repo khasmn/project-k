@@ -31,6 +31,14 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 
 ## Session log (newest first)
 
+### 2026-11-05 – Battle log (update/battle-log)
+- Review panel on the log (scores 4/5/4/4). Kha kept: result first + math in gray, round dividers, name colors.
+- Lines now read "Bandit 2 uses Cheap Shot: hits Lancer for 1! (d20 ... | dagger d4: 1)"; one line per attack
+  (the skill name leads it), no "+0" terms. Combatant puts the math in {braces}; the screen shows it gray.
+- "-- Round N --" opens each round (whoever moves first starts it).
+- Every hero/ally name green, monster name red, anywhere in a line (fixes skill users staying white).
+- Not picked (maybe later): kill lines, dark box behind the log, loud nat 1, round damage summary, low-HP warning.
+
 ### 2026-11-05 – Lancer class (feature/lancer)
 - New class Lancer in data/classes.json: HP 32, Atk 3, Def 2, Spd 2, spear d8. Sim win rate 48% (others 43-54%).
 - Skills: Piercing Thrust (+2 to hit, +1d4), Sweeping Arc (Speed save, all monsters, d6). Save skills
