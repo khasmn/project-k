@@ -710,7 +710,7 @@ func _set_target(foe: Combatant) -> void:
 
 
 func _update_labels() -> void:
-	%HeroName.text = Run.hero_title
+	%HeroName.text = Run.hero.display_name
 	%HeroHPBar.max_value = hero.max_hp
 	%HeroHPBar.value = hero.hp
 	var full: Color = Color(0.3, 0.7, 1) if hero.energy_name == "Mana" else Color(1, 0.78, 0.3)
