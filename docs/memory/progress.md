@@ -31,6 +31,12 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 
 ## Session log (newest first)
 
+### 2026-11-05 – Chapter 2 monster art (feature/chapter-2-art), step 2 of 4
+- Idle strips (5 frames, breathing) for Snow Imp, Rime Goblin, Frost Wolf, Yeti, Frozen Soldier (32x32) and
+  Imp Swarmlord, Goblin Chieftain, Winter Alpha, Elder Yeti, Frost Captain (48x48); "sprite" in enemies.json.
+- Attack strips from the make-attack-animation monster_attacks.py generator (wolves bite, no trail).
+- Art script: scratchpad frost_monsters.py (Pillow). Next: step 3, Vharn sprite + snowy backgrounds.
+
 ### 2026-11-05 – Chapter 2 flow (feature/chapter-2-flow), step 1 of 4
 - chapters.json "2" Frostfang Peaks (hp_mult 1.1, attack_bonus +1; woods/bandit_fortress backgrounds until step 3).
 - Monsters: Snow Imp, Rime Goblin, Frost Wolf, Yeti, Frozen Soldier; elites Imp Swarmlord, Goblin Chieftain,
