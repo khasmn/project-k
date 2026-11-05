@@ -38,6 +38,12 @@ func _ready() -> void:
 	town_button.tooltip_text = "Go back to town. The chapter starts again from room 1;\nyou keep your level, gear, gold and materials."
 	town_button.pressed.connect(_back_to_town)
 	gear_button.add_sibling(town_button)
+	if OS.is_debug_build():  # true when run from the Godot editor, false in an exported game
+		var test_button: Button = %CharacterButton.duplicate()
+		test_button.text = "TEST: LEVEL 10"
+		test_button.tooltip_text = "Testing only: gain the EXP to reach level %d (with its stat points)." % Evolution.LEVEL
+		test_button.pressed.connect(_test_level_up)
+		town_button.add_sibling(test_button)
 	add_child(gear_window)
 	dice.alignment = BoxContainer.ALIGNMENT_CENTER
 	Dice.recording = Settings.animate_dice
@@ -221,6 +227,13 @@ func _on_window_closed() -> void:
 		_to_battle()
 	else:
 		_update_sidebar()
+
+
+func _test_level_up() -> void:
+	while Run.level < Evolution.LEVEL:
+		Run.gain_exp(Run.exp_needed() - Run.experience)
+	_update_sidebar()
+	_show_doors()
 
 
 func _back_to_town() -> void:

@@ -39,6 +39,7 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 - Level-up log says "Your path splits!". Hero skills now get the allies too (Shield Wall / Spear Wall cover them).
 - Multi-attack skills on a 1-hit pose land together (Frenzy shows its damage numbers).
 - Level 10 needs ~216 EXP: replay chapter 1 (level is kept) until chapter 2 exists. Class art is unchanged.
+- TEST: LEVEL 10 button on the path screen, only in debug builds (run from Godot), for testing the evolution.
 
 ### 2026-11-05 – Battle log (update/battle-log)
 - Review panel on the log (scores 4/5/4/4). Kha kept: result first + math in gray, round dividers, name colors.
