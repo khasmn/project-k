@@ -91,6 +91,13 @@ func _init() -> void:
 	boxer.use_skill(boxer.skills[0], [foe], [boxer])
 	_check(foe.hp == 42, "Uppercut damage wrong: %d HP" % foe.hp)
 
+	# Sweeping Arc: a save attack with no status effect; a failed save takes d6 + half Attack.
+	var lancer: Combatant = _fighter("sweeping_arc", 3)
+	foe = _dummy()
+	Dice.forced_rolls = [2, 4]  # save 2 fails; d6 4 + 1
+	lancer.use_skill(lancer.skills[0], [foe], [lancer])
+	_check(foe.hp == 45 and foe.statuses.is_empty(), "Sweeping Arc wrong: %d HP" % foe.hp)
+
 	# Cooldown: cost + 2 turns. Fireball (3) used on turn 1 waits turns 2-6, ready on turn 7.
 	var caster: Combatant = _fighter("fireball", 3)
 	caster.start_fight()

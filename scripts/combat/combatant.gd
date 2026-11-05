@@ -326,7 +326,7 @@ func _blast(foe: Combatant, skill: Dictionary) -> String:
 	var line: String = "%s: %s save rolled %d, %+d = %d vs %d: %s %d damage." % [foe.display_name,
 		skill.save.capitalize(), result.natural, stat, result.total, save_dc(),
 		"pass, half:" if result.success else "fail!", damage] + foe.take_damage(damage)
-	if not result.success and foe.is_alive():
+	if not result.success and foe.is_alive() and skill.has("effect"):
 		line += " " + _set_status(foe, skill.effect, skill.effect.status.capitalize())
 	return line
 

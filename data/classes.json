@@ -6,5 +6,7 @@
 	"mage": {"name": "Mage", "projectile": "bolt", "impact": "spark", "skills": ["fireball", "frost_bolt"], "energy_name": "Mana", "start_energy": 3, "role": "Spells", "weapon": "Magic bolt", "damage_die": 10, "attack_stat": "magic", "evolves": "Elementalist or Warlock",
 		"stats": {"hp": 30, "attack": 0, "magic": 4, "defense": 1, "speed": 2, "charisma": 2, "luck": 1}},
 	"brawler": {"name": "Brawler", "impact": "punch", "skills": ["flurry", "uppercut"], "role": "Fast unarmed combos", "weapon": "Fists", "damage_die": 8, "attack_stat": "attack", "evolves": "Monk or Pit Fighter",
-		"stats": {"hp": 30, "attack": 3, "magic": 0, "defense": 2, "speed": 4, "charisma": 1, "luck": 1}}
+		"stats": {"hp": 30, "attack": 3, "magic": 0, "defense": 2, "speed": 4, "charisma": 1, "luck": 1}},
+	"lancer": {"name": "Lancer", "impact": "slash", "skills": ["piercing_thrust", "sweeping_arc"], "role": "Reach and charges", "weapon": "Spear", "damage_die": 8, "attack_stat": "attack", "evolves": "Skylancer or Phalanx",
+		"stats": {"hp": 32, "attack": 3, "magic": 0, "defense": 2, "speed": 2, "charisma": 1, "luck": 1}}
 }

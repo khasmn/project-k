@@ -134,7 +134,7 @@ func _refresh() -> void:
 		%ClassInfo.text = "Pick a class."
 	else:
 		var hero_class: Dictionary = draft.classes[draft.class_id]
-		%ClassInfo.text = "%s\nWeapon: %s (d%d)\nEvolves at level 15: %s" % [
+		%ClassInfo.text = "%s\nWeapon: %s (d%d)\nEvolves at level 10: %s" % [
 			hero_class.role, hero_class.weapon, hero_class.damage_die, hero_class.evolves]
 
 	race_button.text = race_button.text.left(3) + "Reroll race (%d left)" % draft.race_rerolls_left
