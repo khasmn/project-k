@@ -31,6 +31,16 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 
 ## Session log (newest first)
 
+### 2026-11-05 – Cutscenes (feature/prologue)
+- New make-cutscene skill. Cutscene player: scripts/story/cutscene.gd + scenes/story/cutscene.tscn,
+  data/cutscenes.json (art strip, fps, text, optional hero spot), art in assets/cutscenes/ (384x216 frames, 8 each).
+- Prologue after Start run: King Oswin alone with the queen's painting ("Soon," he whispers), then the hero at
+  dawn in front of the home, smoke over the Whispering Woods. Then the town.
+- Chapter 1 ending (first boss win per run, on Back to town): Sir Corwin at the camp with the letter, King Oswin
+  sends you after Malzareth, asks for the crystals' dust "for the royal vault". Run.chapters_won.
+- chapters.json: "outro" is now only the Bandit Chief's last words (log); "outro_cutscene" names the ending.
+- Art script: scratchpad cutscenes.py (Pillow). Animation off in Settings = pictures stay on frame 1.
+
 ### 2026-11-05 – Chapters and scaling (feature/chapters)
 - data/chapters.json (chapter 1 only): name, background, boss_background, monsters, boss, boss_door, boss_text,
   hp_mult, attack_bonus, intro, intro_retry, outro. Run.chapter, Run.chapters_seen, Run.chapter_data().

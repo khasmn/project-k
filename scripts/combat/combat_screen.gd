@@ -580,8 +580,14 @@ func _continue() -> void:
 
 
 func _back_to_town() -> void:
+	var first_win: bool = Run.is_boss() and not Run.chapter in Run.chapters_won
+	if first_win:
+		Run.chapters_won.append(Run.chapter)
 	Run.restart_chapter()
-	get_tree().change_scene_to_file(TOWN_SCENE)
+	if first_win:  # the chapter's ending plays once a run
+		Cutscene.play(get_tree(), Run.chapter_data().outro_cutscene, TOWN_SCENE)
+	else:
+		get_tree().change_scene_to_file(TOWN_SCENE)
 
 
 func _new_hero() -> void:

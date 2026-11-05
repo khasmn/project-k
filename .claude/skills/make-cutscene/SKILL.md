@@ -20,8 +20,8 @@ Write a short storyboard: one line per scene with
 
 ## 2. How cutscenes work in the game
 
-- `data/cutscenes.json`: `{"<id>": [scene, ...]}`. A scene: `"art"` (strip in `assets/cutscenes/`),
-  `"frames"`, `"fps"` (1-3), `"text"`, optional `"hero": [x, y]` (draws the player's hero sprite there,
+- `data/cutscenes.json`: `{"<id>": [scene, ...]}`. A scene: `"art"` (strip of 384-wide frames in
+  `assets/cutscenes/`), `"fps"` (1-3), `"text"`, optional `"hero": [x, y]` (draws the player's hero sprite there,
   in their chosen look, 3x pixel size, as on the battle screen).
 - `Cutscene.play(id, next_scene)` (`scripts/story/cutscene.gd`): full screen, the text types in under the
   picture, a click shows the whole text or goes to the next scene, a **Skip** button ends it. Mouse only.
@@ -45,7 +45,8 @@ Write a short storyboard: one line per scene with
 
 1. Follow the CLAUDE.md git workflow (`feature/cutscene-<id>`).
 2. Save strips to `assets/cutscenes/<scene>.png`; add the entry to `data/cutscenes.json`; call
-   `Cutscene.play()` where the story needs it (only once where it should not repeat, e.g. `Run.chapters_seen`).
+   `Cutscene.play()` where the story needs it (once a run where it should not repeat, e.g. `Run.chapters_won`;
+   a chapter ending is its `"outro_cutscene"` in `data/chapters.json`).
 3. Import (`$G --headless --import`), run all checks, take a screenshot of each scene in the game.
 4. Tell Kha exactly what to click to see it, and give 2-3 Pixelorama touch-ups to try.
 5. Commit "Add <id> cutscene" and save project memory.

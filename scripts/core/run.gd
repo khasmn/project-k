@@ -21,6 +21,7 @@ static var hero: Combatant
 static var hero_look: Dictionary = {}  # for HeroSprite; empty for the test hero
 static var chapter: String = "1"  # id in data/chapters.json
 static var chapters_seen: Array[String] = []  # chapters started this run: a replay shows the short intro
+static var chapters_won: Array[String] = []  # chapters whose boss fell this run: the ending cutscene played
 static var room: int = 1  # 1..ROOMS, then ROOMS + 1 is the boss
 static var room_type: String = ""  # the door picked for this room
 static var room_note: String = ""  # shown at the start of the next battle log
@@ -68,6 +69,7 @@ static func _reset() -> void:
 	evolution = ""
 	chapter = "1"
 	chapters_seen = []
+	chapters_won = []
 	points = 0
 	gold = START_GOLD
 	lives = LIVES
