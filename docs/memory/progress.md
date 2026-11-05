@@ -31,6 +31,15 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 
 ## Session log (newest first)
 
+### 2026-11-05 – Level 10 evolution (feature/evolution)
+- data/evolutions.json: 10 advanced classes (from, role, boost, 2 skills); 20 new skills in data/skills.json
+  (existing keys only, reused class poses and effects). scripts/core/evolution.gd: ready, choices, evolve.
+- At level 10 the path screen shows "YOUR PATH SPLITS" with 2 class cards (tooltip = skill details); the pick
+  keeps the 2 base skills, adds 2, applies the boost. Run.evolution holds it (reset with a new run).
+- Level-up log says "Your path splits!". Hero skills now get the allies too (Shield Wall / Spear Wall cover them).
+- Multi-attack skills on a 1-hit pose land together (Frenzy shows its damage numbers).
+- Level 10 needs ~216 EXP: replay chapter 1 (level is kept) until chapter 2 exists. Class art is unchanged.
+
 ### 2026-11-05 – Battle log (update/battle-log)
 - Review panel on the log (scores 4/5/4/4). Kha kept: result first + math in gray, round dividers, name colors.
 - Lines now read "Bandit 2 uses Cheap Shot: hits Lancer for 1! (d20 ... | dagger d4: 1)"; one line per attack

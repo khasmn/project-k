@@ -98,6 +98,22 @@ func _init() -> void:
 	lancer.use_skill(lancer.skills[0], [foe], [lancer])
 	_check(foe.hp == 45 and foe.statuses.is_empty(), "Sweeping Arc wrong: %d HP" % foe.hp)
 
+	# Evolutions: 2 per base class, every skill exists; at level 10 the pick adds its boost and 2 skills, once.
+	for base: String in Run.data("classes"):
+		Run.hero_look = {"class": base}
+		_check(Evolution.choices().size() == 2, "%s doesn't have 2 evolutions" % base)
+	for entry: Dictionary in Run.data("evolutions").values():
+		for id: String in entry.skills:
+			_check(skills.has(id) and skills[id].has("cost"), "evolution skill %s missing" % id)
+	Run.hero = _fighter("shield_bash", 3)
+	Run.hero_look = {"class": "warrior"}
+	Run.level = 9
+	_check(not Evolution.ready(), "evolution offered before level 10")
+	Run.level = 10
+	var defense: int = Run.hero.defense
+	Evolution.evolve("knight")
+	_check(Run.hero.defense == defense + 2 and Run.hero.skills.size() == 3 and not Evolution.ready(), "Knight evolution wrong")
+
 	# Cooldown: cost + 2 turns. Fireball (3) used on turn 1 waits turns 2-6, ready on turn 7.
 	var caster: Combatant = _fighter("fireball", 3)
 	caster.start_fight()
