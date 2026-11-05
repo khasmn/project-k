@@ -72,7 +72,7 @@ func _initialize() -> void:
 		draft.set(kind + "_id", picks[kind])
 	Run.start(draft)
 	Dice.forced_rolls = forced
-	print("Seed: %d   Hero: %s" % [seed_value, Run.hero_title])
+	print("Seed: %d   Hero: %s" % [seed_value, Run.hero.display_name])
 	Engine.time_scale = 20.0  # skip the enemy's thinking pause
 	_play(actions)
 

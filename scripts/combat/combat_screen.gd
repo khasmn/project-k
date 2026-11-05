@@ -28,6 +28,8 @@ var ally_bars: Dictionary = {}  # ally -> its small HP bar
 var hearts: HBoxContainer = HBoxContainer.new()  # lives left, next to Level in the HERO box
 var enemies: Array[Combatant] = []
 var target: Combatant  # the monster the hero attacks; click a card to change it
+var round_number: int = 0
+var hero_first: bool = true  # whoever moves first opens each round in the log
 var fight_over: bool = false  # true after a win or a flee, so Continue only works once
 var dice: DiceTray = DiceTray.new()
 var fx: FightFx = FightFx.new()
@@ -148,7 +150,8 @@ func _start_fight() -> void:
 		order += " Tie! %s first." % (
 			"%s (%s wins ties) goes" % [hero.display_name, hero.passive("wins_ties")] if hero.wins_ties else "The monsters go")
 	_log(order)
-	if hero_init > enemy_init or (hero_init == enemy_init and hero.wins_ties):
+	hero_first = hero_init > enemy_init or (hero_init == enemy_init and hero.wins_ties)
+	if hero_first:
 		_hero_turn()
 	else:
 		_enemy_turn()
@@ -179,6 +182,8 @@ func _info(foe: Combatant) -> String:
 
 
 func _hero_turn() -> void:
+	if hero_first:
+		_new_round()
 	var turn_text: String = hero.start_turn()
 	if turn_text != "":
 		_log(turn_text)
@@ -467,6 +472,8 @@ func _ally_down(ally: Combatant) -> void:
 
 func _enemy_turn() -> void:
 	_set_buttons_enabled(false)
+	if not hero_first:
+		_new_round()
 	for foe in _alive():
 		%TurnLabel.text = "%s's turn..." % foe.display_name
 		# await pauses this function until the timer runs out, so the turns don't happen instantly.
@@ -703,7 +710,7 @@ func _set_target(foe: Combatant) -> void:
 
 
 func _update_labels() -> void:
-	%HeroName.text = Run.hero_title
+	%HeroName.text = Run.hero.display_name
 	%HeroHPBar.max_value = hero.max_hp
 	%HeroHPBar.value = hero.hp
 	var full: Color = Color(0.3, 0.7, 1) if hero.energy_name == "Mana" else Color(1, 0.78, 0.3)
@@ -774,27 +781,35 @@ func _set_buttons_enabled(enabled: bool) -> void:
 	%ItemButton.disabled = not enabled or Run.items.values().all(func(count: int) -> bool: return count == 0)
 
 
+func _new_round() -> void:
+	round_number += 1
+	_log("[color=%s]-- Round %d --[/color]" % [GRAY, round_number])
+
+
 func _log(text: String) -> void:
 	%Log.append_text(_highlight(text) + "\n")
 
 
-## Color names, passives, hits, misses and damage so a log line is easy to scan.
+## Color names (hero side green, monsters red, wherever they appear), passives, results and damage, and show the
+## dice math in {braces} in gray, so the result is what the eye finds first.
 func _highlight(text: String) -> String:
 	for passive in hero.passive_names.values():
 		text = text.replace(passive, "[color=%s]%s[/color]" % [PASSIVE_COLOR, passive])
-	var attackers: Array = [[hero, HERO_COLOR]]
+	var colors: Dictionary = {hero.display_name: HERO_COLOR}
 	for ally in allies:
-		attackers.append([ally, HERO_COLOR])
+		colors[ally.display_name] = HERO_COLOR
 	for foe in enemies:
-		attackers.append([foe, ENEMY_COLOR])
-	for fighter in attackers:
-		var name_text: String = fighter[0].display_name + " attacks"
-		if text.begins_with(name_text):
-			text = "[color=%s][b]%s[/b][/color]%s" % [fighter[1], name_text, text.substr(name_text.length())]
-	text = text.replace("CRITICAL HIT!", "[color=%s][b]CRITICAL HIT![/b][/color]" % GOLD)
-	text = text.replace(": hit!", ": [b]hit![/b]")
-	text = text.replace("automatic miss!", "[color=%s]automatic miss![/color]" % GRAY)
-	text = text.replace(": miss.", ": [color=%s]miss.[/color]" % GRAY)
-	text = text.replace("Damage:", "[color=%s]Damage:[/color]" % GRAY)
-	var damage: RegEx = RegEx.create_from_string("= (\\d+) damage")
-	return damage.sub(text, "= [b]$1 damage[/b]", true)
+		colors[foe.display_name] = ENEMY_COLOR
+	var names: Array = colors.keys()
+	names.sort_custom(func(a: String, b: String) -> bool: return a.length() > b.length())  # "Bandit Chief" before "Bandit"
+	var hits: Array[RegExMatch] = RegEx.create_from_string("\\b(%s)\\b" % "|".join(names)).search_all(text)
+	for i in range(hits.size() - 1, -1, -1):  # back to front, so the earlier positions stay right
+		var before: String = text.left(hits[i].get_start())
+		if before.count("{") > before.count("}"):
+			continue  # names inside the gray dice math stay gray
+		text = before + "[color=%s][b]%s[/b][/color]" % [colors[hits[i].get_string()], hits[i].get_string()] + text.substr(hits[i].get_end())
+	text = text.replace("{", "[color=%s](" % GRAY).replace("}", ")[/color]")
+	text = text.replace("CRITICAL HIT", "[color=%s][b]CRITICAL HIT[/b][/color]" % GOLD)
+	text = text.replace(" misses ", " [color=%s]misses[/color] " % GRAY)
+	var damage: RegEx = RegEx.create_from_string("(for|full|half,) (\\d+)( damage)?!")
+	return damage.sub(text, "$1 [b]$2$3[/b]!", true)

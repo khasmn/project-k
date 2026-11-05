@@ -17,7 +17,6 @@ const START_GOLD: int = 30  # enough for a first piece of gear in the town Shop
 const LIVES: int = 3
 
 static var hero: Combatant
-static var hero_title: String = ""
 static var hero_look: Dictionary = {}  # for HeroSprite; empty for the test hero
 static var room: int = 1  # 1..ROOMS, then ROOMS + 1 is the boss
 static var room_type: String = ""  # the door picked for this room
@@ -44,15 +43,12 @@ static var eggs: Array[String] = []  # animal kinds, waiting to hatch at the Far
 static func start(draft: CharacterDraft) -> void:
 	hero = Combatant.new(draft.hero_data())
 	hero_look = draft.sprite_look()
-	hero_title = ("%s, " % draft.look.name if draft.look.name else "") + "%s %s with %s" % [
-		draft.races[draft.race_id].name, draft.classes[draft.class_id].name, draft.talents[draft.talent_id].name]
 	_reset()
 
 
 ## For running a scene on its own (F6 or the play tool without a run).
 static func start_test() -> void:
 	hero = Combatant.new(data("heroes").test_hero)
-	hero_title = "Test hero"
 	hero_look = {}
 	_reset()
 

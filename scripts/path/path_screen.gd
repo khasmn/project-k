@@ -218,7 +218,7 @@ func _close_character() -> void:
 func _update_sidebar() -> void:
 	%Progress.text = "Boss fight" if Run.is_boss() else "Room %d of %d" % [Run.room, Run.ROOMS]
 	%Gold.text = "Gold %d" % Run.gold
-	%HeroName.text = Run.hero_title
+	%HeroName.text = Run.hero.display_name
 	%HeroHPBar.max_value = hero.max_hp
 	%HeroHPBar.value = hero.hp
 	%HeroHP.text = "HP %d / %d" % [hero.hp, hero.max_hp]
