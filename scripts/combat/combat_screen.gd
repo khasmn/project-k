@@ -589,6 +589,7 @@ func _back_to_town(next_chapter: String = "") -> void:
 	var first_win: bool = Run.is_boss() and not Run.chapter in Run.chapters_won
 	if first_win:
 		Run.chapters_won.append(Run.chapter)
+		Run.gold += int(Run.chapter_data().get("reward_gold", 0))  # the King's envoy pays (told in the ending cutscene)
 	if next_chapter:
 		Run.chapter = next_chapter
 	Run.restart_chapter()

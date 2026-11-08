@@ -6,9 +6,10 @@ class_name RoomEvent
 const POISON: Dictionary = {"power": 1, "turns": 3}
 
 
-## A random event not seen this run (all seen: any event).
+## A random event of this chapter not seen this run (all seen: any of them). Events without "chapters" go anywhere.
 static func pick() -> String:
-	var ids: Array = Run.data("events").keys()
+	var all: Dictionary = Run.data("events")
+	var ids: Array = all.keys().filter(func(id: String) -> bool: return Run.chapter in all[id].get("chapters", [Run.chapter]))
 	var fresh: Array = ids.filter(func(id: String) -> bool: return not id in Run.events_seen)
 	var pool: Array = fresh if fresh else ids
 	return pool[0] if pool.size() == 1 else pool[Dice.roll(pool.size(), false) - 1]
