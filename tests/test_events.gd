@@ -65,11 +65,16 @@ func _init() -> void:
 	_check(RoomEvent.pick() == events.keys()[0], "the last unseen event is picked without a die")
 	Run.start(draft)
 	_check(Run.next_fight.is_empty() and Run.events_seen.is_empty(), "a new hero starts clean")
+	var chapter_1: int = events.values().filter(func(e: Dictionary) -> bool: return "1" in e.get("chapters", ["1"])).size()
 	for i in 20:
 		var door: String = RoomEvent.pick()
-		_check(not door in Run.events_seen or Run.events_seen.size() == events.size(), "events don't repeat until all are seen")
+		_check(not door in Run.events_seen or Run.events_seen.size() == chapter_1, "events don't repeat until all are seen")
+		_check(door != "dying_imp", "a chapter 2 event showed up in chapter 1")
 		if not door in Run.events_seen:
 			Run.events_seen.append(door)
+	Run.chapter = "2"
+	Run.events_seen.assign(events.keys().filter(func(id: String) -> bool: return id != "dying_imp"))
+	_check(RoomEvent.pick() == "dying_imp", "the chapter 2 event shows up in chapter 2")
 	if failed:
 		quit(1)
 		return

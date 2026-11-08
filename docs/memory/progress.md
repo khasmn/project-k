@@ -31,6 +31,14 @@ half-Attack damage, elites, Train point, log/actions side by side, Item button w
 
 ## Session log (newest first)
 
+### 2026-11-08 – Chapter 2 story (feature/chapter-2-story), step 4 of 4
+- Ending cutscene chapter_2_end (crystal_shatter, town_envoy, envoy_road): the crystal falls to dust, the envoy
+  pays 50 gold (chapters.json "reward_gold", paid on the first boss win) and takes the dust; the chest hums.
+- Lore event "A Dying Imp" (no checks, random): "Don't break it... It holds them back." Events can have a
+  "chapters" list (RoomEvent.pick filters; no list = every chapter).
+- Path screen heading text now wraps (long chapter intros and event texts stretched the screen).
+- Chapter 2 is complete. Art script: scratchpad ch2_cutscenes.py.
+
 ### 2026-11-05 – Chapter 2 boss art (feature/chapter-2-boss), step 3 of 4
 - Vharn the Frost Tyrant 64x64 (frost giant king: ice armor, ice crown, glaive, pulsing blue heart) + attack strip.
 - Backgrounds: frostfang (epic vast, frozen pass at dusk, buried royal watchtower, slow snow) and frozen_throne

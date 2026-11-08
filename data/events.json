@@ -53,5 +53,15 @@
 			{"label": "Search the cart", "stat": "luck", "dc": 12,
 				"success": {"text": "Under the seat: a map of the road. You will strike first in the next fight.", "first": true},
 				"fail": {"text": "Just old straw and a cranky mouse."}}
+		]},
+	"dying_imp": {"name": "A Dying Imp", "chapters": ["2"], "door": "Something small and blue lies still in the snow.",
+		"text": "A Snow Imp lies in the snow, its ice horns cracked. It grabs your boot. \"Don't break it... the crystal. It holds them back.\"",
+		"choices": [
+			{"label": "Listen",
+				"success": {"text": "\"Them? Who?\" It only shivers. \"Below. Waiting.\" Then it is still.", "exp": 10}},
+			{"label": "Give it a kind end",
+				"success": {"text": "You stay until it is still. In its claws you find a few coins.", "gold": 8}},
+			{"label": "Walk away",
+				"success": {"text": "Behind you it whispers once more: \"Little key...\""}}
 		]}
 }

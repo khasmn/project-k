@@ -7,5 +7,10 @@
 		{"art": "camp_dawn", "fps": 2, "text": "At dawn a royal knight rides into the camp: Sir Corwin Vale. \"The King asks for you.\""},
 		{"art": "throne_day", "fps": 2, "hero": [232, 120], "text": "\"The Demon King Malzareth sends his monsters against us. His castle is sealed by four crystals, each guarded by a Demon Lord. Break them, and end him.\""},
 		{"art": "throne_day", "fps": 2, "hero": [232, 120], "text": "\"And bring me the dust of every crystal you break,\" King Oswin says with a warm smile. \"For the royal vault.\""}
+	],
+	"chapter_2_end": [
+		{"art": "crystal_shatter", "fps": 2, "hero": [176, 120], "text": "The Crystal of Frost cracks and falls into glittering dust. For a moment, the whole mountain seems to breathe out."},
+		{"art": "town_envoy", "fps": 2, "hero": [194, 120], "text": "A royal envoy waits in town with a purse of 50 gold. \"His Majesty thanks you. The crystal's dust, please. For the royal vault.\""},
+		{"art": "envoy_road", "fps": 2, "text": "All the way to the capital, the little chest hums."}
 	]
 }

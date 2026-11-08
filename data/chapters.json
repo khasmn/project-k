@@ -12,5 +12,5 @@
 		"hp_mult": 1.1, "attack_bonus": 1,
 		"intro": "The road north climbs into the Frostfang Peaks. Soldiers who went up the passes never came back. Something up there keeps them, frozen and obedient.",
 		"intro_retry": "Back into the Frostfang Peaks. The cold is waiting.",
-		"outro": "\"Three more locks, little key,\" Vharn rasps as the ice cracks. \"Then you will wish for my cold.\""}
+		"outro": "\"Three more locks, little key,\" Vharn rasps as the ice cracks. \"Then you will wish for my cold.\"", "outro_cutscene": "chapter_2_end", "reward_gold": 50}
 }
